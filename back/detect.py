@@ -2,10 +2,10 @@ from ultralytics import YOLO
 import os
 import cv2
 
-def detect(image_path, model, result_folder, conf_threshold=0.25):
+def detect(image_path, result_folder, conf_threshold=0.25):
+    from ultralytics import YOLO
     # Load model
-    if not hasattr(model, "predict"):
-        raise ValueError("The provided model does not have a 'predict' method.")
+    model = YOLO("yolov8s.pt")
 
     # Predict
     result = model.predict(image_path, save=False, conf=conf_threshold)
@@ -38,4 +38,4 @@ if __name__ == "__main__":
     ]
 
     for image_path in image_paths:
-        result_image_path = detect(image_path, model, result_folder)
+        result_image_path = detect(image_path, result_folder)
