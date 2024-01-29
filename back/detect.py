@@ -24,7 +24,7 @@ def detect(image_path, result_folder, conf_threshold=0.25):
 
 if __name__ == "__main__":
     # 결과 이미지를 저장할 폴더 생성
-    result_folder = "result"
+    result_folder = "/Users/park_sh/Desktop/what-desk/back/result"
     os.makedirs(result_folder, exist_ok=True)
 
     # YOLO 모델 로드
@@ -32,8 +32,8 @@ if __name__ == "__main__":
 
     # 이미지 경로
     image_paths = [
-        # "/Users/park_sh/Desktop/what-desk/back/image/[3%쿠폰]_제로데스크_에보_테이블_컴퓨터_책상_1000~2000size_2Colors.jpg"
-        "/Users/park_sh/Desktop/what-desk/back/image/_[누적판매_1만5천]_오테카_원목_책상.jpg"
+        "/Users/park_sh/Desktop/what-desk/back/image/[3%쿠폰]_제로데스크_에보_테이블_컴퓨터_책상_1000~2000size_2Colors.jpg"
+        # "/Users/park_sh/Desktop/what-desk/back/image/_[누적판매_1만5천]_오테카_원목_책상.jpg"
         # 추가 가능
     ]
 

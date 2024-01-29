@@ -2,6 +2,7 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import FileResponse
 import os
 import uuid
+from detect import detect
 
 app = FastAPI()
 
@@ -24,7 +25,12 @@ async def process_image(file: UploadFile):
         # 업로드된 파일 저장
         with open(file_path, "wb") as image:
             image.write(file.file.read())
+        # detect 함수를 적용하여 결과 반환
+        result_image_path = detect(file_path, result_folder)
 
-        return {"filename": filename}
+        # 결과물 파일명 반환
+        result_filename = os.path.basename(result_image_path)
+        return {"result_filename": result_filename}
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
