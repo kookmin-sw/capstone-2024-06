@@ -34,3 +34,5 @@ async def process_image(file: UploadFile):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+# 서버 오픈 ->  uvicorn main:app --reload --host 0.0.0.0 --port 8000 

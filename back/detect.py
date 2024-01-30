@@ -10,13 +10,13 @@ def detect(image_path, result_folder, conf_threshold=0.25):
     # Predict
     result = model.predict(image_path, save=False, conf=conf_threshold)
 
-    # Get the filename without extension
+    # 이미지 저장 경로
     file_name = os.path.splitext(os.path.basename(image_path))[0]
 
-    # Save the result image in the specified folder
+    # 저장 경로
     save_path = os.path.join(result_folder, f"{file_name}_result.jpg")
 
-    # Visualize and save the result image
+    # 저장
     plots = result[0].plot()
     cv2.imwrite(save_path, plots)
 
