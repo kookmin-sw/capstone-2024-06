@@ -36,3 +36,4 @@ async def process_image(file: UploadFile):
         raise HTTPException(status_code=500, detail=str(e))
 
 # 서버 오픈 ->  uvicorn main:app --reload --host 0.0.0.0 --port 8000 
+# 가상환경 -> source venv/bin/activate, 종료 -> deactivate
