@@ -1,5 +1,6 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 import os
 import uuid
 from detect import detect
@@ -10,8 +11,19 @@ app = FastAPI()
 async def root():
     return "hello world"
 
+origins = [
+    "*"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],  # 모든 HTTP 메서드를 허용하려면 "*" 사용
+    allow_headers=["*"],  # 모든 헤더를 허용하려면 "*" 사용
+)
 result_folder = "/Users/park_sh/Desktop/what-desk/back/result"
-upload_folder = "/Users/park_sh/Desktop/what-desk/uploads"
+upload_folder = "/Users/park_sh/Desktop/what-desk/back/uploads"
 
 @app.get("/get_image/{image_filename}")
 async def get_image(image_filename: str):
