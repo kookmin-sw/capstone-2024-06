@@ -67,10 +67,12 @@ async def process_image(file: UploadFile):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.post("/users/", response_model=schemas.UserBase)
 def create_user(user: schemas.UserBase, db: Session = Depends(get_db)):
     return crud.create_user(db=db, user=user)
 
+# test
 # 서버 오픈 ->  uvicorn main:app --reload --host 0.0.0.0 --port 8000 
 # 가상환경 -> source venv/bin/activate, 종료 -> deactivate
     
