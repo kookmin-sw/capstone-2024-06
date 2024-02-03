@@ -22,7 +22,7 @@ def get_db():
 	finally:
 		db.close()
           
-
+# 메인
 @app.get("/")
 async def root():
     return "hello world"
@@ -46,7 +46,7 @@ async def get_image(image_filename: str):
     image_path = os.path.join(result_folder, image_filename)
     return FileResponse(image_path, media_type="image/jpeg")
 
-# 이미지 업로드 및 결과 반환 라우트
+# 이미지 업로드 및 처리 결과 반환 
 @app.post("/process_image/")
 async def process_image(file: UploadFile):
     try:
@@ -67,7 +67,7 @@ async def process_image(file: UploadFile):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
+# 유저정보
 @app.post("/users/", response_model=schemas.UserBase)
 def create_user(user: schemas.UserBase, db: Session = Depends(get_db)):
     return crud.create_user(db=db, user=user)
@@ -75,4 +75,4 @@ def create_user(user: schemas.UserBase, db: Session = Depends(get_db)):
 # test
 # 서버 오픈 ->  uvicorn main:app --reload --host 0.0.0.0 --port 8000 
 # 가상환경 -> source venv/bin/activate, 종료 -> deactivate
-    
+# db -> db 실행(brew services start postgresql), db 확인(psql -U admin -d mydb), db 종료(brew services stop postgresql)
