@@ -31,11 +31,9 @@ if __name__ == "__main__":
     model = YOLO("yolov8s.pt")
 
     # 이미지 경로
-    image_paths = [
-        "/Users/park_sh/Desktop/what-desk/back/image/[3%쿠폰]_제로데스크_에보_테이블_컴퓨터_책상_1000~2000size_2Colors.jpg"
-        # "/Users/park_sh/Desktop/what-desk/back/image/_[누적판매_1만5천]_오테카_원목_책상.jpg"
-        # 추가 가능
-    ]
+    image_paths = 'image'
 
-    for image_path in image_paths:
-        result_image_path = detect(image_path, result_folder)
+    for file_name in os.listdir(image_paths):
+        if file_name.endswith((".jpg", ".jpeg", ".png")):
+            image_path = os.path.join(image_paths, file_name)
+            result_image_path = detect(image_path, result_folder,0.1)
