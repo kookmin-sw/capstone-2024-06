@@ -1,14 +1,14 @@
 from ultralytics import YOLO
 import os
 import cv2
-
+import csv
 def detect(image_path, result_folder, conf_threshold=0.25):
     from ultralytics import YOLO
     # Load model
     model = YOLO("yolov8s.pt")
 
     # Predict
-    result = model.predict(image_path, save=False, conf=conf_threshold)
+    result = model.predict(image_path, save=False, conf=conf_threshold, classes =[24,25,26,39,41,56,58,59,60,62,63,64,66,73,74,])
 
     # 이미지 저장 경로
     file_name = os.path.splitext(os.path.basename(image_path))[0]
