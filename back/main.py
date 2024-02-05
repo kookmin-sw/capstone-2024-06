@@ -72,7 +72,7 @@ async def process_image(file: UploadFile):
 def create_user(user: schemas.UserBase, db: Session = Depends(get_db)):
     return crud.create_user(db=db, user=user)
 
-@app.get("/users/check_user/{id/password}")
+@app.get("/users/{id/password}")
 def check_user(id=str,password=str, db: Session = Depends(get_db)):
     return crud.check_user(db=db, id=id, password=password)
 
