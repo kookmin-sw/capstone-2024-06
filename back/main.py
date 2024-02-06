@@ -68,15 +68,21 @@ async def process_image(file: UploadFile):
         raise HTTPException(status_code=500, detail=str(e))
 
 # 유저정보
-@app.post("/users/", response_model=schemas.UserBase)
+@app.post("/user/sign_up", response_model=schemas.UserBase)
 def create_user(user: schemas.UserBase, db: Session = Depends(get_db)):
     return crud.create_user(db=db, user=user)
 
-@app.get("/users/{id/password}")
-def check_user(id=str,password=str, db: Session = Depends(get_db)):
-    return crud.check_user(db=db, id=id, password=password)
+@app.post("/user/sign_in")
+def check_user(user: schemas.UserBase, db: Session = Depends(get_db)):
+    db_user = crud.read_user_by_id(db=db, id=user.id)
 
-
+    if not db_user:
+        raise HTTPException(status_code=404, detail='User not found')
+    
+    if user.password != db_user.password:
+        raise HTTPException(status_code=400, detail='Incorrect password')
+    
+    return {"message": "User exist"}
 
 
 # test
