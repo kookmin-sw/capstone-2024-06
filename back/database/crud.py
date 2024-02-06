@@ -3,7 +3,7 @@ from database import models, schemas
 
 
 def create_user(db: Session, user: schemas.UserBase):
-    db_item = models.User(user.model_dump())
+    db_item = models.User(**user.model_dump())
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
