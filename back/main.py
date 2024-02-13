@@ -85,7 +85,7 @@ def check_user(user: schemas.UserBase, db: Session = Depends(get_db)):
     return {"message": "User exist"}
 
 
-# test
+# test 0213
 # 서버 오픈 ->  uvicorn main:app --reload --host 0.0.0.0 --port 8000 
 # 가상환경 -> source venv/bin/activate, 종료 -> deactivate
 # db -> db 실행(brew services start postgresql), db 확인(psql -U admin -d mydb), db 종료(brew services stop postgresql), SELECT * FROM users;
