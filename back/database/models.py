@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, ForeignKey
+from sqlalchemy import Column, String, Integer, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from database.database import Base
 
@@ -6,5 +6,8 @@ from database.database import Base
 class User(Base):
     __tablename__ = 'users'
 
-    id = Column(String, primary_key=True, index=True)
-    password = Column(String)
+    username = Column(String, primary_key=True, index=True)
+    hashed_password = Column(String)
+    disabled = Column(Boolean)
+
+    
