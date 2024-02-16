@@ -8,6 +8,4 @@ class User(Base):
 
     username = Column(String, primary_key=True, index=True)
     hashed_password = Column(String)
-    disabled = Column(Boolean)
-
     
