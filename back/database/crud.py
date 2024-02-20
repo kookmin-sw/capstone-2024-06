@@ -1,3 +1,4 @@
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from database import models, schemas
 
@@ -42,7 +43,12 @@ def read_post(
         query = query.filter(models.Post.writer_username == writer_username)
 
     if keyword:
-        query = query.filter(models.Post.title.ilike(f"%{keyword}%"))
+        query = query.filter(
+            or_(
+                models.Post.title.ilike(f"%{keyword}%"),
+                models.Post.content.ilike(f"%{keyword}%")
+            )
+        )
 
     return query.all()
 

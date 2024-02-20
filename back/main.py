@@ -101,7 +101,7 @@ def create_comment(comment: schemas.Comment, db: Session = Depends(get_db)):
     return crud.create_comment(db=db, comment=comment)
 
 
-@app.post("/post/search", response_model=List[schemas.Post])
+@app.get("/post/search", response_model=List[schemas.Post])
 def search_post(
     category: str | None = None,
     writer_username: str | None = None,
