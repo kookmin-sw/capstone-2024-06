@@ -2,20 +2,31 @@ from pydantic import BaseModel
 
 
 class User(BaseModel):
-    username: str
+    user_id: str
     password: str
 
 
-class Post(BaseModel):
-    post_id: str
+class BasePost(BaseModel):
+    author_id: str
     title: str
-    content: str
     category: str
-    writer_username: str
+
+
+class PostForm(BasePost):
+    content: str
+
+
+class PostPreview(BasePost):
+    post_id: int
+    like_count: int
+    view_count: int
+
+
+class Post(PostPreview):
+    content: str
 
 
 class Comment(BaseModel):
-    comment_id: str
+    author_id: str
+    post_id: int
     content: str
-    writer_username: str
-    post_id: str

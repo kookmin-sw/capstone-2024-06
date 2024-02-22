@@ -1,35 +1,54 @@
-from sqlalchemy import Column, String, Integer, ForeignKey
+from sqlalchemy import Column, String, Integer, ForeignKey, Sequence
 from sqlalchemy.orm import relationship
 from database.database import Base
 
 
-class User(Base):
-    __tablename__ = 'user'
+class Users(Base):
+    __tablename__ = "users"
 
-    username = Column(String, primary_key=True, index=True)
+    user_id = Column(String, primary_key=True, index=True)
     password = Column(String)
-    post = relationship("Post", back_populates="writer", uselist=True)
-    comment = relationship("Comment", back_populates="writer", uselist=True)
+
+    posts = relationship("Posts", back_populates="author", uselist=True)
+    comments = relationship("Comments", back_populates="author", uselist=True)
+    likes = relationship("Likes", back_populates="author", uselist=True)
 
 
-class Post(Base):
-    __tablename__ = 'post'
-    
-    post_id = Column(String, primary_key=True)
+class Posts(Base):
+    __tablename__ = "posts"
+
+    post_id = Column(Integer, Sequence("post_id_seq"), primary_key=True)
+
+    author_id = Column(String, ForeignKey("users.user_id"))
+
     title = Column(String)
     content = Column(String)
     category = Column(String)
-    writer_username = Column(String, ForeignKey("user.username"))
-    writer = relationship("User", back_populates="post")
-    comment = relationship("Comment", back_populates="post", uselist=True)
+
+    like_count = Column(Integer, default=0)
+    view_count = Column(Integer, default=0)
+
+    author = relationship("Users", back_populates="posts")
+    comments = relationship("Comments", back_populates="post", uselist=True)
+    likes = relationship("Likes", back_populates="post", uselist=True)
 
 
-class Comment(Base):
-    __tablename__ = 'comment'
+class Comments(Base):
+    __tablename__ = "comments"
 
-    comment_id = Column(String, primary_key=True)
+    author_id = Column(String, ForeignKey("users.user_id"), primary_key=True)
+    post_id = Column(Integer, ForeignKey("posts.post_id"), primary_key=True)
+
     content = Column(String)
-    writer_username = Column(String, ForeignKey("user.username"))
-    writer = relationship("User", back_populates="comment")
-    post_id = Column(String, ForeignKey("post.post_id"))
-    post = relationship("Post", back_populates="comment")
+
+    author = relationship("Users", back_populates="comments")
+    post = relationship("Posts", back_populates="comments")
+
+
+class Likes(Base):
+    __tablename__ = "likes"
+    author_id = Column(String, ForeignKey("users.user_id"), primary_key=True)
+    post_id = Column(Integer, ForeignKey("posts.post_id"), primary_key=True)
+
+    author = relationship("Users", back_populates="likes")
+    post = relationship("Posts", back_populates="likes")

@@ -8,11 +8,13 @@ import uuid
 from detect import detect
 
 from sqlalchemy.orm import Session
-from database import crud, models, schemas
+from database import crud
+from database.models import *
+from database.schemas import *
 from database.database import SessionLocal, engine
 
-models.Base.metadata.create_all(bind=engine)
 
+Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 
@@ -72,14 +74,14 @@ async def process_image(file: UploadFile):
 
 
 # 유저정보
-@app.post("/user/sign_up", response_model=schemas.User)
-def create_user(user: schemas.User, db: Session = Depends(get_db)):
-    return crud.create_user(db=db, user=user)
+@app.post("/user/sign_up", response_model=User)
+async def create_user(user: User, db: Session = Depends(get_db)):
+    return await crud.create_user(db, user)
 
 
 @app.post("/user/sign_in")
-def check_user(user: schemas.User, db: Session = Depends(get_db)):
-    db_user = crud.read_user_by_id(db=db, username=user.username)
+async def check_user(user: User, db: Session = Depends(get_db)):
+    db_user = await crud.read_user_by_id(db, user.username)
 
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -91,39 +93,52 @@ def check_user(user: schemas.User, db: Session = Depends(get_db)):
 
 
 # posting test
-@app.post("/post/create", response_model=schemas.Post)
-def create_post(post: schemas.Post, db: Session = Depends(get_db)):
-    return crud.create_post(db=db, post=post)
+@app.post("/post/create", response_model=Post)
+async def create_post(post: PostForm, db: Session = Depends(get_db)):
+    return await crud.create_post(db, post)
 
 
-@app.post("/comment/create", response_model=schemas.Comment)
-def create_comment(comment: schemas.Comment, db: Session = Depends(get_db)):
-    return crud.create_comment(db=db, comment=comment)
+@app.post("/comment/create", response_model=Comment)
+async def create_comment(comment: Comment, db: Session = Depends(get_db)):
+    return await crud.create_comment(db, comment)
 
 
-@app.get("/post/search", response_model=List[schemas.Post])
-def search_post(
+@app.get("/post/{post_id}", response_model=Post)
+async def read_post(post_id: int, db: Session = Depends(get_db)):
+    post = crud.increment_view_count(db. post_id)
+    if post is None:
+        raise HTTPException(status_code=404, detail="Post does not exist.")
+
+
+@app.get("/post/search", response_model=List[Post])
+async def search_post(
     category: str | None = None,
-    writer_username: str | None = None,
+    author_id: str | None = None,
     keyword: str | None = None,
     db: Session = Depends(get_db),
 ):
-    posts = crud.read_post(
-        db=db, category=category, writer_username=writer_username, keyword=keyword
+    posts = await crud.search_posts(
+        db, author_id=author_id, category=category, keyword=keyword
     )
     return posts
 
 
-@app.post("/comment/search", response_model=List[schemas.Comment])
-def search_comment(
+@app.get("/comment/search", response_model=List[Comment])
+async def search_comment(
     post_id: str | None = None,
-    writer_username: str | None = None,
+    author_id: str | None = None,
     db: Session = Depends(get_db),
 ):
-    comments = crud.read_comment(
-        db=db, post_id=post_id, writer_username=writer_username
+    comments = await crud.read_comment(
+        db, author_id=author_id, post_id=post_id
     )
     return comments
+
+
+@app.post("/like", response_model=Post)
+async def like_post(author_id: str, post_id: str, db: Session = Depends(get_db)):    
+    await crud.create_like(db, author_id, post_id)
+    return  await crud.increment_like_count(db, post_id)
 
 
 # test
