@@ -30,3 +30,8 @@ class Comment(BaseModel):
     author_id: str
     post_id: int
     content: str
+
+
+class Image(BaseModel):
+    image_id: str
+    filename: str

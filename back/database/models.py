@@ -47,8 +47,16 @@ class Comments(Base):
 
 class Likes(Base):
     __tablename__ = "likes"
+
     author_id = Column(String, ForeignKey("users.user_id"), primary_key=True)
     post_id = Column(Integer, ForeignKey("posts.post_id"), primary_key=True)
 
     author = relationship("Users", back_populates="likes")
     post = relationship("Posts", back_populates="likes")
+
+
+class Images(Base):
+    __tablename__ = "images"
+
+    image_id = Column(String, primary_key=True)
+    filename = Column(String)

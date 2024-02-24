@@ -100,3 +100,11 @@ async def read_comment(db: Session, author_id: str = None, post_id: int = None):
 
 async def read_like(db: Session, author_id: str, post_id: int):
     return db.query(Likes).filter(Likes.author_id == author_id, Likes.post_id == post_id).all()
+
+
+async def created_image(db: Session, image: Image):
+    image = Images(**image.model_dump())
+    db.add(image)
+    db.commit()
+    db.refresh(image)
+    return image

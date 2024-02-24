@@ -1,8 +1,11 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException, Depends
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from typing import List
+
 import os
+import shutil
 import uuid
 
 from detect import detect
@@ -16,6 +19,8 @@ from database.database import SessionLocal, engine
 
 Base.metadata.create_all(bind=engine)
 app = FastAPI()
+app.mount("/uploaded_images",
+          StaticFiles(directory="uploaded_images"), name="uploaded_images")
 
 
 def get_db():
@@ -136,9 +141,25 @@ async def search_comment(
 
 
 @app.post("/like", response_model=Post)
-async def like_post(author_id: str, post_id: str, db: Session = Depends(get_db)):    
+async def like_post(author_id: str, post_id: str, db: Session = Depends(get_db)):
     await crud.create_like(db, author_id, post_id)
-    return  await crud.increment_like_count(db, post_id)
+    return await crud.increment_like_count(db, post_id)
+
+
+# image test
+@app.post("/image/upload", response_model=Image)
+async def upload_image(file: UploadFile, db: Session = Depends(get_db)):
+    os.makedirs("uploaded_images", exist_ok=True)
+
+    image_id = str(uuid.uuid4())
+    filename = file.filename
+    file_extension = os.path.splitext(filename)[1]
+
+    with open(f"uploaded_images/{image_id}{file_extension}", "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    image = Image(image_id=image_id, filename=filename)
+    return await crud.created_image(db, image)
 
 
 # test
