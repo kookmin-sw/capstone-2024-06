@@ -7,6 +7,9 @@
 - 어떤데스크 (what_desk)
   - 프로젝트 설치방법 및 데모, 사용방법, 프리뷰등을 readme.md에 작성.
   - Api나 사용방법등 내용이 많을경우 wiki에 꾸미고 링크 추가.
+ 
+  - next-js 사용
+  - PostgreSQL,FastAPI 설치
 
 - 팀페이지 꾸미기
   - 프로젝트 소개 및 팀원 소개
@@ -17,16 +20,14 @@
   - Theme Chooser에서 태마선택
   - 수정후 팀페이지 확인하여 점검.
 
-**팀페이지 주소** -> https://kookmin-sw.github.io/ '{{자신의 리파지토리 아이디}}'
-
-**예시)** 2024년 0조  https://github.com/gustmdqkr321/what-desk.git
+**팀페이지 주소** -> 2024년 0조  https://github.com/gustmdqkr321/what-desk.git
 
 
 ## 내용에 아래와 같은 내용들을 추가하세요.
 
 ### 1. 프로잭트 소개
+사용자가 선택한 사진을 기반으로 한 인테리어 된 사진 추천
 
-데스크테리어 추천 인공지능 제공 커뮤니티 #1
 
 ### 2. 소개 영상
 
