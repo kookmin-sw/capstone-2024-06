@@ -42,6 +42,7 @@ class CommentForm(BaseModel):
 
 
 class Comment(CommentForm):
+    comment_id: int
     author_id: str
 
 

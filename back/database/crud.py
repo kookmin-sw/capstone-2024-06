@@ -64,6 +64,10 @@ async def read_post(db: Session, post_id: int):
     return db.query(Posts).filter(Posts.post_id == post_id).first()
 
 
+async def read_comment(db: Session, comment_id: int):
+    return db.query(Comments).filter(Comments.comment_id == comment_id).first()
+
+
 async def search_posts(
     db: Session, category: str = None, author_id: str = None, keyword: str = None
 ):
@@ -86,14 +90,14 @@ async def search_posts(
     return query.all()
 
 
-async def read_comment(db: Session, author_id: str = None, post_id: int = None):
-    query = db.query(Comment)
+async def search_comment(db: Session, author_id: str = None, post_id: int = None):
+    query = db.query(Comments)
 
     if post_id:
-        query = query.filter(Comment.post_id == post_id)
+        query = query.filter(Comments.post_id == post_id)
 
     if author_id:
-        query = query.filter(Comment.author_id == author_id)
+        query = query.filter(Comments.author_id == author_id)
 
     return query.all()
 
@@ -108,3 +112,13 @@ async def created_image(db: Session, image: Image):
     db.commit()
     db.refresh(image)
     return image
+
+
+async def delete_post(db: Session, post: Posts):
+    db.delete(post)
+    db.commit()
+
+
+async def delete_comment(db: Session, comment: Comments):
+    db.delete(comment)
+    db.commit()

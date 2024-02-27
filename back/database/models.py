@@ -36,8 +36,10 @@ class Posts(Base):
 class Comments(Base):
     __tablename__ = "comments"
 
-    author_id = Column(String, ForeignKey("users.user_id"), primary_key=True)
-    post_id = Column(Integer, ForeignKey("posts.post_id"), primary_key=True)
+    comment_id = Column(Integer, Sequence("comment_id_seq"), primary_key=True)
+
+    author_id = Column(String, ForeignKey("users.user_id"))
+    post_id = Column(Integer, ForeignKey("posts.post_id"))
 
     content = Column(String)
 
@@ -47,7 +49,7 @@ class Comments(Base):
 
 class Likes(Base):
     __tablename__ = "likes"
-
+    
     author_id = Column(String, ForeignKey("users.user_id"), primary_key=True)
     post_id = Column(Integer, ForeignKey("posts.post_id"), primary_key=True)
 

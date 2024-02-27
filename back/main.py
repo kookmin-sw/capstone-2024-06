@@ -130,8 +130,9 @@ async def create_user(user: User, db: Session = Depends(get_db)):
     user_db = await crud.read_user(db, user.user_id)
     if user_db:
         raise HTTPException(status_code=409, detail="User ID already exists")
-    
-    return await crud.create_user(db, user)
+
+    await crud.create_user(db, user)
+    return {"message": "User deleted successfully"}
 
 
 @app.post("/token")
@@ -143,11 +144,19 @@ async def generate_token(user: User, db: Session = Depends(get_db)):
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+    data = {
+        "iss": "what-desk",
+        "sub": user.user_id
+    }
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.user_id}, expires_delta=access_token_expires
+        data=data, expires_delta=access_token_expires
     )
-    return Token(access_token=access_token, token_type="bearer")
+    return {
+        "user_id": user.user_id,
+        "token": Token(access_token=access_token, token_type="bearer")
+    }
 
 
 @app.get("/user/me")
@@ -155,21 +164,10 @@ async def current_user(user_id: str = Depends(get_current_user)):
     return {"user_id": user_id}
 
 
-@app.post("/post/create", response_model=Post)
+@app.post("/post/create")
 async def create_post(post: PostForm, user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
-    return await crud.create_post(db, post, user_id)
-
-
-@app.post("/comment/create", response_model=Comment)
-async def create_comment(comment: CommentForm, user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
-    return await crud.create_comment(db, comment, user_id)
-
-
-@app.get("/post/{post_id}", response_model=Post)
-async def read_post(post_id: int, db: Session = Depends(get_db)):
-    post = await crud.increment_view_count(db, post_id)
-    if post is None:
-        raise HTTPException(status_code=404, detail="Post does not exist.")
+    await crud.create_post(db, post, user_id)
+    return {"message": "Post created successfully"}
 
 
 @app.get("/post/search", response_model=List[PostPreview])
@@ -185,6 +183,47 @@ async def search_posts(
     return posts
 
 
+@app.get("/post/{post_id}", response_model=Post)
+async def read_post(post_id: int, db: Session = Depends(get_db)):
+    post = await crud.increment_view_count(db, post_id)
+    if post is None:
+        raise HTTPException(status_code=404, detail="Post does not exist.")
+    return post
+    
+
+@app.delete("/post/{post_id}")
+async def delete_post(post_id: int, user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    post = await crud.read_post(db, post_id)
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    
+    if post.author_id != user_id:
+        raise HTTPException(status_code=403, detail="Permission denied: You are not the author of this post")
+    
+    await crud.delete_post(db, post)
+    return {"message": "Post deleted successfully"}
+
+
+@app.post("/post/like/{post_id}")
+async def like_post(post_id: str, user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    post = await crud.read_post(db, post_id)
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    await crud.create_like(db, user_id, post_id)
+    return {"message": "User liked post successfully"}
+
+
+@app.post("/comment/create")
+async def create_comment(comment: CommentForm, user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    post = await crud.read_post(db, comment.post_id)
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    
+    await crud.create_comment(db, comment, user_id)
+    return {"messaeg": "Comment created successfully"}
+
+
 @app.get("/comment/search", response_model=List[Comment])
 async def search_comment(
     post_id: str | None = None,
@@ -197,10 +236,17 @@ async def search_comment(
     return comments
 
 
-@app.post("/like", response_model=Post)
-async def like_post(post_id: str, user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
-    await crud.create_like(db, user_id, post_id)
-    return await crud.increment_like_count(db, post_id)
+@app.delete("/comment/{comment_id}")
+async def delete_comment(comment_id: int, user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    comment = await crud.read_comment(db, comment_id)
+    if not comment:
+        raise HTTPException(status_code=404, detail="Comment not found")
+
+    if comment.author_id != user_id:
+        raise HTTPException(status_code=403, detail="Permission denied: You are not the author of this comment")
+    
+    await crud.delete_comment(db, comment)
+    return {"message": "Comment deleted successfully"}
 
 
 @app.post("/image/upload", response_model=Image)
