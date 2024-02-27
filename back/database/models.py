@@ -7,7 +7,7 @@ class Users(Base):
     __tablename__ = "users"
 
     user_id = Column(String, primary_key=True, index=True)
-    password = Column(String)
+    hashed_password = Column(String)
 
     posts = relationship("Posts", back_populates="author", uselist=True)
     comments = relationship("Comments", back_populates="author", uselist=True)

@@ -23,9 +23,9 @@ from database.models import *
 from database.schemas import *
 from database.database import SessionLocal, engine
 
-models.Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 
-SECRET_KEY = "secret" # temp
+SECRET_KEY = "secret"  # temp
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -40,33 +40,26 @@ app.mount("/uploaded_images",
 
 
 def get_db():
-	db = SessionLocal()
-	try:
-		yield db
-	finally:
-		db.close()
-          
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
-def verify_password(password, hashed_password):
+
+def verify_password(password: str, hashed_password: str):
     return pwd_context.verify(password, hashed_password)
 
 
-def get_hashed_password(password):
+def get_hashed_password(password: str):
     return pwd_context.hash(password)
 
 
-def decode_jwt_payload(token):
-     header, payload, signature = token.split(".")
-     decoded_payload = base64.urlsafe_b64decode(payload + "==").decode("utf-8")
-     parsed_payload = json.loads(decoded_payload)
-     return parsed_payload
-
-
-async def authenticate_user(db, username: str, password: str):
-    user = await crud.read_user(db, username)
-    if not user:
+async def authenticate_user(db: Session, user: User):
+    user_db = await crud.read_user(db, user.user_id)
+    if not user_db:
         return False
-    if not verify_password(password, user.hashed_password):
+    if not verify_password(user.password, user_db.hashed_password):
         return False
     return user
 
@@ -78,8 +71,27 @@ def create_access_token(data: dict, expires_delta: timedelta):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-          
+
+def decode_jwt_payload(token):
+    header, payload, signature = token.split(".")
+
+    decoded_payload = base64.urlsafe_b64decode(payload + "==").decode("utf-8")
+    parsed_payload = json.loads(decoded_payload)
+
+    return parsed_payload
+
+
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    payload = decode_jwt_payload(token)
+    try:
+        validation = jwt.decode(token, SECRET_KEY, ALGORITHM)
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    return payload["sub"]
+
 # 메인
+
+
 @app.get("/")
 async def root():
     return "hello world"
@@ -108,18 +120,23 @@ async def get_image(image_filename: str):
 @app.post("/process_image/")
 async def process_image(file: UploadFile):
     return process(file)
-    
 
-@app.post("/user/sign_up", response_model=schemas.User)
-async def create_user(user: schemas.UserSignUp, db: Session = Depends(get_db)):
+
+@app.post("/user/sign_up", response_model=HashedUser)
+async def create_user(user: User, db: Session = Depends(get_db)):
     hashed_password = get_hashed_password(user.password)
-    user = schemas.UserDB(**user.model_dump(), hashed_password=hashed_password)
-    return await crud.create_user(db=db, user=user)
+    user = HashedUser(**user.model_dump(), hashed_password=hashed_password)
+
+    user_db = await crud.read_user(db, user.user_id)
+    if user_db:
+        raise HTTPException(status_code=409, detail="User ID already exists")
+    
+    return await crud.create_user(db, user)
 
 
 @app.post("/token")
-async def token(user: schemas.UserSignUp, db: Session = Depends(get_db)):
-    user = await authenticate_user(db, user.username, user.password)
+async def generate_token(user: User, db: Session = Depends(get_db)):
+    user = await authenticate_user(db, user)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -128,46 +145,35 @@ async def token(user: schemas.UserSignUp, db: Session = Depends(get_db)):
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={"sub": user.user_id}, expires_delta=access_token_expires
     )
-    return schemas.Token(access_token=access_token, token_type="bearer")
+    return Token(access_token=access_token, token_type="bearer")
 
 
 @app.get("/user/me")
-async def me(token: str = Depends(oauth2_scheme)):
-    print(f"received token : {token}")
-
-    payload = decode_jwt_payload(token)
-    print(f"decoded payload : {payload}")
-
-    try:
-        validation = jwt.decode(token, SECRET_KEY, ALGORITHM)
-    except JWTError:
-         raise HTTPException(status_code=401, detail="Invalid token")
-
-    return payload
+async def current_user(user_id: str = Depends(get_current_user)):
+    return {"user_id": user_id}
 
 
-# posting test
 @app.post("/post/create", response_model=Post)
-async def create_post(post: PostForm, db: Session = Depends(get_db)):
-    return await crud.create_post(db, post)
+async def create_post(post: PostForm, user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    return await crud.create_post(db, post, user_id)
 
 
 @app.post("/comment/create", response_model=Comment)
-async def create_comment(comment: Comment, db: Session = Depends(get_db)):
-    return await crud.create_comment(db, comment)
+async def create_comment(comment: CommentForm, user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    return await crud.create_comment(db, comment, user_id)
 
 
 @app.get("/post/{post_id}", response_model=Post)
 async def read_post(post_id: int, db: Session = Depends(get_db)):
-    post = crud.increment_view_count(db. post_id)
+    post = await crud.increment_view_count(db, post_id)
     if post is None:
         raise HTTPException(status_code=404, detail="Post does not exist.")
 
 
-@app.get("/post/search", response_model=List[Post])
-async def search_post(
+@app.get("/post/search", response_model=List[PostPreview])
+async def search_posts(
     category: str | None = None,
     author_id: str | None = None,
     keyword: str | None = None,
@@ -192,25 +198,25 @@ async def search_comment(
 
 
 @app.post("/like", response_model=Post)
-async def like_post(author_id: str, post_id: str, db: Session = Depends(get_db)):
-    await crud.create_like(db, author_id, post_id)
+async def like_post(post_id: str, user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    await crud.create_like(db, user_id, post_id)
     return await crud.increment_like_count(db, post_id)
 
 
-# image test
 @app.post("/image/upload", response_model=Image)
-async def upload_image(file: UploadFile, db: Session = Depends(get_db)):
+async def upload_image(file: UploadFile, user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
     os.makedirs("uploaded_images", exist_ok=True)
 
-    image_id = str(uuid.uuid4())
     filename = file.filename
     file_extension = os.path.splitext(filename)[1]
+    image_id = str(uuid.uuid4()) + file_extension
 
-    with open(f"uploaded_images/{image_id}{file_extension}", "wb") as buffer:
+    with open(f"uploaded_images/{image_id}", "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
     image = Image(image_id=image_id, filename=filename)
     return await crud.created_image(db, image)
+
 
 # test
 # 서버 오픈 ->  uvicorn main:app --reload --host 0.0.0.0 --port 8000

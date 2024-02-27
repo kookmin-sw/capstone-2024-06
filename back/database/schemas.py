@@ -6,8 +6,17 @@ class User(BaseModel):
     password: str
 
 
+class HashedUser(BaseModel):
+    user_id: str
+    hashed_password: str
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
 class BasePost(BaseModel):
-    author_id: str
     title: str
     category: str
 
@@ -17,6 +26,7 @@ class PostForm(BasePost):
 
 
 class PostPreview(BasePost):
+    author_id: str
     post_id: int
     like_count: int
     view_count: int
@@ -26,10 +36,13 @@ class Post(PostPreview):
     content: str
 
 
-class Comment(BaseModel):
-    author_id: str
+class CommentForm(BaseModel):
     post_id: int
     content: str
+
+
+class Comment(CommentForm):
+    author_id: str
 
 
 class Image(BaseModel):

@@ -4,7 +4,7 @@ from database.models import *
 from database.schemas import *
 
 
-async def create_user(db: Session, user: User):
+async def create_user(db: Session, user: HashedUser):
     user = Users(**user.model_dump())
     db.add(user)
     db.commit()
@@ -12,16 +12,16 @@ async def create_user(db: Session, user: User):
     return user
 
 
-async def create_post(db: Session, post: PostForm):
-    post = Posts(**post.model_dump())
+async def create_post(db: Session, post: PostForm, user_id: str):
+    post = Posts(**post.model_dump(), author_id=user_id)
     db.add(post)
     db.commit()
     db.refresh(post)
     return post
 
 
-async def create_comment(db: Session, comment: Comment):
-    comment = Comments(**comment.model_dump())
+async def create_comment(db: Session, comment: CommentForm, user_id: str):
+    comment = Comments(**comment.model_dump(), author_id=user_id)
     db.add(comment)
     db.commit()
     db.refresh(comment)
