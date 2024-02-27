@@ -2,14 +2,12 @@ from pydantic import BaseModel
 
 
 class User(BaseModel):
-    username: str
-
-
-class UserSignUp(User):
+    user_id: str
     password: str
 
 
-class UserDB(User):
+class HashedUser(BaseModel):
+    user_id: str
     hashed_password: str
 
 
@@ -18,6 +16,36 @@ class Token(BaseModel):
     token_type: str
 
 
-class TokenData(BaseModel):
-    username: str | None = None
+class BasePost(BaseModel):
+    title: str
+    category: str
 
+
+class PostForm(BasePost):
+    content: str
+
+
+class PostPreview(BasePost):
+    author_id: str
+    post_id: int
+    like_count: int
+    view_count: int
+
+
+class Post(PostPreview):
+    content: str
+
+
+class CommentForm(BaseModel):
+    post_id: int
+    content: str
+
+
+class Comment(CommentForm):
+    comment_id: int
+    author_id: str
+
+
+class Image(BaseModel):
+    image_id: str
+    filename: str
