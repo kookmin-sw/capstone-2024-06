@@ -3,11 +3,13 @@ from datetime import datetime, timedelta, timezone
 from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, status
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from jose import JWTError, jwt
+from fastapi.security import OAuth2PasswordBearer
+from jose import jwt, JWTError
 from passlib.context import CryptContext
 import os
 import uuid
+import base64
+import json
 
 from detect import detect
 
@@ -17,12 +19,12 @@ from database.database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
 
-SECRET_KEY = "5620f1628ee220e31ae6d0a18dee3d3e268def2b8847df798a419a6d93adedb3" # temp
+SECRET_KEY = "secret" # temp
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="user/oauth_sign_in")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 app = FastAPI()
@@ -44,6 +46,13 @@ def get_hashed_password(password):
     return pwd_context.hash(password)
 
 
+def decode_jwt_payload(token):
+     header, payload, signature = token.split(".")
+     decoded_payload = base64.urlsafe_b64decode(payload + "==").decode("utf-8")
+     parsed_payload = json.loads(decoded_payload)
+     return parsed_payload
+
+
 async def authenticate_user(db, username: str, password: str):
     user = await crud.read_user(db, username)
     if not user:
@@ -60,27 +69,6 @@ def create_access_token(data: dict, expires_delta: timedelta):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-
-async def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-        token_data = schemas.TokenData(username=username)
-    except JWTError:
-        raise credentials_exception
-    
-    user = await crud.read_user(db, username=token_data.username)
-    if user is None:
-        raise credentials_exception
-    return user
-
           
 # 메인
 @app.get("/")
@@ -88,7 +76,7 @@ async def root():
     return "hello world"
 
 origins = [
-    "*"
+    "http://localhost:3000"
 ]
 
 app.add_middleware(
@@ -126,35 +114,18 @@ async def process_image(file: UploadFile):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
 
-# 유저정보
 @app.post("/user/sign_up", response_model=schemas.User)
-def create_user(user: schemas.User, db: Session = Depends(get_db)):
-    return crud.create_user(db=db, user=user)
-
-@app.post("/user/sign_in")
-def check_user(user: schemas.User, db: Session = Depends(get_db)):
-    db_user = crud.read_user_by_id(db=db, id=user.id)
-
-    if not db_user:
-        raise HTTPException(status_code=404, detail='User not found')
-    
-    if user.password != db_user.password:
-        raise HTTPException(status_code=400, detail='Incorrect password')
-    
-    return {"message": "User exist"}
-
-
-# OAuth2 test
-@app.post("/user/oauth_sign_up", response_model=schemas.User)
-async def oauth_create_user(user: schemas.UserSignUp, db: Session = Depends(get_db)):
+async def create_user(user: schemas.UserSignUp, db: Session = Depends(get_db)):
     hashed_password = get_hashed_password(user.password)
     user = schemas.UserDB(**user.model_dump(), hashed_password=hashed_password)
     return await crud.create_user(db=db, user=user)
 
-@app.post("/user/oauth_sign_in")
-async def oauth_sign_in(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)) -> schemas.Token:
-    user = await authenticate_user(db, form_data.username, form_data.password)
+
+@app.post("/token")
+async def token(user: schemas.UserSignUp, db: Session = Depends(get_db)):
+    user = await authenticate_user(db, user.username, user.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -167,9 +138,20 @@ async def oauth_sign_in(form_data: OAuth2PasswordRequestForm = Depends(), db: Se
     )
     return schemas.Token(access_token=access_token, token_type="bearer")
 
+
 @app.get("/user/me")
-async def me(current_user: schemas.User = Depends(get_current_user)):
-    return current_user
+async def me(token: str = Depends(oauth2_scheme)):
+    print(f"received token : {token}")
+
+    payload = decode_jwt_payload(token)
+    print(f"decoded payload : {payload}")
+
+    try:
+        validation = jwt.decode(token, SECRET_KEY, ALGORITHM)
+    except JWTError:
+         raise HTTPException(status_code=401, detail="Invalid token")
+
+    return payload
 
 # test
 # 서버 오픈 ->  uvicorn main:app --reload --host 0.0.0.0 --port 8000 
