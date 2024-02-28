@@ -135,13 +135,32 @@ const authOptions: NextAuthOptions = {
       console.log("account", account);
       console.log("profile", profile);
 
-      console.log("provider", account?.provider);
       if (account) {
-        console.log("test", account.provider == 'credentials');
         if (account.provider == 'credentials') {
           token.access_token = user.token.access_token;
         } else {
-          token.access_token = account.access_token;
+          console.log(JSON.stringify({
+            name: user.name,
+            email: user.email,
+            provider: account.provider
+          }));
+          const res = await fetch(`http://175.194.198.155:8080/token/${account.access_token}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name: user.name,
+              email: user.email,
+              provider: account.provider
+            }),
+          });
+          if (res.ok) {
+            const new_token = await res.json();
+            token.access_token = new_token.token.access_token;
+          } else {
+            throw Error("Unhandled error occured");
+          }
         }
       }
       return token

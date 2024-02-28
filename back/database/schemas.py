@@ -2,12 +2,22 @@ from pydantic import BaseModel
 from typing import List
 
 
-class User(BaseModel):
+class UserSignIn(BaseModel):
     user_id: str
     password: str
 
 
-class HashedUser(BaseModel):
+class ExternalUser(BaseModel):
+    name: str | None = None
+    email: str | None = None
+    provider: str = "credentials"
+
+
+class UserForm(UserSignIn, ExternalUser):
+    ...
+
+
+class HashedUser(ExternalUser):
     user_id: str
     hashed_password: str
 

@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
-from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, status
+from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, status, Request
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
@@ -14,6 +14,7 @@ import shutil
 import uuid
 import base64
 import json
+import requests
 
 from detect import detect
 from process_image import process
@@ -55,8 +56,8 @@ def get_hashed_password(password: str):
     return pwd_context.hash(password)
 
 
-async def authenticate_user(db: Session, user: User):
-    user_db = await crud.read_user(db, user.user_id)
+async def authenticate_user(db: Session, user: UserSignIn):
+    user_db = await crud.read_user_by_id(db, user.user_id)
     if not user_db:
         return False
     if not verify_password(user.password, user_db.hashed_password):
@@ -73,6 +74,7 @@ def create_access_token(data: dict, expires_delta: timedelta):
 
 
 def decode_jwt_payload(token):
+    print(token)
     header, payload, signature = token.split(".")
 
     decoded_payload = base64.urlsafe_b64decode(payload + "==").decode("utf-8")
@@ -123,11 +125,11 @@ async def process_image(file: UploadFile):
 
 
 @app.post("/user")
-async def create_user(user: User, db: Session = Depends(get_db)):
+async def create_user(user: UserForm, db: Session = Depends(get_db)):
     hashed_password = get_hashed_password(user.password)
     user = HashedUser(**user.model_dump(), hashed_password=hashed_password)
 
-    user_db = await crud.read_user(db, user.user_id)
+    user_db = await crud.read_user_by_id(db, user.user_id)
     if user_db:
         raise HTTPException(status_code=409, detail="User ID already exists")
 
@@ -136,7 +138,8 @@ async def create_user(user: User, db: Session = Depends(get_db)):
 
 
 @app.post("/token")
-async def generate_token(user: User, db: Session = Depends(get_db)):
+async def generate_token(user: UserSignIn, db: Session = Depends(get_db)):
+    print("here?")
     user = await authenticate_user(db, user)
     if not user:
         raise HTTPException(
@@ -145,10 +148,37 @@ async def generate_token(user: User, db: Session = Depends(get_db)):
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    data = {
-        "iss": "what-desk",
-        "sub": user.user_id
-    }
+    data = {"sub": user.user_id}
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data=data, expires_delta=access_token_expires
+    )
+    return {"token": Token(access_token=access_token, token_type="bearer")}
+
+
+@app.post("/token/{access_token}")
+async def generate_token_from_external_provider(user: ExternalUser, access_token: str, db: Session = Depends(get_db)):
+    if user.provider == "google":
+        response = requests.get("https://oauth2.googleapis.com/tokeninfo", params={"access_token": access_token})
+    elif user.provider == "kakao":
+        ...
+    elif user.provider == "naver":
+        ...
+    else:
+        raise HTTPException(status_code=501, detail="Provider not supported")
+    
+    if not response.ok:
+        raise HTTPException(status_code=401, detail="Invalid access token")
+    
+    user_db = await crud.read_user_by_email(db, user.email)
+    user_id = "G_" + response.json()["sub"]
+    if not user_db:
+        user = HashedUser(**user.model_dump(), user_id=user_id)
+        await crud.create_user(db, user)
+    elif user_db.provider != user.provider:
+        raise HTTPException(status_code=409, detail="Email already registered")
+
+    data = {"sub": user_id}
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data=data, expires_delta=access_token_expires

@@ -56,8 +56,12 @@ async def increment_view_count(db: Session, post_id: int):
         return post
 
 
-async def read_user(db: Session, user_id: str):
+async def read_user_by_id(db: Session, user_id: str):
     return db.query(Users).filter(Users.user_id == user_id).first()
+
+
+async def read_user_by_email(db: Session, email: str):
+    return db.query(Users).filter(Users.email == email).first()
 
 
 async def read_post(db: Session, post_id: int):
