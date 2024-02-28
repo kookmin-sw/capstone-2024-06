@@ -122,7 +122,7 @@ async def process_image(file: UploadFile):
     return process(file)
 
 
-@app.post("/user/sign_up", response_model=HashedUser)
+@app.post("/user")
 async def create_user(user: User, db: Session = Depends(get_db)):
     hashed_password = get_hashed_password(user.password)
     user = HashedUser(**user.model_dump(), hashed_password=hashed_password)
@@ -132,7 +132,7 @@ async def create_user(user: User, db: Session = Depends(get_db)):
         raise HTTPException(status_code=409, detail="User ID already exists")
 
     await crud.create_user(db, user)
-    return {"message": "User deleted successfully"}
+    return {"message": "User created successfully"}
 
 
 @app.post("/token")
@@ -153,10 +153,7 @@ async def generate_token(user: User, db: Session = Depends(get_db)):
     access_token = create_access_token(
         data=data, expires_delta=access_token_expires
     )
-    return {
-        "user_id": user.user_id,
-        "token": Token(access_token=access_token, token_type="bearer")
-    }
+    return {"token": Token(access_token=access_token, token_type="bearer")}
 
 
 @app.get("/user/me")
@@ -164,7 +161,7 @@ async def current_user(user_id: str = Depends(get_current_user)):
     return {"user_id": user_id}
 
 
-@app.post("/post/create")
+@app.post("/post")
 async def create_post(post: PostForm, user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
     await crud.create_post(db, post, user_id)
     return {"message": "Post created successfully"}
@@ -204,7 +201,7 @@ async def delete_post(post_id: int, user_id: str = Depends(get_current_user), db
     return {"message": "Post deleted successfully"}
 
 
-@app.post("/post/like/{post_id}")
+@app.post("/like/post/{post_id}")
 async def like_post(post_id: str, user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
     post = await crud.read_post(db, post_id)
     if not post:
@@ -214,7 +211,7 @@ async def like_post(post_id: str, user_id: str = Depends(get_current_user), db: 
     return {"message": "User liked post successfully"}
 
 
-@app.post("/comment/create")
+@app.post("/comment")
 async def create_comment(comment: CommentForm, user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
     post = await crud.read_post(db, comment.post_id)
     if not post:
@@ -222,18 +219,6 @@ async def create_comment(comment: CommentForm, user_id: str = Depends(get_curren
     
     await crud.create_comment(db, comment, user_id)
     return {"messaeg": "Comment created successfully"}
-
-
-@app.get("/comment/search", response_model=List[Comment])
-async def search_comment(
-    post_id: str | None = None,
-    author_id: str | None = None,
-    db: Session = Depends(get_db),
-):
-    comments = await crud.read_comment(
-        db, author_id=author_id, post_id=post_id
-    )
-    return comments
 
 
 @app.delete("/comment/{comment_id}")

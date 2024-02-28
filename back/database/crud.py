@@ -1,5 +1,5 @@
 from sqlalchemy import or_
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from database.models import *
 from database.schemas import *
 
@@ -47,7 +47,7 @@ async def increment_like_count(db: Session, post_id: int):
 
 
 async def increment_view_count(db: Session, post_id: int):
-    post = db.query(Posts).filter(Posts.post_id == post_id).first()
+    post = db.query(Posts).filter(Posts.post_id == post_id).options(joinedload(Posts.comments)).first()
 
     if post:
         post.view_count += 1

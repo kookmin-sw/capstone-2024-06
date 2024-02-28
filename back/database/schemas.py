@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List
 
 
 class User(BaseModel):
@@ -14,6 +15,16 @@ class HashedUser(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+
+class CommentForm(BaseModel):
+    post_id: int
+    content: str
+
+
+class Comment(CommentForm):
+    comment_id: int
+    author_id: str
 
 
 class BasePost(BaseModel):
@@ -34,16 +45,7 @@ class PostPreview(BasePost):
 
 class Post(PostPreview):
     content: str
-
-
-class CommentForm(BaseModel):
-    post_id: int
-    content: str
-
-
-class Comment(CommentForm):
-    comment_id: int
-    author_id: str
+    comments: List[Comment]
 
 
 class Image(BaseModel):
