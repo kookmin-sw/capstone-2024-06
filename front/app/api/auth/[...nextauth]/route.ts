@@ -130,34 +130,19 @@ const authOptions: NextAuthOptions = {
 
   callbacks: {
     async jwt({ token, account, profile, user}) {
-      console.log("token", token);
-      console.log("user", user);
-      console.log("account", account);
-      console.log("profile", profile);
-
       if (account) {
         if (account.provider == 'credentials') {
-          token.access_token = user.token.access_token;
+          token.user = user.user;
+          token.access_token = user.access_token;
         } else {
-          console.log(JSON.stringify({
-            name: user.name,
-            email: user.email,
-            provider: account.provider
-          }));
-          const res = await fetch(`http://175.194.198.155:8080/token/${account.access_token}`, {
+          const res = await fetch(`http://175.194.198.155:8080/token/${account.access_token}?provider=${account.provider}`, {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              name: user.name,
-              email: user.email,
-              provider: account.provider
-            }),
           });
           if (res.ok) {
-            const new_token = await res.json();
-            token.access_token = new_token.token.access_token;
+            const body = await res.json();
+            token.user = body.user;
+            token.access_token = body.access_token;
+            console.log(user)
           } else {
             throw Error("Unhandled error occured");
           }
@@ -166,6 +151,7 @@ const authOptions: NextAuthOptions = {
       return token
     },
     async session({ session, token }) {
+      session.user = token.user;
       session.access_token = token.access_token;
       console.log("session", session);
       return session

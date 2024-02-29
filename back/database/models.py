@@ -9,9 +9,10 @@ class Users(Base):
     user_id = Column(String, primary_key=True, index=True)
 
     name = Column(String)
-    email = Column(String, unique=True)
-    hashed_password = Column(String)
+    email = Column(String)
+    image = Column(String)
     provider = Column(String)
+    hashed_password = Column(String)
 
     posts = relationship("Posts", back_populates="author", uselist=True)
     comments = relationship("Comments", back_populates="author", uselist=True)

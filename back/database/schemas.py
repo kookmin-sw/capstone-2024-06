@@ -7,24 +7,26 @@ class UserSignIn(BaseModel):
     password: str
 
 
-class ExternalUser(BaseModel):
+class UserInfo(BaseModel):
+    user_id: str
     name: str | None = None
     email: str | None = None
+    image: str | None = None
     provider: str = "credentials"
 
 
-class UserForm(UserSignIn, ExternalUser):
+class UserForm(UserSignIn, UserInfo):
     ...
 
 
-class HashedUser(ExternalUser):
+class HashedUser(UserInfo):
     user_id: str
-    hashed_password: str
+    hashed_password: str | None = None
 
 
-class Token(BaseModel):
+class TokenResult(BaseModel):
+    user: UserInfo
     access_token: str
-    token_type: str
 
 
 class CommentForm(BaseModel):

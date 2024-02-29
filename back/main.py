@@ -1,13 +1,13 @@
 from datetime import datetime, timedelta, timezone
 
-from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, status, Request
+from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, status, Body
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 from fastapi.staticfiles import StaticFiles
-from typing import List
+from typing import List, Annotated
 
 import os
 import shutil
@@ -36,8 +36,9 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 Base.metadata.create_all(bind=engine)
 app = FastAPI()
-app.mount("/uploaded_images",
-          StaticFiles(directory="uploaded_images"), name="uploaded_images")
+app.mount(
+    "/uploaded_images", StaticFiles(directory="uploaded_images"), name="uploaded_images"
+)
 
 
 def get_db():
@@ -91,6 +92,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         raise HTTPException(status_code=401, detail="Invalid token")
     return payload["sub"]
 
+
 # 메인
 
 
@@ -137,9 +139,8 @@ async def create_user(user: UserForm, db: Session = Depends(get_db)):
     return {"message": "User created successfully"}
 
 
-@app.post("/token")
+@app.post("/token", response_model=TokenResult)
 async def generate_token(user: UserSignIn, db: Session = Depends(get_db)):
-    print("here?")
     user = await authenticate_user(db, user)
     if not user:
         raise HTTPException(
@@ -150,40 +151,47 @@ async def generate_token(user: UserSignIn, db: Session = Depends(get_db)):
 
     data = {"sub": user.user_id}
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data=data, expires_delta=access_token_expires
-    )
-    return {"token": Token(access_token=access_token, token_type="bearer")}
+    access_token = create_access_token(data=data, expires_delta=access_token_expires)
+    return {"user": user, "access_token": access_token}
 
 
-@app.post("/token/{access_token}")
-async def generate_token_from_external_provider(user: ExternalUser, access_token: str, db: Session = Depends(get_db)):
-    if user.provider == "google":
-        response = requests.get("https://oauth2.googleapis.com/tokeninfo", params={"access_token": access_token})
+@app.post("/token/{access_token}", response_model=TokenResult)
+async def generate_token_from_external_provider(
+    access_token: str, provider: str, db: Session = Depends(get_db)
+):
+    if provider == "google":
+        response = requests.get(
+            "https://www.googleapis.com/oauth2/v3/userinfo",
+            params={"access_token": access_token},
+        )
     elif user.provider == "kakao":
         ...
     elif user.provider == "naver":
         ...
     else:
         raise HTTPException(status_code=501, detail="Provider not supported")
-    
+
     if not response.ok:
         raise HTTPException(status_code=401, detail="Invalid access token")
-    
-    user_db = await crud.read_user_by_email(db, user.email)
-    user_id = "G_" + response.json()["sub"]
+
+    user_info = response.json()
+    user_id = "G_" + user_info["sub"]
+    user = HashedUser(
+        user_id=user_id,
+        name=user_info["name"],
+        email=user_info["email"],
+        image=user_info["picture"],
+        provider=provider,
+    )
+
+    user_db = await crud.read_user_by_id(db, user.user_id)
     if not user_db:
-        user = HashedUser(**user.model_dump(), user_id=user_id)
         await crud.create_user(db, user)
-    elif user_db.provider != user.provider:
-        raise HTTPException(status_code=409, detail="Email already registered")
 
     data = {"sub": user_id}
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data=data, expires_delta=access_token_expires
-    )
-    return {"token": Token(access_token=access_token, token_type="bearer")}
+    access_token = create_access_token(data=data, expires_delta=access_token_expires)
+    return {"user": user, "access_token": access_token}
 
 
 @app.get("/user/me")
@@ -192,7 +200,11 @@ async def current_user(user_id: str = Depends(get_current_user)):
 
 
 @app.post("/post")
-async def create_post(post: PostForm, user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
+async def create_post(
+    post: PostForm,
+    user_id: str = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     await crud.create_post(db, post, user_id)
     return {"message": "Post created successfully"}
 
@@ -216,23 +228,34 @@ async def read_post(post_id: int, db: Session = Depends(get_db)):
     if post is None:
         raise HTTPException(status_code=404, detail="Post does not exist.")
     return post
-    
+
 
 @app.delete("/post/{post_id}")
-async def delete_post(post_id: int, user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
+async def delete_post(
+    post_id: int,
+    user_id: str = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     post = await crud.read_post(db, post_id)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
-    
+
     if post.author_id != user_id:
-        raise HTTPException(status_code=403, detail="Permission denied: You are not the author of this post")
-    
+        raise HTTPException(
+            status_code=403,
+            detail="Permission denied: You are not the author of this post",
+        )
+
     await crud.delete_post(db, post)
     return {"message": "Post deleted successfully"}
 
 
 @app.post("/like/post/{post_id}")
-async def like_post(post_id: str, user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
+async def like_post(
+    post_id: str,
+    user_id: str = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     post = await crud.read_post(db, post_id)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
@@ -242,30 +265,45 @@ async def like_post(post_id: str, user_id: str = Depends(get_current_user), db: 
 
 
 @app.post("/comment")
-async def create_comment(comment: CommentForm, user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
+async def create_comment(
+    comment: CommentForm,
+    user_id: str = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     post = await crud.read_post(db, comment.post_id)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
-    
+
     await crud.create_comment(db, comment, user_id)
     return {"messaeg": "Comment created successfully"}
 
 
 @app.delete("/comment/{comment_id}")
-async def delete_comment(comment_id: int, user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
+async def delete_comment(
+    comment_id: int,
+    user_id: str = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     comment = await crud.read_comment(db, comment_id)
     if not comment:
         raise HTTPException(status_code=404, detail="Comment not found")
 
     if comment.author_id != user_id:
-        raise HTTPException(status_code=403, detail="Permission denied: You are not the author of this comment")
-    
+        raise HTTPException(
+            status_code=403,
+            detail="Permission denied: You are not the author of this comment",
+        )
+
     await crud.delete_comment(db, comment)
     return {"message": "Comment deleted successfully"}
 
 
 @app.post("/image/upload", response_model=Image)
-async def upload_image(file: UploadFile, user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
+async def upload_image(
+    file: UploadFile,
+    user_id: str = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     os.makedirs("uploaded_images", exist_ok=True)
 
     filename = file.filename
