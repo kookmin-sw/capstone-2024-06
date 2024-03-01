@@ -19,7 +19,11 @@ const LoginButton = () => {
     if (data) {
       await signOut();
     } else {
-      await signIn();
+      try {
+        await signIn();
+      } catch (error) {
+        alert(error.message);
+      }
     }
   }
 

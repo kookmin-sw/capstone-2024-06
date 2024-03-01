@@ -129,33 +129,42 @@ const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    async jwt({ token, account, profile, user}) {
+    async jwt({ token, account, user}) {
       if (account) {
         if (account.provider == 'credentials') {
           token.user = user.user;
           token.access_token = user.access_token;
         } else {
+          user = {
+            ...user,
+            user_id: user.id,
+            id: undefined
+          };
           const res = await fetch(`http://175.194.198.155:8080/token/${account.access_token}?provider=${account.provider}`, {
             method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(user)
           });
           if (res.ok) {
             const body = await res.json();
             token.user = body.user;
             token.access_token = body.access_token;
-            console.log(user)
           } else {
-            throw Error("Unhandled error occured");
+            console.log(res.status, await res.text());
+            throw Error("Custom Error");
           }
         }
       }
       return token
     },
-    async session({ session, token }) {
+    async session({ session, token}) {
       session.user = token.user;
       session.access_token = token.access_token;
       console.log("session", session);
       return session
-    }
+    },
   }
 };
 

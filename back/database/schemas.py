@@ -12,16 +12,20 @@ class UserInfo(BaseModel):
     name: str | None = None
     email: str | None = None
     image: str | None = None
-    provider: str = "credentials"
 
 
-class UserForm(UserSignIn, UserInfo):
-    ...
+class UserForm(UserSignIn, UserInfo): ...
 
 
 class HashedUser(UserInfo):
     user_id: str
     hashed_password: str | None = None
+
+
+class UserExternalMap(BaseModel):
+    external_id: str
+    provider: str
+    user_id: str
 
 
 class TokenResult(BaseModel):

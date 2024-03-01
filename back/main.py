@@ -15,10 +15,12 @@ import uuid
 import base64
 import json
 import requests
+import re
 
 from detect import detect
 from process_image import process
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from database import crud
 from database.models import *
 from database.schemas import *
@@ -157,46 +159,67 @@ async def generate_token(user: UserSignIn, db: Session = Depends(get_db)):
 
 @app.post("/token/{access_token}", response_model=TokenResult)
 async def generate_token_from_external_provider(
-    access_token: str, provider: str, db: Session = Depends(get_db)
+    access_token: str, provider: str, user: UserInfo, db: Session = Depends(get_db)
 ):
     if provider == "google":
         response = requests.get(
-            "https://www.googleapis.com/oauth2/v3/userinfo",
+            "https://www.googleapis.com/oauth2/v1/tokeninfo",
             params={"access_token": access_token},
         )
-    elif user.provider == "kakao":
-        ...
-    elif user.provider == "naver":
-        ...
+    elif provider == "kakao":
+        response = requests.get(
+            "https://kapi.kakao.com/v1/user/access_token_info",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+    elif provider == "naver":
+        response = requests.get(
+            "https://openapi.naver.com/v1/nid/me",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
     else:
         raise HTTPException(status_code=501, detail="Provider not supported")
 
     if not response.ok:
         raise HTTPException(status_code=401, detail="Invalid access token")
 
-    user_info = response.json()
-    user_id = "G_" + user_info["sub"]
-    user = HashedUser(
-        user_id=user_id,
-        name=user_info["name"],
-        email=user_info["email"],
-        image=user_info["picture"],
-        provider=provider,
-    )
+    user_external_map = await crud.read_user_external_map(db, user.user_id, provider)
 
-    user_db = await crud.read_user_by_id(db, user.user_id)
-    if not user_db:
-        await crud.create_user(db, user)
+    if user_external_map:
+        user = user_external_map.user
+    else:
+        internal_id = str(uuid.uuid4())
+        user_external_map = UserExternalMap(
+            external_id=user.user_id, provider=provider, user_id=internal_id
+        )
+        user.user_id = internal_id
 
-    data = {"sub": user_id}
+        try:
+            await crud.create_user(db, user)
+        except IntegrityError as e:
+            error_message = e.orig.diag.message_detail
+            pattern = r"\((.*?)\)=\((.*?)\)"
+            matched = re.search(pattern, error_message)
+            key = matched.group(1)
+
+            if key == "email":
+                raise HTTPException(status_code=409, detail="Email already registerd")
+        except Exception as e:
+            print(e)
+            raise HTTPException(status_code=500, detail="Internal server error")
+
+        await crud.create_user_external_map(db, user_external_map)
+
+    data = {"sub": user.user_id}
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(data=data, expires_delta=access_token_expires)
     return {"user": user, "access_token": access_token}
 
 
-@app.get("/user/me")
-async def current_user(user_id: str = Depends(get_current_user)):
-    return {"user_id": user_id}
+@app.get("/user/me", response_model=UserInfo)
+async def current_user(
+    user_id: str = Depends(get_current_user), db: Session = Depends(get_db)
+):
+    return await crud.read_user_by_id(db, user_id)
 
 
 @app.post("/post")
@@ -314,7 +337,7 @@ async def upload_image(
         shutil.copyfileobj(file.file, buffer)
 
     image = Image(image_id=image_id, filename=filename)
-    return await crud.created_image(db, image)
+    return await crud.create_image(db, image)
 
 
 # test
