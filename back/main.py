@@ -86,16 +86,13 @@ def decode_jwt_payload(token):
     return parsed_payload
 
 
-# def get_current_user(token: str = Depends(oauth2_scheme)):
-#     payload = decode_jwt_payload(token)
-#     try:
-#         validation = jwt.decode(token, SECRET_KEY, ALGORITHM)
-#     except JWTError:
-#         raise HTTPException(status_code=401, detail="Invalid token")
-#     return payload["sub"]
-
-def get_current_user():
-    return "admin"
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    payload = decode_jwt_payload(token)
+    try:
+        validation = jwt.decode(token, SECRET_KEY, ALGORITHM)
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    return payload["sub"]
 
 
 # 메인

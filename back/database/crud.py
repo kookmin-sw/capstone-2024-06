@@ -56,23 +56,20 @@ async def increment_like_count(db: Session, post_id: int):
 
 
 async def increment_view_count(db: Session, post_id: int):
-    topq = db.query(Comments)
-    topq = topq.filter(Comments.parent_comment_id == None)
-    topq = topq.cte('all_comments', recursive=True)
+    anchor_clause = db.query(Comments)
+    anchor_clause = anchor_clause.filter(Comments.parent_comment_id == None)
+    anchor_clause = anchor_clause.cte('all_comments', recursive=True)
 
-    # Define the bottom query to join with the CTE to fetch child comments
-    bottomq = db.query(Comments)
-    bottomq = bottomq.join(topq, Comments.parent_comment_id == topq.c.comment_id)
+    recursive_clause = db.query(Comments)
+    recursive_clause = recursive_clause.join(anchor_clause, Comments.parent_comment_id == anchor_clause.c.comment_id)
 
-    # Construct the recursive query by unioning the top and bottom queries
-    recursive_q = topq.union_all(bottomq)
+    recursive_cte = anchor_clause.union_all(recursive_clause)
 
-    # Execute the final query to fetch posts with all associated comments
     post = (
         db.query(Posts)
-        .join(recursive_q, recursive_q.c.post_id == Posts.post_id)
-        .options(selectinload(Posts.comments))
         .filter(Posts.post_id == post_id)
+        .join(recursive_cte, recursive_cte.c.post_id == Posts.post_id)
+        .options(selectinload(Posts.comments))
         .first()
     )
 

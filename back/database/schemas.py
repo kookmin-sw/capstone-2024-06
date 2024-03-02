@@ -43,7 +43,7 @@ class CommentForm(BaseModel):
 class Comment(CommentForm):
     comment_id: int
     author_id: str
-    sub_comments: List[Comment] | None = None
+    child_comments: List[Comment] | None = None
 
 
 class BasePost(BaseModel):
