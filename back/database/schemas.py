@@ -1,3 +1,4 @@
+from __future__ import annotations
 from pydantic import BaseModel
 from typing import List
 
@@ -35,12 +36,14 @@ class TokenResult(BaseModel):
 
 class CommentForm(BaseModel):
     post_id: int
+    parent_comment_id: int | None = None
     content: str
 
 
 class Comment(CommentForm):
     comment_id: int
     author_id: str
+    sub_comments: List[Comment] | None = None
 
 
 class BasePost(BaseModel):
@@ -61,7 +64,7 @@ class PostPreview(BasePost):
 
 class Post(PostPreview):
     content: str
-    comments: List[Comment]
+    comments: List[Comment] | None = None
 
 
 class Image(BaseModel):

@@ -34,7 +34,12 @@ class Posts(Base):
     view_count = Column(Integer, default=0, nullable=False)
 
     author = relationship("Users", back_populates="posts")
-    comments = relationship("Comments", back_populates="post", uselist=True)
+    comments = relationship(
+        "Comments",
+        primaryjoin="and_(Posts.post_id == Comments.post_id, Comments.parent_comment_id == None)",
+        back_populates="post",
+        uselist=True,
+    )
     likes = relationship("Likes", back_populates="post", uselist=True)
 
 
@@ -45,11 +50,20 @@ class Comments(Base):
 
     author_id = Column(String, ForeignKey("users.user_id"), nullable=False)
     post_id = Column(Integer, ForeignKey("posts.post_id"), nullable=False)
+    parent_comment_id = Column(Integer, ForeignKey("comments.comment_id"))
 
     content = Column(String, nullable=False)
 
     author = relationship("Users", back_populates="comments")
     post = relationship("Posts", back_populates="comments")
+    parent_comment = relationship(
+        "Comments",
+        remote_side=[comment_id],
+        back_populates="child_comments",
+    )
+    child_comments = relationship(
+        "Comments", back_populates="parent_comment", uselist=True
+    )
 
 
 class Likes(Base):

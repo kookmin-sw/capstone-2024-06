@@ -1,5 +1,6 @@
 from sqlalchemy import and_, or_
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session, joinedload, selectinload
+from sqlalchemy.sql import alias, select, column
 from database.models import *
 from database.schemas import *
 
@@ -55,10 +56,23 @@ async def increment_like_count(db: Session, post_id: int):
 
 
 async def increment_view_count(db: Session, post_id: int):
+    topq = db.query(Comments)
+    topq = topq.filter(Comments.parent_comment_id == None)
+    topq = topq.cte('all_comments', recursive=True)
+
+    # Define the bottom query to join with the CTE to fetch child comments
+    bottomq = db.query(Comments)
+    bottomq = bottomq.join(topq, Comments.parent_comment_id == topq.c.comment_id)
+
+    # Construct the recursive query by unioning the top and bottom queries
+    recursive_q = topq.union_all(bottomq)
+
+    # Execute the final query to fetch posts with all associated comments
     post = (
         db.query(Posts)
+        .join(recursive_q, recursive_q.c.post_id == Posts.post_id)
+        .options(selectinload(Posts.comments))
         .filter(Posts.post_id == post_id)
-        .options(joinedload(Posts.comments))
         .first()
     )
 
