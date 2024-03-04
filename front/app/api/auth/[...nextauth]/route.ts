@@ -31,7 +31,7 @@ const credentialsProvider = CredentialsProvider({
 
   async authorize(credentials, req) {
     try {
-      const res = await fetch("http://175.194.198.155:8080/token", {
+      const res = await fetch("http://localhost:8080/token", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -140,7 +140,7 @@ const authOptions: NextAuthOptions = {
             user_id: user.id,
             id: undefined
           };
-          const res = await fetch(`http://175.194.198.155:8080/token/${account.access_token}?provider=${account.provider}`, {
+          const res = await fetch(`http://localhost:8080/token/${account.access_token}?provider=${account.provider}`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

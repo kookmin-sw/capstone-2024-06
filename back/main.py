@@ -268,7 +268,8 @@ async def delete_post(
             status_code=403,
             detail="Permission denied: You are not the author of this post",
         )
-
+    
+    print(post.post_id)
     await crud.delete_post(db, post)
     return {"message": "Post deleted successfully"}
 

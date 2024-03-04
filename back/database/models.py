@@ -37,6 +37,7 @@ class Posts(Base):
     comments = relationship(
         "Comments",
         primaryjoin="and_(Posts.post_id == Comments.post_id, Comments.parent_comment_id == None)",
+        cascade="all, delete-orphan",
         back_populates="post",
         uselist=True,
     )
@@ -62,7 +63,7 @@ class Comments(Base):
         back_populates="child_comments",
     )
     child_comments = relationship(
-        "Comments", back_populates="parent_comment", uselist=True
+        "Comments", back_populates="parent_comment", uselist=True, cascade="all, delete-orphan"
     )
 
 
