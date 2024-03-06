@@ -86,6 +86,7 @@ if __name__ == "__main__":
     from PIL import Image
     from io import BytesIO
     from pprint import pprint
+    import re
 
 
     def show_image_from_url(url):
@@ -94,15 +95,32 @@ if __name__ == "__main__":
         image.show()
 
 
-    desks = get_desks(page=1)
-    pprint(desks)
-    target_desk = desks[0]
-    show_image_from_url(target_desk["image_url"])
+    def sanitize_filename(filename):
+        sanitized_filename = re.sub(r'[\/\\\:\*\?\"\<\>\|]', '_', filename)
+        sanitized_filename = ''.join(c for c in sanitized_filename if c.isprintable())
+        return sanitized_filename.replace(" ", "_")
+    
 
-    styling_shots = get_styling_shots(target_desk["id"], page=1)
-    pprint(styling_shots)
-    target_styling_shot = styling_shots[0]
-    show_image_from_url(target_styling_shot["image_url"])
+    def download_image(url, file_name, download_folder):
+        response = requests.get(url)
+        if response.status_code == 200:
+            with open(f"./{download_folder}/{file_name}", 'wb') as f:
+                f.write(response.content)
 
-    tags = get_tags(target_styling_shot["id"])
-    pprint(tags)
+    download_folder = "image"
+
+    for page in range(1, 100):
+        print(page)
+        desks = get_desks(page=page)
+        for desk in desks:
+            download_image(desk["image_url"], sanitize_filename(desk["name"]), download_folder)
+    # target_desk = desks[0]
+    # show_image_from_url(target_desk["image_url"])
+
+    # styling_shots = get_styling_shots(target_desk["id"], page=1)
+    # pprint(styling_shots)
+    # target_styling_shot = styling_shots[0]
+    # show_image_from_url(target_styling_shot["image_url"])
+
+    # tags = get_tags(target_styling_shot["id"])
+    # pprint(tags)
