@@ -31,6 +31,7 @@ async def create_post(db: Session, post: PostForm, user_id: str):
 
 async def create_comment(db: Session, comment: CommentForm, user_id: str):
     comment = Comments(**comment.model_dump(), author_id=user_id)
+    comment.post.increment_comment_count()
     db.add(comment)
     db.commit()
     db.refresh(comment)
@@ -39,20 +40,12 @@ async def create_comment(db: Session, comment: CommentForm, user_id: str):
 
 async def create_like(db: Session, author_id: str, post_id: int):
     like = Likes(author_id=author_id, post_id=post_id)
+    like.post.increment_like_count()
     db.add(like)
     db.commit()
     db.refresh(like)
     return like
 
-
-async def increment_like_count(db: Session, post_id: int):
-    post = db.query(Posts).filter(Posts.post_id == post_id).first()
-
-    if post:
-        post.like_count += 1
-        db.commit()
-        db.refresh(post)
-        return post
 
 
 async def increment_view_count(db: Session, post_id: int):

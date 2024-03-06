@@ -1,4 +1,5 @@
 from sqlalchemy import Column, String, Integer, ForeignKey, Sequence
+from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 from sqlalchemy.orm import relationship
 from database.database import Base
 
@@ -32,6 +33,7 @@ class Posts(Base):
 
     like_count = Column(Integer, default=0, nullable=False)
     view_count = Column(Integer, default=0, nullable=False)
+    comment_count = Column(Integer, default=0, nullable=False)
 
     author = relationship("Users", back_populates="posts")
     comments = relationship(
@@ -42,6 +44,18 @@ class Posts(Base):
         uselist=True,
     )
     likes = relationship("Likes", back_populates="post", uselist=True)
+
+    @hybrid_method
+    def increment_view_count(self):
+        self.view_count += 1
+
+    @hybrid_method
+    def increment_like_count(self):
+        self.like_count += 1
+    
+    @hybrid_method
+    def increment_comment_count(self):
+        self.comment_count += 1
 
 
 class Comments(Base):
@@ -63,7 +77,10 @@ class Comments(Base):
         back_populates="child_comments",
     )
     child_comments = relationship(
-        "Comments", back_populates="parent_comment", uselist=True, cascade="all, delete-orphan"
+        "Comments",
+        back_populates="parent_comment",
+        uselist=True,
+        cascade="all, delete-orphan",
     )
 
 
