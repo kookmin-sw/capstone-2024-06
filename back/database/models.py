@@ -1,6 +1,8 @@
-from sqlalchemy import Column, String, Integer, ForeignKey, Sequence
+from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, Sequence, DateTime
+from sqlalchemy.ext.hybrid import hybrid_method
 from sqlalchemy.orm import relationship
 from database.database import Base
+from datetime import datetime
 
 
 class Users(Base):
@@ -32,10 +34,34 @@ class Posts(Base):
 
     like_count = Column(Integer, default=0, nullable=False)
     view_count = Column(Integer, default=0, nullable=False)
+    comment_count = Column(Integer, default=0, nullable=False)
+    created_at = Column(DateTime, default=datetime.now(), nullable=False)
 
     author = relationship("Users", back_populates="posts")
-    comments = relationship("Comments", back_populates="post", uselist=True)
+    comments = relationship(
+        "Comments",
+        primaryjoin="and_(Posts.post_id == Comments.post_id, Comments.parent_comment_id == None)",
+        cascade="all, delete-orphan",
+        back_populates="post",
+        uselist=True,
+    )
     likes = relationship("Likes", back_populates="post", uselist=True)
+
+    @hybrid_method
+    def increment_view_count(self):
+        self.view_count += 1
+
+    @hybrid_method
+    def increment_like_count(self):
+        self.like_count += 1
+    
+    @hybrid_method
+    def increment_comment_count(self):
+        self.comment_count += 1
+    
+    @hybrid_method
+    def decrement_comment_count(self):
+        self.comment_count -= 1
 
 
 class Comments(Base):
@@ -43,13 +69,35 @@ class Comments(Base):
 
     comment_id = Column(Integer, Sequence("comment_id_seq"), primary_key=True)
 
-    author_id = Column(String, ForeignKey("users.user_id"), nullable=False)
+    author_id = Column(String, ForeignKey("users.user_id"))
     post_id = Column(Integer, ForeignKey("posts.post_id"), nullable=False)
+    parent_comment_id = Column(Integer, ForeignKey("comments.comment_id"))
 
     content = Column(String, nullable=False)
+    child_comment_count = Column(Integer, default=0, nullable=False)
+    created_at = Column(DateTime, default=datetime.now(), nullable=False)
 
     author = relationship("Users", back_populates="comments")
     post = relationship("Posts", back_populates="comments")
+    parent_comment = relationship(
+        "Comments",
+        remote_side=[comment_id],
+        back_populates="child_comments",
+    )
+    child_comments = relationship(
+        "Comments",
+        back_populates="parent_comment",
+        uselist=True,
+        cascade="all, delete-orphan",
+    )
+
+    @hybrid_method
+    def increment_child_comment_count(self):
+        self.child_comment_count += 1
+    
+    @hybrid_method
+    def decrement_child_comment_count(self):
+        self.child_comment_count -= 1
 
 
 class Likes(Base):

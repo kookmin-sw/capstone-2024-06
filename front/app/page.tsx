@@ -10,12 +10,11 @@ const MyPage = () => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch('http://175.194.198.155:8080/user/me', {
+      const response = await fetch('http://localhost:8080/user/me', {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${session.access_token}`
         }
-        // You can include additional options here if needed
       });
 
       if (response.ok) {
