@@ -104,7 +104,7 @@ if __name__ == "__main__":
     def download_image(url, file_name, download_folder):
         response = requests.get(url)
         if response.status_code == 200:
-            with open(f"./{download_folder}/{file_name}", 'wb') as f:
+            with open(f"./{download_folder}/{file_name}.png", 'wb') as f:
                 f.write(response.content)
 
     download_folder = "image"

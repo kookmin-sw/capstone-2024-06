@@ -47,32 +47,6 @@ async def create_like(db: Session, author_id: str, post_id: int):
     return like
 
 
-
-async def increment_view_count(db: Session, post_id: int):
-    anchor_clause = db.query(Comments)
-    anchor_clause = anchor_clause.filter(Comments.parent_comment_id == None)
-    anchor_clause = anchor_clause.cte('all_comments', recursive=True)
-
-    recursive_clause = db.query(Comments)
-    recursive_clause = recursive_clause.join(anchor_clause, Comments.parent_comment_id == anchor_clause.c.comment_id)
-
-    recursive_cte = anchor_clause.union_all(recursive_clause)
-
-    post = (
-        db.query(Posts)
-        .filter(Posts.post_id == post_id)
-        .join(recursive_cte, recursive_cte.c.post_id == Posts.post_id)
-        .options(selectinload(Posts.comments))
-        .first()
-    )
-
-    if post:
-        post.view_count += 1
-        db.commit()
-        db.refresh(post)
-        return post
-
-
 async def read_user_by_id(db: Session, user_id: str):
     return db.query(Users).filter(Users.user_id == user_id).first()
 
@@ -96,6 +70,30 @@ async def read_user_external_map(db: Session, external_id: str, provider: str):
 
 async def read_post(db: Session, post_id: int):
     return db.query(Posts).filter(Posts.post_id == post_id).first()
+
+
+async def read_whole_post(db: Session, post_id: int):
+    anchor_clause = db.query(Comments)
+    anchor_clause = anchor_clause.filter(Comments.parent_comment_id == None)
+    anchor_clause = anchor_clause.cte('all_comments', recursive=True)
+
+    recursive_clause = db.query(Comments)
+    recursive_clause = recursive_clause.join(anchor_clause, Comments.parent_comment_id == anchor_clause.c.comment_id)
+
+    recursive_cte = anchor_clause.union_all(recursive_clause)
+
+    post = (
+        db.query(Posts)
+        .filter(Posts.post_id == post_id)
+        .outerjoin(recursive_cte, recursive_cte.c.post_id == Posts.post_id)
+        .options(selectinload(Posts.comments))
+        .first()
+    )
+    if post:
+        post.increment_view_count()
+    db.commit()
+
+    return post
 
 
 async def read_comment(db: Session, comment_id: int):
@@ -158,5 +156,26 @@ async def delete_post(db: Session, post: Posts):
 
 
 async def delete_comment(db: Session, comment: Comments):
-    db.delete(comment)
+    comment.post.decrement_comment_count()
+    
+    parent_comment = comment.parent_comment
+    if parent_comment:
+        parent_comment.decrement_child_comment_count()
+        if parent_comment.child_comment_count == 0:
+            db.delete(parent_comment)
+        else:
+            db.delete(comment)
+    else:
+        if comment.child_comment_count == 0:
+            db.delete(comment)
+        else:
+            comment.author_id = None
+            comment.content = "삭제된 댓글입니다"
+    db.commit()
+
+
+async def delete_comment_content(db: Session, comment: Comments):
+    comment.post.decrement_comment_count()
+    comment.author_id = None
+    comment.content = "삭제된 댓글입니다."
     db.commit()

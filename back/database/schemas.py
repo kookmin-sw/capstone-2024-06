@@ -1,6 +1,7 @@
 from __future__ import annotations
 from pydantic import BaseModel
 from typing import List
+from datetime import datetime
 
 
 class UserSignIn(BaseModel):
@@ -42,7 +43,8 @@ class CommentForm(BaseModel):
 
 class Comment(CommentForm):
     comment_id: int
-    author_id: str
+    author_id: str | None = None
+    created_at: datetime
     child_comments: List[Comment] | None = None
 
 
@@ -60,6 +62,8 @@ class PostPreview(BasePost):
     post_id: int
     like_count: int
     view_count: int
+    comment_count: int
+    created_at: datetime
 
 
 class Post(PostPreview):

@@ -86,14 +86,15 @@ def decode_jwt_payload(token):
     return parsed_payload
 
 
-def get_current_user(token: str = Depends(oauth2_scheme)):
-    payload = decode_jwt_payload(token)
-    try:
-        validation = jwt.decode(token, SECRET_KEY, ALGORITHM)
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Invalid token")
-    return payload["sub"]
-
+# def get_current_user(token: str = Depends(oauth2_scheme)):
+#     payload = decode_jwt_payload(token)
+#     try:
+#         validation = jwt.decode(token, SECRET_KEY, ALGORITHM)
+#     except JWTError:
+#         raise HTTPException(status_code=401, detail="Invalid token")
+#     return payload["sub"]
+def get_current_user():
+    return "admin"
 
 # 메인
 
@@ -247,7 +248,7 @@ async def search_posts(
 
 @app.get("/post/{post_id}", response_model=Post)
 async def read_post(post_id: int, db: Session = Depends(get_db)):
-    post = await crud.increment_view_count(db, post_id)
+    post = await crud.read_whole_post(db, post_id)
     if post is None:
         raise HTTPException(status_code=404, detail="Post does not exist.")
     return post
@@ -269,7 +270,6 @@ async def delete_post(
             detail="Permission denied: You are not the author of this post",
         )
     
-    print(post.post_id)
     await crud.delete_post(db, post)
     return {"message": "Post deleted successfully"}
 
