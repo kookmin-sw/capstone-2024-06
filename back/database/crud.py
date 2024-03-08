@@ -45,6 +45,15 @@ async def create_like(db: Session, author_id: str, post_id: int):
     return like
 
 
+async def create_follow(db: Session, follower_user_id: str, followee_user_id: str):
+    follow = Follows(
+        follower_user_id=follower_user_id, followee_user_id=followee_user_id
+    )
+    db.add(follow)
+    db.commit()
+    return follow
+
+
 async def read_user_by_id(db: Session, user_id: str):
     return db.query(Users).filter(Users.user_id == user_id).first()
 
@@ -73,10 +82,12 @@ async def read_post(db: Session, post_id: int):
 async def read_whole_post(db: Session, post_id: int):
     anchor_clause = db.query(Comments)
     anchor_clause = anchor_clause.filter(Comments.parent_comment_id == None)
-    anchor_clause = anchor_clause.cte('all_comments', recursive=True)
+    anchor_clause = anchor_clause.cte("all_comments", recursive=True)
 
     recursive_clause = db.query(Comments)
-    recursive_clause = recursive_clause.join(anchor_clause, Comments.parent_comment_id == anchor_clause.c.comment_id)
+    recursive_clause = recursive_clause.join(
+        anchor_clause, Comments.parent_comment_id == anchor_clause.c.comment_id
+    )
 
     recursive_cte = anchor_clause.union_all(recursive_clause)
 
@@ -96,6 +107,19 @@ async def read_whole_post(db: Session, post_id: int):
 
 async def read_comment(db: Session, comment_id: int):
     return db.query(Comments).filter(Comments.comment_id == comment_id).first()
+
+
+async def read_follow(db: Session, follower_user_id: str, followee_user_id: str):
+    return (
+        db.query(Follows)
+        .filter(
+            and_(
+                Follows.follower_user_id == follower_user_id,
+                Follows.followee_user_id == followee_user_id,
+            )
+        )
+        .first()
+    )
 
 
 async def search_posts(
@@ -154,7 +178,7 @@ async def delete_post(db: Session, post: Posts):
 
 async def delete_comment(db: Session, comment: Comments):
     comment.post.decrement_comment_count()
-    
+
     parent_comment = comment.parent_comment
     if parent_comment:
         parent_comment.decrement_child_comment_count()
@@ -171,8 +195,6 @@ async def delete_comment(db: Session, comment: Comments):
     db.commit()
 
 
-async def delete_comment_content(db: Session, comment: Comments):
-    comment.post.decrement_comment_count()
-    comment.author_id = None
-    comment.content = "삭제된 댓글입니다."
+async def delete_follow(db: Session, follow: Follows):
+    db.delete(follow)
     db.commit()

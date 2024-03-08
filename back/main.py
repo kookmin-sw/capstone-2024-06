@@ -96,6 +96,7 @@ def decode_jwt_payload(token):
 def get_current_user():
     return "admin"
 
+
 # 메인
 
 
@@ -269,7 +270,7 @@ async def delete_post(
             status_code=403,
             detail="Permission denied: You are not the author of this post",
         )
-    
+
     await crud.delete_post(db, post)
     return {"message": "Post deleted successfully"}
 
@@ -342,6 +343,48 @@ async def upload_image(
 
     image = Image(image_id=image_id, filename=filename)
     return await crud.create_image(db, image)
+
+
+@app.post("/follow/{followee_user_id}")
+async def follow_user(
+    followee_user_id: str,
+    follower_user_id: str = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    await crud.create_follow(db, follower_user_id, followee_user_id)
+    return {"message": "Followed successfully"}
+
+
+@app.delete("/follow/{followee_user_id}")
+async def unfollow_user(
+    followee_user_id: str,
+    follower_user_id: str = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    follow = await crud.read_follow(db, follower_user_id, followee_user_id)
+    if not follow:
+        raise HTTPException(status_code=404, detail="You are not following this user")
+    
+    await crud.delete_follow(db, follow)
+    return {"message": "Unfollowed successfully"}
+
+
+@app.post("/followers", response_model=List[UserInfo])
+async def get_followers(
+    user_id: str = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    user = await crud.read_user_by_id(db, user_id)
+    return user.followers
+
+
+@app.post("/followees", response_model=List[UserInfo])
+async def get_followees(
+    user_id: str = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    user = await crud.read_user_by_id(db, user_id)
+    return user.followees
 
 
 # test

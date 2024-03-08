@@ -5,6 +5,13 @@ from database.database import Base
 from datetime import datetime
 
 
+class Follows(Base):
+    __tablename__ = "follows"
+
+    follower_user_id = Column(String, ForeignKey("users.user_id"), primary_key=True)
+    followee_user_id = Column(String, ForeignKey("users.user_id"), primary_key=True)
+
+
 class Users(Base):
     __tablename__ = "users"
 
@@ -19,6 +26,14 @@ class Users(Base):
     comments = relationship("Comments", back_populates="author", uselist=True)
     likes = relationship("Likes", back_populates="author", uselist=True)
     user_external_map = relationship("UserExternalMapping")
+
+    followers = relationship(
+        "Users",
+        secondary="follows",
+        primaryjoin=user_id == Follows.followee_user_id,
+        secondaryjoin=user_id == Follows.follower_user_id,
+        backref="followees",
+    )
 
 
 class Posts(Base):
@@ -54,11 +69,11 @@ class Posts(Base):
     @hybrid_method
     def increment_like_count(self):
         self.like_count += 1
-    
+
     @hybrid_method
     def increment_comment_count(self):
         self.comment_count += 1
-    
+
     @hybrid_method
     def decrement_comment_count(self):
         self.comment_count -= 1
@@ -94,7 +109,7 @@ class Comments(Base):
     @hybrid_method
     def increment_child_comment_count(self):
         self.child_comment_count += 1
-    
+
     @hybrid_method
     def decrement_child_comment_count(self):
         self.child_comment_count -= 1
