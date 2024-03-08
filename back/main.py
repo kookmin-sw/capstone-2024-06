@@ -312,10 +312,13 @@ async def delete_comment(
     if not comment:
         raise HTTPException(status_code=404, detail="Comment not found")
 
+    if not comment.author_id:
+        raise HTTPException(status_code=404, detail="Comment already deleted")
+
     if comment.author_id != user_id:
         raise HTTPException(
             status_code=403,
-            detail="Permission denied: You are not the author of this comment",
+            detail="You are not the author of this comment",
         )
 
     await crud.delete_comment(db, comment)

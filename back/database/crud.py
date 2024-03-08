@@ -9,7 +9,6 @@ async def create_user(db: Session, user: HashedUser):
     user = Users(**user.model_dump())
     db.add(user)
     db.commit()
-    db.refresh(user)
     return user
 
 
@@ -17,7 +16,6 @@ async def create_user_external_map(db: Session, user_external_map: UserExternalM
     user_external_map = UserExternalMapping(**user_external_map.model_dump())
     db.add(user_external_map)
     db.commit()
-    db.refresh(user_external_map)
     return user_external_map
 
 
@@ -25,25 +23,25 @@ async def create_post(db: Session, post: PostForm, user_id: str):
     post = Posts(**post.model_dump(), author_id=user_id)
     db.add(post)
     db.commit()
-    db.refresh(post)
     return post
 
 
 async def create_comment(db: Session, comment: CommentForm, user_id: str):
     comment = Comments(**comment.model_dump(), author_id=user_id)
-    comment.post.increment_comment_count()
     db.add(comment)
+    db.flush()
+    comment.post.increment_comment_count()
+    comment.parent_comment.increment_child_comment_count()
     db.commit()
-    db.refresh(comment)
     return comment
 
 
 async def create_like(db: Session, author_id: str, post_id: int):
     like = Likes(author_id=author_id, post_id=post_id)
-    like.post.increment_like_count()
     db.add(like)
+    db.flush()
+    like.post.increment_like_count()
     db.commit()
-    db.refresh(like)
     return like
 
 
@@ -146,7 +144,6 @@ async def create_image(db: Session, image: Image):
     image = Images(**image.model_dump())
     db.add(image)
     db.commit()
-    db.refresh(image)
     return image
 
 
