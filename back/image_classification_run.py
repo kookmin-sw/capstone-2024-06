@@ -34,7 +34,7 @@ def get_image_paths(folder_path):
 model = tf.keras.models.load_model("back/my_model")
 
 # {'h형책상': 0, '독서실책상': 1, '일자형책상': 2, '컴퓨터책상': 3, '코너형책상': 4}
-
+# reset check
 image_folder_path = "/Users/park_sh/Desktop/backend/back/test_image/독서실책상"  # 대상 이미지 폴더
 image_paths = get_image_paths(image_folder_path)
 predictions = predict_images(image_paths, model)
