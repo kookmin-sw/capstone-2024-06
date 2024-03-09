@@ -2,6 +2,7 @@ import requests
 import re
 import os
 
+## 책상 종류별 크롤링
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
@@ -35,29 +36,29 @@ def get_desks(query, page=1):
     return desks
 
 
+def sanitize_filename(filename):
+    sanitized_filename = re.sub(r'[\/\\\:\*\?\"\<\>\|]', '_', filename)
+    sanitized_filename = ''.join(c for c in sanitized_filename if c.isprintable())
+    return sanitized_filename.replace(" ", "_")
+
+
+def download_image(url, file_name, download_folder):
+    response = requests.get(url)
+    if response.status_code == 200:
+        with open(f"{download_folder}/{file_name}.png", 'wb') as f:
+            f.write(response.content)
+
+
 if __name__ == "__main__":
-    def sanitize_filename(filename):
-        sanitized_filename = re.sub(r'[\/\\\:\*\?\"\<\>\|]', '_', filename)
-        sanitized_filename = ''.join(c for c in sanitized_filename if c.isprintable())
-        return sanitized_filename.replace(" ", "_")
-    
+    base_download_folder = "back/image"
+    queries = ["독서실책상", "컴퓨터책상", "일자형책상", "코너형책상", "h형책상"]  # 책상 종류
 
-    def download_image(url, file_name, download_folder):
-        response = requests.get(url)
-        if response.status_code == 200:
-            with open(f"./{download_folder}/{file_name}.png", 'wb') as f:
-                f.write(response.content)
+    for query in queries:
+        download_folder = f"{base_download_folder}/{query}"
+        if not os.path.exists(download_folder):
+            os.makedirs(download_folder)
 
-
-    base_download_folder = "image"
-    query = "컴퓨터책상"
-    download_folder = f"{base_download_folder}/{query}"
-
-    if not os.path.exists(download_folder):
-        os.makedirs(download_folder)
-
-    for page in range(1, 2):
-        desks = get_desks(query, page=page)
-        for desk in desks:
-            download_image(desk["image_url"], sanitize_filename(desk["name"]), download_folder)
-    
+        for page in range(1, 50):  # 페이지 수 조절
+            desks = get_desks(query, page=page)
+            for desk in desks:
+                download_image(desk["image_url"], sanitize_filename(desk["name"]), download_folder)
