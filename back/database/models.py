@@ -24,9 +24,9 @@ class Users(Base):
 
     posts = relationship("Posts", back_populates="author", uselist=True)
     comments = relationship("Comments", back_populates="author", uselist=True)
-    likes = relationship("Likes", back_populates="author", uselist=True)
+    liked_posts = relationship("Posts", secondary="post_likes", back_populates="liking_users", cascade="all, delete", uselist=True)
+    liked_comments = relationship("Comments", secondary="comment_likes", back_populates="liking_users", cascade="all, delete", uselist=True)
     user_external_map = relationship("UserExternalMapping")
-
     followers = relationship(
         "Users",
         secondary="follows",
@@ -56,11 +56,12 @@ class Posts(Base):
     comments = relationship(
         "Comments",
         primaryjoin="and_(Posts.post_id == Comments.post_id, Comments.parent_comment_id == None)",
-        cascade="all, delete-orphan",
         back_populates="post",
+        cascade="all, delete-orphan",
         uselist=True,
     )
-    likes = relationship("Likes", cascade="all, delete", back_populates="post", uselist=True)
+    liking_users = relationship("Users", secondary="post_likes", back_populates="liked_posts", cascade="all, delete", uselist=True)
+
 
     @hybrid_method
     def increment_view_count(self):
@@ -89,6 +90,7 @@ class Comments(Base):
     parent_comment_id = Column(Integer, ForeignKey("comments.comment_id"))
 
     content = Column(String, nullable=False)
+    like_count = Column(Integer, default=0, nullable=False)
     child_comment_count = Column(Integer, default=0, nullable=False)
     created_at = Column(DateTime, default=datetime.now(), nullable=False)
 
@@ -105,6 +107,7 @@ class Comments(Base):
         uselist=True,
         cascade="all, delete-orphan",
     )
+    liking_users = relationship("Users", secondary="comment_likes", back_populates="liked_comments", cascade="all, delete", uselist=True)
 
     @hybrid_method
     def increment_child_comment_count(self):
@@ -114,15 +117,23 @@ class Comments(Base):
     def decrement_child_comment_count(self):
         self.child_comment_count -= 1
 
+    @hybrid_method
+    def increment_like_count(self):
+        self.like_count += 1
 
-class Likes(Base):
-    __tablename__ = "likes"
 
-    author_id = Column(String, ForeignKey("users.user_id"), primary_key=True)
+class PostLikes(Base):
+    __tablename__ = "post_likes"
+
+    user_id = Column(String, ForeignKey("users.user_id"), primary_key=True)
     post_id = Column(Integer, ForeignKey("posts.post_id"), primary_key=True)
 
-    author = relationship("Users", back_populates="likes")
-    post = relationship("Posts", back_populates="likes")
+
+class CommentLikes(Base):
+    __tablename__ = "comment_likes"
+
+    user_id = Column(String, ForeignKey("users.user_id"), primary_key=True)
+    comment_id = Column(Integer, ForeignKey("comments.comment_id"), primary_key=True)
 
 
 class Images(Base):

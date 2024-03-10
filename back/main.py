@@ -283,7 +283,7 @@ async def delete_post(
 
 @app.post("/like/post/{post_id}")
 async def like_post(
-    post_id: str,
+    post_id: int,
     user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -291,8 +291,23 @@ async def like_post(
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
 
-    await crud.create_like(db, user_id, post_id)
+    await crud.create_post_like(db, user_id, post_id)
     return {"message": "User liked post successfully"}
+
+
+@app.post("/like/comment/{comment_id}")
+async def like_comment(
+    comment_id: int,
+    user_id: str = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    comment = await crud.read_comment(db, comment_id)
+    if not comment:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    
+    await crud.create_comment_like(db, user_id, comment_id)
+    return {"message": "User liked comment successfully"}
+
 
 
 @app.post("/comment")

@@ -44,6 +44,7 @@ class CommentForm(BaseModel):
 class Comment(CommentForm):
     comment_id: int
     author_id: str | None = None
+    like_count: int
     created_at: datetime
     child_comments: List[Comment] | None = None
 

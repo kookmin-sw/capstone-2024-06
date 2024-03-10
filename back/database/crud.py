@@ -31,18 +31,26 @@ async def create_comment(db: Session, comment: CommentForm, user_id: str):
     db.add(comment)
     db.flush()
     comment.post.increment_comment_count()
-    comment.parent_comment.increment_child_comment_count()
+    if comment.parent_comment:
+        comment.parent_comment.increment_child_comment_count()
     db.commit()
     return comment
 
 
-async def create_like(db: Session, author_id: str, post_id: int):
-    like = Likes(author_id=author_id, post_id=post_id)
-    db.add(like)
-    db.flush()
-    like.post.increment_like_count()
+async def create_post_like(db: Session, user_id: str, post_id: int):
+    user = db.query(Users).filter(Users.user_id == user_id).first()
+    post = db.query(Posts).filter(Posts.post_id == post_id).first()
+    user.liked_posts.append(post)
+    post.increment_like_count()
     db.commit()
-    return like
+
+
+async def create_comment_like(db: Session, user_id: str, comment_id: int):
+    user = db.query(Users).filter(Users.user_id == user_id).first()
+    comment = db.query(Comments).filter(Comments.comment_id == comment_id).first()
+    user.liked_comments.append(comment)
+    comment.increment_like_count()
+    db.commit()
 
 
 async def create_follow(db: Session, follower_user_id: str, followee_user_id: str):
@@ -147,11 +155,19 @@ async def search_comment(db: Session, author_id: str = None, post_id: int = None
     return query.all()
 
 
-async def read_like(db: Session, author_id: str, post_id: int):
+async def read_post_like(db: Session, user_id: str, post_id: int):
     return (
-        db.query(Likes)
-        .filter(Likes.author_id == author_id, Likes.post_id == post_id)
-        .all()
+        db.query(PostLikes)
+        .filter(PostLikes.user_id == user_id, PostLikes.post_id == post_id)
+        .first()
+    )
+
+
+async def read_comment_like(db: Session, user_id: str, comment_id: int):
+    return (
+        db.query(CommentLikes)
+        .filter(CommentLikes.user_id == user_id, CommentLikes.comment_id == comment_id)
+        .first()
     )
 
 
