@@ -68,7 +68,6 @@ class PostPreview(BasePost):
 
 class Post(PostPreview):
     content: str
-    comments: List[Comment] | None = None
 
 
 class Image(BaseModel):

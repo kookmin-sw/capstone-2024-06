@@ -60,7 +60,7 @@ class Posts(Base):
         back_populates="post",
         uselist=True,
     )
-    likes = relationship("Likes", back_populates="post", uselist=True)
+    likes = relationship("Likes", cascade="all, delete", back_populates="post", uselist=True)
 
     @hybrid_method
     def increment_view_count(self):

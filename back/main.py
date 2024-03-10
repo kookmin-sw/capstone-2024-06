@@ -249,10 +249,16 @@ async def search_posts(
 
 @app.get("/post/{post_id}", response_model=Post)
 async def read_post(post_id: int, db: Session = Depends(get_db)):
-    post = await crud.read_whole_post(db, post_id)
+    post = await crud.read_post_with_view(db, post_id)
     if post is None:
         raise HTTPException(status_code=404, detail="Post does not exist.")
     return post
+
+
+@app.get("/comment/{post_id}", response_model=List[Comment])
+async def read_comment(post_id: int, db: Session = Depends(get_db)):
+    comments = await crud.read_comments(db, post_id)
+    return comments
 
 
 @app.delete("/post/{post_id}")
@@ -326,7 +332,7 @@ async def delete_comment(
     return {"message": "Comment deleted successfully"}
 
 
-@app.post("/image/upload", response_model=Image)
+@app.post("/image", response_model=Image)
 async def upload_image(
     file: UploadFile,
     user_id: str = Depends(get_current_user),

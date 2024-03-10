@@ -79,25 +79,8 @@ async def read_post(db: Session, post_id: int):
     return db.query(Posts).filter(Posts.post_id == post_id).first()
 
 
-async def read_whole_post(db: Session, post_id: int):
-    anchor_clause = db.query(Comments)
-    anchor_clause = anchor_clause.filter(Comments.parent_comment_id == None)
-    anchor_clause = anchor_clause.cte("all_comments", recursive=True)
-
-    recursive_clause = db.query(Comments)
-    recursive_clause = recursive_clause.join(
-        anchor_clause, Comments.parent_comment_id == anchor_clause.c.comment_id
-    )
-
-    recursive_cte = anchor_clause.union_all(recursive_clause)
-
-    post = (
-        db.query(Posts)
-        .filter(Posts.post_id == post_id)
-        .outerjoin(recursive_cte, recursive_cte.c.post_id == Posts.post_id)
-        .options(selectinload(Posts.comments))
-        .first()
-    )
+async def read_post_with_view(db: Session, post_id: int):
+    post = db.query(Posts).filter(Posts.post_id == post_id).first()
     if post:
         post.increment_view_count()
     db.commit()
@@ -107,6 +90,14 @@ async def read_whole_post(db: Session, post_id: int):
 
 async def read_comment(db: Session, comment_id: int):
     return db.query(Comments).filter(Comments.comment_id == comment_id).first()
+
+
+async def read_comments(db: Session, post_id: int):
+    return (
+        db.query(Comments)
+        .filter(Comments.post_id == post_id, Comments.parent_comment_id.is_(None))
+        .all()
+    )
 
 
 async def read_follow(db: Session, follower_user_id: str, followee_user_id: str):
