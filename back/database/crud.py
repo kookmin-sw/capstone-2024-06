@@ -1,4 +1,4 @@
-from sqlalchemy import and_, or_
+from sqlalchemy import and_, or_, desc
 from sqlalchemy.orm import Session, joinedload, selectinload
 from sqlalchemy.sql import alias, select, column
 from database.models import *
@@ -146,7 +146,7 @@ async def read_follow(db: Session, follower_user_id: str, followee_user_id: str)
 
 
 async def search_posts(
-    db: Session, category: str = None, author_id: str = None, keyword: str = None
+    db: Session, category: str, author_id: str, keyword: str, order: str, per: int, page: int
 ):
     query = db.query(Posts)
 
@@ -163,7 +163,16 @@ async def search_posts(
                 Posts.content.ilike(f"%{keyword}%"),
             )
         )
+    
+    if order == "newest":
+        query = query.order_by(desc(Posts.created_at))
+    elif order == "most_viewed":
+        query = query.order_by(desc(Posts.view_count))
+    elif order == "most_liked":
+        query = query.order_by(desc(Posts.like_count))
 
+    offset = per * (page - 1)
+    query = query.limit(per).offset(offset)
     return query.all()
 
 

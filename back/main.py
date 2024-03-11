@@ -86,15 +86,14 @@ def decode_jwt_payload(token):
     return parsed_payload
 
 
-# def get_current_user(token: str = Depends(oauth2_scheme)):
-#     payload = decode_jwt_payload(token)
-#     try:
-#         validation = jwt.decode(token, SECRET_KEY, ALGORITHM)
-#     except JWTError:
-#         raise HTTPException(status_code=401, detail="Invalid token")
-#     return payload["sub"]
-def get_current_user():
-    return "admin"
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    payload = decode_jwt_payload(token)
+    try:
+        validation = jwt.decode(token, SECRET_KEY, ALGORITHM)
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    print(payload["sub"])
+    return payload["sub"]
 
 
 # 메인
@@ -239,10 +238,16 @@ async def search_posts(
     category: str | None = None,
     author_id: str | None = None,
     keyword: str | None = None,
+    order: str = "newest",
+    per: int = 24,
+    page: int = 1,
     db: Session = Depends(get_db),
 ):
+    if order not in ["newest", "most_viewed", "most_liked"]:
+        return HTTPException(status_code=400, detail="Invalid order parameter")
+        
     posts = await crud.search_posts(
-        db, author_id=author_id, category=category, keyword=keyword
+        db, author_id=author_id, category=category, keyword=keyword, 
     )
     return posts
 
