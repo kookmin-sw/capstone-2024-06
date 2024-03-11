@@ -1,0 +1,330 @@
+/* signupStyle.module.css */
+
+.desktop {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  background: #FFFFFF;
+}
+
+.header {
+  position: absolute;
+  width: 168px;
+  height: 40px;
+  left: 875px;
+  top: 110px;
+}
+
+.title {
+  position: absolute;
+  width: 168px;
+  height: 40px;
+  left: 875px;
+  top: 110px;
+
+  font-style: normal;
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 39px;
+
+  color: #A26D07;
+}
+
+.subtitle {
+  position: absolute;
+  width: 75px;
+  height: 25px;
+  left: 922px;
+  top: 171px;
+
+  font-style: normal;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 24px;
+  /* identical to box height */
+
+  color: #231F20;
+}
+
+.rectangle63 {
+  /* Rectangle 63 닉네임 */
+
+  box-sizing: border-box;
+
+  position: absolute;
+  width: 394px;
+  height: 60px;
+  left: 761px;
+  top: 250px;
+
+  background: #F3F3F3;
+  border: 1px solid #BEBEBE;
+  border-radius: 5px;
+
+}
+
+.inputField63 {
+  width: 394px;
+  height: 60px;
+  left: 761px;
+  top: 250px;
+
+  background: #F3F3F3;
+}
+
+.rectangle64 {
+  /* Rectangle 64 */
+
+  box-sizing: border-box;
+
+  position: absolute;
+  width: 394px;
+  height: 60px;
+  left: 759.5px;
+  top: 355.5px;
+
+  background: #F3F3F3;
+  border: 1px solid #BEBEBE;
+  border-radius: 5px;
+}
+
+.inputField64 {
+  width: 394px;
+  height: 60px;
+  left: 759.5px;
+  top: 355.5px;
+
+  background: #F3F3F3;
+}
+
+.errormessage64 {
+  /* 중복된 아이디 입니다. */
+
+  position: absolute;
+  width: 91px;
+  height: 12px;
+  left: 1175px;
+  top: 376px;
+
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 10px;
+  line-height: 12px;
+
+  color: #DF3030;
+}
+
+.rectangle58 {
+  /* Rectangle 58 */
+
+  box-sizing: border-box;
+
+  position: absolute;
+  width: 394px;
+  height: 60px;
+  left: 761px;
+  top: 450px;
+
+  background: #F3F3F3;
+  border: 1px solid #BEBEBE;
+  border-radius: 5px;
+
+}
+
+.inputField58 {
+  width: 394px;
+  height: 60px;
+  left: 761px;
+  top: 450px;
+
+  background: #F3F3F3;
+}
+
+.error58 {
+  /* Rectangle 60 */
+
+  position: absolute;
+  width: 206px;
+  height: 98px;
+  left: 1170px;
+  top: 450px;
+
+  background: #F3F3F3;
+  border-radius: 5px;
+
+}
+
+.errormessage58 {
+  /* 8~16자의 영문 */
+
+  position: absolute;
+  width: 51px;
+  height: 10px;
+  left: 1205px;
+  top: 479px;
+
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 8px;
+  line-height: 10px;
+  /* identical to box height */
+
+  color: #DF3030;
+}
+
+.rectangle59 {
+  /* Rectangle 59 비밀번호 확인*/
+
+  box-sizing: border-box;
+
+  position: absolute;
+  width: 394px;
+  height: 60px;
+  left: 761px;
+  top: 516px;
+
+  background: #F3F3F3;
+  border: 1px solid #BEBEBE;
+  border-radius: 5px;
+
+}
+
+.inputField59 {
+  width: 394px;
+  height: 60px;
+  left: 761px;
+  top: 516px;
+
+  background: #F3F3F3;
+}
+
+.errormessage59 {
+  /* 비밀번호가 일치하지 않습니다. */
+  position: absolute;
+  width: 394px;
+  height: 60px;
+  left: 761px;
+  top: 700px;
+  color: #DF3030;
+}
+
+.rectangle62 {
+  /* Rectangle 62 이메일 */
+
+  box-sizing: border-box;
+
+  position: absolute;
+  width: 394px;
+  height: 60px;
+  left: 761px;
+  top: 614px;
+
+  background: #F3F3F3;
+  border: 1px solid #BEBEBE;
+  border-radius: 5px;
+
+}
+
+.inputField62 {
+  width: 394px;
+  height: 60px;
+  left: 761px;
+  top: 614px;
+
+  background: #F3F3F3;
+}
+
+.failed {
+  width: 394px;
+  height: 60px;
+  left: 761px;
+  top: 700px;
+
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 8px;
+  line-height: 10px;
+
+  color: #DF3030;
+}
+
+.line4 {
+  /* Line 4 */
+
+  position: absolute;
+  width: 394px;
+  height: 0px;
+  left: 763px;
+  top: 770px;
+
+  border: 1px solid #A26D07;
+
+}
+
+.rectangle55 {
+  /* Rectangle 55 제출버튼*/
+  position: absolute;
+  width: 394px;
+  height: 59px;
+  left: 763px;
+  top: 830px;
+
+  background: #BEBEBE;
+  border-radius: 5px;
+}
+
+.message55 {
+  /* 회원가입 하기 */
+  position: absolute;
+  width: 394px;
+  height: 59px;
+  left: 763px;
+  top: 830px;
+
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 24px;
+
+  color: #FFFFFF;
+}
+
+.loginbutton {
+  /* 로그인 */
+
+  position: absolute;
+  width: 42px;
+  height: 18px;
+  left: 852px;
+  top: 937px;
+
+  font-style: normal;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 18px;
+
+  color: #000000;
+}
+
+.FindAccount {
+  /* 계정찾기 */
+
+  position: absolute;
+  width: 56px;
+  height: 18px;
+  left: 1012px;
+  top: 937px;
+
+  font-style: normal;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 18px;
+
+  color: #000000;
+
+
+}
