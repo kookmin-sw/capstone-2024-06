@@ -47,6 +47,7 @@ class Comment(CommentForm):
     like_count: int
     created_at: datetime
     child_comments: List[Comment] | None = None
+    author_image: str | None = None
 
 
 class BasePost(BaseModel):
@@ -69,6 +70,7 @@ class PostPreview(BasePost):
 
 class Post(PostPreview):
     content: str
+    author_image: str | None = None
 
 
 class Image(BaseModel):

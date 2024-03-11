@@ -93,19 +93,43 @@ async def read_post_with_view(db: Session, post_id: int):
         post.increment_view_count()
     db.commit()
 
-    return post
+    post_data = post.__dict__
+    post_data["author_image"] = post.author.image
+
+    return post_data
 
 
 async def read_comment(db: Session, comment_id: int):
     return db.query(Comments).filter(Comments.comment_id == comment_id).first()
 
 
+def construct_comment_with_image(comment):
+    comment_data = comment.__dict__
+    comment_data["image"] = comment.author.image
+
+    if comment.child_comment_count > 0:
+        comment_data["chlid_comments"] = [
+            construct_comment_with_image(child_comment)
+            for child_comment in comment.child_comments
+        ]
+    return comment_data
+
+
 async def read_comments(db: Session, post_id: int):
-    return (
+    comments = (
         db.query(Comments)
+        .options(
+            selectinload(Comments.child_comments).selectinload(Comments.author),
+            selectinload(Comments.author),
+        )
         .filter(Comments.post_id == post_id, Comments.parent_comment_id.is_(None))
         .all()
     )
+
+    comments_with_image = [
+        construct_comment_with_image(comment) for comment in comments
+    ]
+    return comments_with_image
 
 
 async def read_follow(db: Session, follower_user_id: str, followee_user_id: str):
