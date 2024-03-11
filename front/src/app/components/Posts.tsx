@@ -26,25 +26,6 @@
       PostsLoad();
     }, []);
 
-    
-
-    // const PostDeleteBt = async () => {
-    //   try {
-    //     const response = await fetch(`http://10.30.118.194:8080/post/1`, {
-    //       method: "DELETE",
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //       },
-    //     });
-    //     const data = await response.json();
-    //     console.log(data);
-    //   } catch (error) {
-    //     console.error("Error", error);
-    //   }
-    // };
-
-    // PostDeleteBt();
-
     const router = useRouter();
 
     const chunkArray = (array: any[], size: number) => {
@@ -59,16 +40,6 @@
     const PostClick = (PostId: number) => {
       router.push(`/Community/FreePost/${PostId}`);
     };
-
-    // const LikedBtClick = (postId: number) => {
-    //   const updatedData = Posts.map((post) => {
-    //     if (post.PostId === postId) {
-    //       return { ...post, Liked: !post.Liked };
-    //     }
-    //     return post;
-    //   });
-    //   setPosts(updatedData);
-    // };
 
     const chunkedPosts = chunkArray(Posts, 3);
 

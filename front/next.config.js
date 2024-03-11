@@ -2,7 +2,7 @@
 const nextConfig = {
     reactStrictMode: false,
     env: {
-        Localhost: "http://192.168.194.253:8080"
+        Localhost: "http://10.30.113.194:8080"
     }
 }
 

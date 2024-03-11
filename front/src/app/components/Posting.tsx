@@ -40,6 +40,8 @@ const Posting = () => {
     };
     PostLoadBt();
   }, [Postid]);
+  
+  console.log(Posting)
 
 
   const PostingDeleteBt = async () => {
