@@ -3,18 +3,30 @@
 const test = () => {
   const handleClick = async () => {
     try {
+      const formDatas = {
+        post_id: "123",
+        title: "Test 1",
+        content: "테스트입니다",
+        category: "자유게시판",
+        writer_username: "user1"
+      };
+
       const formData = new URLSearchParams();
-      formData.append("grant_type", "password");
-      formData.append("username", "username1");
-      formData.append("password", "password");
+      formData.append("post_id", "2");
+      formData.append("title", "Test 1");
+      formData.append("content", "테스트입니다");
+      formData.append("category", "자유게시판");
+      formData.append("writer_username", "User 1");
+      const keyword = "테스트입니다";
+      const encodedKeyword = encodeURIComponent(keyword);
       const response = await fetch(
-        "http://172.16.101.247:8080/user/oauth_sign_in",
+        `http://175.194.198.155:8080/post/search?keyword=테스트입니다`,
         {
-          method: "POST",
+          method: "GET",
           headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+            "Content-Type": "application/json",
           },
-          body: formData.toString(),
+          // body: JSON.stringify(formDatas),
         }
       );
 
@@ -59,10 +71,17 @@ const test = () => {
   };
   return (
     <div>
-      <button onClick={handleClick}>로그인</button>
+      <button className="border" onClick={handleClick}>Test</button>
       <button onClick={handleClicks}>me</button>;
+      {/* <div className="flex-col items-center border min-w-[700px] max-w-[1000px] w-11/12 h-auto">
+          <ImageSlider />
+
+          <div className="font-bold text-lg">잘꾸민 책상 모음</div>
+          <RecommendImgSlider />
+        </div> */}
     </div>
   );
 };
 
 export default test;
+

@@ -61,7 +61,7 @@ const PictureUpload: FunctionComponent = () => {
   };
   
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center mt-4">
       <div
         className="m-2 relative"
         onDragOver={handleDragOver}
@@ -74,7 +74,7 @@ const PictureUpload: FunctionComponent = () => {
             className="w-[500px] h-[400px] cursor-pointer"
           />
         ) : (
-          <div className="flex items-center justify-center border-dashed border-2 text-[#808080] text-sm w-[450px] h-[200px] cursor-pointer">
+          <div className="flex items-center justify-center border-dashed border-2 text-[#808080] text-sm w-[800px] h-[400px] cursor-pointer">
             드래그하여 사진 업로드
           </div>
         )}

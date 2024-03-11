@@ -1,10 +1,18 @@
 "use client";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
+import { SetStateAction, useState } from "react";
 
 const Nav = () => {
+
   const router = useRouter();
   const pathname = usePathname();
+
+  const [SearchValue, SetSearchValue] = useState("")
+
+  const SearchValueChange = (e: { target: { value: SetStateAction<string>; }; }) => {
+      SetSearchValue(e.target.value)
+  }
 
   const LogoImgClick = () => {
     router.push("/");
@@ -60,6 +68,8 @@ const Nav = () => {
                 type="search"
                 className="w-[300px] px-3 h-[40px] text-gray-700 bg-white border border-solid border-gray-300 rounded-md focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
                 placeholder="검색하기"
+                value={SearchValue}
+                onChange={SearchValueChange}
               />
             </div>
           </div>

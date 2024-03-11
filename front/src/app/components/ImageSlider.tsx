@@ -14,7 +14,7 @@ const ImageSlider = () => {
   const DeskImages = ["/desk4.jpg", "/desk5.png", "/desk6.jpg"];
 
   return (
-    <main>
+    <main className="w-full">
       <div className="swiper-container w-[500px] h-[500px]">
         <Swiper
           slidesPerView={1}

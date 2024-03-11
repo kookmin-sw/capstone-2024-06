@@ -3,11 +3,13 @@ import React, { useState, useRef } from "react";
 import Image from "next/image";
 
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination} from "swiper/modules";
+import { Pagination, Autoplay, Navigation} from "swiper/modules";
 
 
 import "swiper/css";
 import "swiper/css/pagination";
+import 'swiper/css/navigation';
+
 
 
 const RecommendImgSlider = () => {
@@ -17,12 +19,17 @@ const RecommendImgSlider = () => {
     <main>
       <div className="swiper-container w-full h-[500px]">
       <Swiper
-        slidesPerView={5}
         spaceBetween={30}
+        centeredSlides={true}
+        autoplay={{
+          delay: 2500,
+          disableOnInteraction: false,
+        }}
         pagination={{
           clickable: true,
         }}
-        modules={[Pagination]}
+        navigation={true}
+        modules={[Autoplay, Pagination, Navigation]}
         className="mySwiper"
       >
           {DeskImages.map((src, index) => (

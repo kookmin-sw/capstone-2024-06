@@ -1,7 +1,6 @@
 import Nav from "../components/Nav";
 import Category from "../components/Category";
 import Posts from "../components/Posts";
-import Test from "../components/test"
 
 export default function Community() {
 
@@ -17,7 +16,6 @@ export default function Community() {
         <div className="flex-col items-center min-w-[700px] max-w-[1000px] w-11/12 h-auto">
           <div className="w-full">
             <Posts />
-            <Test />
           </div>
         </div>
       </div>
