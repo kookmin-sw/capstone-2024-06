@@ -66,7 +66,7 @@ def Process_image_by_number_of_objects(data_dir):
                         print("Deleting image:", file_name)
                         os.remove(file_path)
 if __name__ == "__main__":
-    base_download_folder = "/Users/park_sh/Desktop/backend/back/train_image"
+    base_download_folder = "./train_image"
     queries = ["독서실책상", "컴퓨터책상", "일자형책상", "코너형책상", "h형책상"]  # 책상 종류
     # queries = ["독서실책상"]
     for query in queries:
