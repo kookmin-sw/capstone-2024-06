@@ -3,7 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import RecommendImgSlider from "./components/RecommendImgSlider";
 
+
 export default function Home() {
+
   return (
     <main className="flex-col w-full h-full">
       <Nav />
