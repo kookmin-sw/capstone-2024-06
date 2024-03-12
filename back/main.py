@@ -247,7 +247,7 @@ async def search_posts(
         return HTTPException(status_code=400, detail="Invalid order parameter")
         
     posts = await crud.search_posts(
-        db, author_id=author_id, category=category, keyword=keyword, 
+        db, author_id, category, keyword, order, per, page
     )
     return posts
 
@@ -312,7 +312,6 @@ async def like_comment(
     
     await crud.create_comment_like(db, user_id, comment_id)
     return {"message": "User liked comment successfully"}
-
 
 
 @app.post("/comment")
