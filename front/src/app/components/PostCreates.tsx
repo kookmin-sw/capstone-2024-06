@@ -2,7 +2,7 @@
 import { SetStateAction, useState, ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { access } from "fs";
+
 
 interface ImagePreview {
   url: string;
@@ -33,7 +33,6 @@ const PostCreates = () => {
  
   const PostCreateBt = async () => {
     try {
-      console.log(" qqwqer" + session.access_token)
       const PostCreateData = {
         title: PostCreateTitle,
         category: "None",
@@ -42,7 +41,7 @@ const PostCreates = () => {
       const response = await fetch(`${process.env.Localhost}/post`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${session?.access_token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(PostCreateData),

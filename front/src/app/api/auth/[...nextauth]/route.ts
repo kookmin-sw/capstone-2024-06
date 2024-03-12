@@ -44,7 +44,6 @@ const credentialsProvider = CredentialsProvider({
 
       if (res.ok) {
         const user = await res.json();
-        console.log("authorize", user);
 
         if (user) {
           // 사용자 정보 반환
@@ -151,7 +150,6 @@ const authOptions: NextAuthOptions = {
             const body = await res.json();
             token.user = body.user;
             token.access_token = body.access_token;
-            console.log(token.user);
           } else {
             console.log(res.status, await res.text());
             throw Error("Custom Error");
@@ -163,7 +161,6 @@ const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       session.user = token.user;
       session.access_token = token.access_token;
-      console.log("session", session);
       return session
     },
   }

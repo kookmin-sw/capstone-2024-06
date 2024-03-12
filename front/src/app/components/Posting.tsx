@@ -18,6 +18,7 @@ const Posting = () => {
     content: "",
     created_at: "",
     comment: "",
+    author_image: "",
   });
 
   useEffect(() => {
@@ -40,8 +41,6 @@ const Posting = () => {
     };
     PostLoadBt();
   }, [Postid]);
-  
-  console.log(Posting)
 
 
   const PostingDeleteBt = async () => {
@@ -82,6 +81,7 @@ const Posting = () => {
     }
     router.push(`http://localhost:3000/Community/FreePost/${Postid.FreePostId}`);
   };
+  console.log(Posting)
 
   return (
     <main className="flex">
@@ -92,7 +92,7 @@ const Posting = () => {
           <div className="">{Posting.created_at.slice(11, 16)}</div>
         </div>
         <div className="w-full border-b flex items-center pb-1">
-          <Image src="/Profilex.png" width={40} height={30} alt={""} />
+          <Image src={Posting.author_image} width={40} height={30} alt={""} />
           <div className="ml-2 w-full">{Posting.author_id}</div>
           <div className="flex w-[78px] h-full mr-1 text-xs">
             <div className="mr-1">조회수</div>
@@ -113,7 +113,7 @@ const Posting = () => {
         <div className="flex justify-start items-center text-lg">
           {Posting.content}
         </div>
-        <Comment />
+        <Comment comment_count={Posting.comment_count}/>
         <button
           onClick={PostingDeleteBt}
           className="animate-bounce bg-transparent w-[200px] h-[50px] hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
