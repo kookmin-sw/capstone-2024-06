@@ -31,10 +31,11 @@ def get_image_paths(folder_path):
     return image_paths
 
 # 모델 로드
-model = tf.keras.models.load_model("back/my_model")
+model = tf.keras.models.load_model("./my_model2")
 
 # {'h형책상': 0, '독서실책상': 1, '일자형책상': 2, '컴퓨터책상': 3, '코너형책상': 4}
-image_folder_path = "/Users/park_sh/Desktop/backend/back/test_image/독서실책상"  # 대상 이미지 폴더
+
+image_folder_path = "/Users/park_sh/Desktop/backend/back/test_image/h형책상"  # 대상 이미지 폴더
 image_paths = get_image_paths(image_folder_path)
 predictions = predict_images(image_paths, model)
 

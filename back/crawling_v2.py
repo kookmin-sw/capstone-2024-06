@@ -48,7 +48,7 @@ def download_image(url, file_name, download_folder):
         with open(f"{download_folder}/{file_name}.png", 'wb') as f:
             f.write(response.content)
 
-def Process_image_by_number_of_objects(data_dir):
+def Process_image_by_number_of_objects(data_dir, cutline):
     for folder_name in os.listdir(data_dir):
         folder_path = os.path.join(data_dir, folder_name)
         # 해당 폴더가 디렉터리인지 확인
@@ -61,22 +61,22 @@ def Process_image_by_number_of_objects(data_dir):
                 # 이미지 파일인지 확인
                 if file_name.endswith((".jpg", ".jpeg", ".png")):
                     class_counts = count_class(file_path)
-                    # 클래스별 객체 수가 2개 이하인 이미지 삭제
-                    if class_counts <= 2:
+                    # 클래스별 객체 수로 이미지 처리
+                    if class_counts <= cutline:
                         print("Deleting image:", file_name)
                         os.remove(file_path)
 if __name__ == "__main__":
-    base_download_folder = "./train_image"
-    queries = ["독서실책상", "컴퓨터책상", "일자형책상", "코너형책상", "h형책상"]  # 책상 종류
-    # queries = ["독서실책상"]
+    base_download_folder = "./test_image"
+    # queries = ["독서실책상", "컴퓨터책상", "일자형책상", "코너형책상", "h형책상"]  # 책상 종류
+    queries = ["h형책상"]
     for query in queries:
         download_folder = f"{base_download_folder}/{query}"
         if not os.path.exists(download_folder):
             os.makedirs(download_folder)
 
-        for page in range(1, 15):  # 페이지 수 조절
+        for page in range(16, 18):  # 페이지 수 조절
             desks = get_desks(query, page=page)
             for desk in desks:
                 download_image(desk["image_url"], sanitize_filename(desk["name"]), download_folder)
-    data_dir = "./train_image"
-    Process_image_by_number_of_objects(data_dir)
+    data_dir = "./test_image/h형책상"
+    Process_image_by_number_of_objects(data_dir,2)
