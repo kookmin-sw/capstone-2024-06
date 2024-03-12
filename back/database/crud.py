@@ -19,11 +19,30 @@ async def create_user_external_map(db: Session, user_external_map: UserExternalM
     return user_external_map
 
 
-async def create_post(db: Session, post: PostForm, user_id: str):
-    post = Posts(**post.model_dump(), author_id=user_id)
+async def create_post(db: Session, post: PostForm, author_id: str, temp_post_id: int):
+    post = Posts(**post.model_dump(), author_id=author_id)
     db.add(post)
+    db.flush()
+
+    temp_post = db.query(TempPosts).filter(TempPosts.author_id == author_id).first()
+    for image in temp_post.images:
+        image.temp_post_id = None
+        image.post_id = post.post_id
+    db.delete(temp_post)
+
     db.commit()
     return post
+
+
+async def create_temp_post(db: Session, author_id: str):
+    temp_post = db.query(TempPosts).filter(TempPosts.author_id == author_id).first()
+    if temp_post:
+        db.delete(temp_post)
+
+    temp_post = TempPosts(author_id=author_id)
+    db.add(temp_post)
+    db.commit()
+    return temp_post
 
 
 async def create_comment(db: Session, comment: CommentForm, user_id: str):
@@ -88,7 +107,12 @@ async def read_post(db: Session, post_id: int):
 
 
 async def read_post_with_view(db: Session, post_id: int):
-    post = db.query(Posts).filter(Posts.post_id == post_id).first()
+    post = (
+        db.query(Posts)
+        .filter(Posts.post_id == post_id)
+        .options(joinedload(Posts.images))
+        .first()
+    )
     if post:
         post.increment_view_count()
     db.commit()
@@ -146,7 +170,13 @@ async def read_follow(db: Session, follower_user_id: str, followee_user_id: str)
 
 
 async def search_posts(
-    db: Session, category: str, author_id: str, keyword: str, order: str, per: int, page: int
+    db: Session,
+    category: str,
+    author_id: str,
+    keyword: str,
+    order: str,
+    per: int,
+    page: int,
 ):
     query = db.query(Posts)
 
@@ -163,7 +193,7 @@ async def search_posts(
                 Posts.content.ilike(f"%{keyword}%"),
             )
         )
-    
+
     if order == "newest":
         query = query.order_by(desc(Posts.created_at))
     elif order == "most_viewed":
@@ -204,8 +234,8 @@ async def read_comment_like(db: Session, user_id: str, comment_id: int):
     )
 
 
-async def create_image(db: Session, image: Image):
-    image = Images(**image.model_dump())
+async def create_image(db: Session, image: Image, temp_post_id: int):
+    image = Images(**image.model_dump(), temp_post_id=temp_post_id)
     db.add(image)
     db.commit()
     return image

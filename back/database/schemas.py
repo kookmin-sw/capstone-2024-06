@@ -69,8 +69,13 @@ class PostPreview(BasePost):
 
 
 class Post(PostPreview):
+    images: List[Image] | None = None
     content: str
     author_image: str | None = None
+
+
+class TempPost(BaseModel):
+    temp_post_id: int
 
 
 class Image(BaseModel):

@@ -221,13 +221,22 @@ async def current_user(
     return await crud.read_user_by_id(db, user_id)
 
 
-@app.post("/post")
+@app.get("/post/temp", response_model=TempPost)
+async def create_temporary_code(
+    user_id: str = Depends(get_current_user), db: Session = Depends(get_db)
+):
+    temp_post = await crud.create_temp_post(db, user_id)
+    return temp_post
+
+
+@app.post("/post/{temp_post_id}")
 async def create_post(
+    temp_post_id: int,
     post: PostForm,
     user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    await crud.create_post(db, post, user_id)
+    await crud.create_post(db, post, user_id, temp_post_id)
     return {"message": "Post created successfully"}
 
 
@@ -243,10 +252,8 @@ async def search_posts(
 ):
     if order not in ["newest", "most_viewed", "most_liked"]:
         return HTTPException(status_code=400, detail="Invalid order parameter")
-        
-    posts = await crud.search_posts(
-        db, author_id, category, keyword, order, per, page
-    )
+
+    posts = await crud.search_posts(db, author_id, category, keyword, order, per, page)
     return posts
 
 
@@ -307,7 +314,7 @@ async def like_comment(
     comment = await crud.read_comment(db, comment_id)
     if not comment:
         raise HTTPException(status_code=404, detail="Comment not found")
-    
+
     await crud.create_comment_like(db, user_id, comment_id)
     return {"message": "User liked comment successfully"}
 
@@ -349,8 +356,9 @@ async def delete_comment(
     return {"message": "Comment deleted successfully"}
 
 
-@app.post("/image", response_model=Image)
+@app.post("/image/{temp_post_id}", response_model=Image)
 async def upload_image(
+    temp_post_id: int,
     file: UploadFile,
     user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -365,7 +373,7 @@ async def upload_image(
         shutil.copyfileobj(file.file, buffer)
 
     image = Image(image_id=image_id, filename=filename)
-    return await crud.create_image(db, image)
+    return await crud.create_image(db, image, temp_post_id)
 
 
 @app.post("/follow/{followee_user_id}")
@@ -387,15 +395,14 @@ async def unfollow_user(
     follow = await crud.read_follow(db, follower_user_id, followee_user_id)
     if not follow:
         raise HTTPException(status_code=404, detail="You are not following this user")
-    
+
     await crud.delete_follow(db, follow)
     return {"message": "Unfollowed successfully"}
 
 
 @app.post("/followers", response_model=List[UserInfo])
 async def get_followers(
-    user_id: str = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    user_id: str = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     user = await crud.read_user_by_id(db, user_id)
     return user.followers
@@ -403,8 +410,7 @@ async def get_followers(
 
 @app.post("/followees", response_model=List[UserInfo])
 async def get_followees(
-    user_id: str = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    user_id: str = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     user = await crud.read_user_by_id(db, user_id)
     return user.followees

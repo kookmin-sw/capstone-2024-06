@@ -24,8 +24,20 @@ class Users(Base):
 
     posts = relationship("Posts", back_populates="author", uselist=True)
     comments = relationship("Comments", back_populates="author", uselist=True)
-    liked_posts = relationship("Posts", secondary="post_likes", back_populates="liking_users", cascade="all, delete", uselist=True)
-    liked_comments = relationship("Comments", secondary="comment_likes", back_populates="liking_users", cascade="all, delete", uselist=True)
+    liked_posts = relationship(
+        "Posts",
+        secondary="post_likes",
+        back_populates="liking_users",
+        cascade="all, delete",
+        uselist=True,
+    )
+    liked_comments = relationship(
+        "Comments",
+        secondary="comment_likes",
+        back_populates="liking_users",
+        cascade="all, delete",
+        uselist=True,
+    )
     user_external_map = relationship("UserExternalMapping")
     followers = relationship(
         "Users",
@@ -60,8 +72,14 @@ class Posts(Base):
         cascade="all, delete-orphan",
         uselist=True,
     )
-    liking_users = relationship("Users", secondary="post_likes", back_populates="liked_posts", cascade="all, delete", uselist=True)
-
+    liking_users = relationship(
+        "Users",
+        secondary="post_likes",
+        back_populates="liked_posts",
+        cascade="all, delete",
+        uselist=True,
+    )
+    images = relationship("Images", cascade="all, delete-orphan")
 
     @hybrid_method
     def increment_view_count(self):
@@ -107,7 +125,13 @@ class Comments(Base):
         uselist=True,
         cascade="all, delete-orphan",
     )
-    liking_users = relationship("Users", secondary="comment_likes", back_populates="liked_comments", cascade="all, delete", uselist=True)
+    liking_users = relationship(
+        "Users",
+        secondary="comment_likes",
+        back_populates="liked_comments",
+        cascade="all, delete",
+        uselist=True,
+    )
 
     @hybrid_method
     def increment_child_comment_count(self):
@@ -136,10 +160,24 @@ class CommentLikes(Base):
     comment_id = Column(Integer, ForeignKey("comments.comment_id"), primary_key=True)
 
 
+class TempPosts(Base):
+    __tablename__ = "temp_posts"
+
+    temp_post_id = Column(Integer, Sequence("temp_post_id_seq"), primary_key=True)
+
+    author_id = Column(String, ForeignKey("users.user_id"), unique=True)
+
+    images = relationship("Images", cascade="all, delete-orphan")
+    author = relationship("Users")
+
+
 class Images(Base):
     __tablename__ = "images"
 
     image_id = Column(String, primary_key=True)
+
+    temp_post_id = Column(Integer, ForeignKey("temp_posts.temp_post_id"))
+    post_id = Column(Integer, ForeignKey("posts.post_id"))
     filename = Column(String, nullable=False)
 
 
@@ -152,4 +190,3 @@ class UserExternalMapping(Base):
     user_id = Column(String, ForeignKey("users.user_id"), nullable=False)
 
     user = relationship("Users", back_populates="user_external_map")
-
