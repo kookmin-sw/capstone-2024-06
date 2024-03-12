@@ -30,7 +30,7 @@ Base.metadata.create_all(bind=engine)
 
 SECRET_KEY = "secret"  # temp
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 1440
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -77,7 +77,6 @@ def create_access_token(data: dict, expires_delta: timedelta):
 
 
 def decode_jwt_payload(token):
-    print(token)
     header, payload, signature = token.split(".")
 
     decoded_payload = base64.urlsafe_b64decode(payload + "==").decode("utf-8")
@@ -92,7 +91,6 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         validation = jwt.decode(token, SECRET_KEY, ALGORITHM)
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
-    print(payload["sub"])
     return payload["sub"]
 
 

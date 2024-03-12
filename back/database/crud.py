@@ -105,7 +105,7 @@ async def read_comment(db: Session, comment_id: int):
 
 def construct_comment_with_image(comment):
     comment_data = comment.__dict__
-    comment_data["image"] = comment.author.image
+    comment_data["image"] = comment.author.image if comment.author else None
 
     if comment.child_comment_count > 0:
         comment_data["chlid_comments"] = [

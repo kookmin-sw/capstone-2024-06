@@ -50,7 +50,7 @@ class Posts(Base):
     like_count = Column(Integer, default=0, nullable=False)
     view_count = Column(Integer, default=0, nullable=False)
     comment_count = Column(Integer, default=0, nullable=False)
-    created_at = Column(DateTime, default=datetime.now(), nullable=False)
+    created_at = Column(DateTime, default=datetime.now, nullable=False)
 
     author = relationship("Users", back_populates="posts")
     comments = relationship(
@@ -92,7 +92,7 @@ class Comments(Base):
     content = Column(String, nullable=False)
     like_count = Column(Integer, default=0, nullable=False)
     child_comment_count = Column(Integer, default=0, nullable=False)
-    created_at = Column(DateTime, default=datetime.now(), nullable=False)
+    created_at = Column(DateTime, default=datetime.now, nullable=False)
 
     author = relationship("Users", back_populates="comments")
     post = relationship("Posts", back_populates="comments")
@@ -152,3 +152,4 @@ class UserExternalMapping(Base):
     user_id = Column(String, ForeignKey("users.user_id"), nullable=False)
 
     user = relationship("Users", back_populates="user_external_map")
+
