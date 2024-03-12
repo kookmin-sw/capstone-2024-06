@@ -30,7 +30,7 @@ Base.metadata.create_all(bind=engine)
 
 SECRET_KEY = "secret"  # temp
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 1440
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -77,7 +77,6 @@ def create_access_token(data: dict, expires_delta: timedelta):
 
 
 def decode_jwt_payload(token):
-    print(token)
     header, payload, signature = token.split(".")
 
     decoded_payload = base64.urlsafe_b64decode(payload + "==").decode("utf-8")
@@ -86,15 +85,14 @@ def decode_jwt_payload(token):
     return parsed_payload
 
 
-# def get_current_user(token: str = Depends(oauth2_scheme)):
-#     payload = decode_jwt_payload(token)
-#     try:
-#         validation = jwt.decode(token, SECRET_KEY, ALGORITHM)
-#     except JWTError:
-#         raise HTTPException(status_code=401, detail="Invalid token")
-#     return payload["sub"]
-def get_current_user():
-    return "admin"
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    payload = decode_jwt_payload(token)
+    try:
+        validation = jwt.decode(token, SECRET_KEY, ALGORITHM)
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    return payload["sub"]
+
 
 # 메인
 
@@ -223,13 +221,22 @@ async def current_user(
     return await crud.read_user_by_id(db, user_id)
 
 
-@app.post("/post")
+@app.get("/post/temp", response_model=TempPost)
+async def create_temporary_code(
+    user_id: str = Depends(get_current_user), db: Session = Depends(get_db)
+):
+    temp_post = await crud.create_temp_post(db, user_id)
+    return temp_post
+
+
+@app.post("/post/{temp_post_id}")
 async def create_post(
+    temp_post_id: int,
     post: PostForm,
     user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    await crud.create_post(db, post, user_id)
+    await crud.create_post(db, post, user_id, temp_post_id)
     return {"message": "Post created successfully"}
 
 
@@ -238,20 +245,30 @@ async def search_posts(
     category: str | None = None,
     author_id: str | None = None,
     keyword: str | None = None,
+    order: str = "newest",
+    per: int = 24,
+    page: int = 1,
     db: Session = Depends(get_db),
 ):
-    posts = await crud.search_posts(
-        db, author_id=author_id, category=category, keyword=keyword
-    )
+    if order not in ["newest", "most_viewed", "most_liked"]:
+        return HTTPException(status_code=400, detail="Invalid order parameter")
+
+    posts = await crud.search_posts(db, author_id, category, keyword, order, per, page)
     return posts
 
 
 @app.get("/post/{post_id}", response_model=Post)
 async def read_post(post_id: int, db: Session = Depends(get_db)):
-    post = await crud.read_whole_post(db, post_id)
+    post = await crud.read_post_with_view(db, post_id)
     if post is None:
         raise HTTPException(status_code=404, detail="Post does not exist.")
     return post
+
+
+@app.get("/comment/{post_id}", response_model=List[Comment])
+async def read_comment(post_id: int, db: Session = Depends(get_db)):
+    comments = await crud.read_comments(db, post_id)
+    return comments
 
 
 @app.delete("/post/{post_id}")
@@ -269,14 +286,14 @@ async def delete_post(
             status_code=403,
             detail="Permission denied: You are not the author of this post",
         )
-    
+
     await crud.delete_post(db, post)
     return {"message": "Post deleted successfully"}
 
 
 @app.post("/like/post/{post_id}")
 async def like_post(
-    post_id: str,
+    post_id: int,
     user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -284,8 +301,22 @@ async def like_post(
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
 
-    await crud.create_like(db, user_id, post_id)
+    await crud.create_post_like(db, user_id, post_id)
     return {"message": "User liked post successfully"}
+
+
+@app.post("/like/comment/{comment_id}")
+async def like_comment(
+    comment_id: int,
+    user_id: str = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    comment = await crud.read_comment(db, comment_id)
+    if not comment:
+        raise HTTPException(status_code=404, detail="Comment not found")
+
+    await crud.create_comment_like(db, user_id, comment_id)
+    return {"message": "User liked comment successfully"}
 
 
 @app.post("/comment")
@@ -312,18 +343,22 @@ async def delete_comment(
     if not comment:
         raise HTTPException(status_code=404, detail="Comment not found")
 
+    if not comment.author_id:
+        raise HTTPException(status_code=404, detail="Comment already deleted")
+
     if comment.author_id != user_id:
         raise HTTPException(
             status_code=403,
-            detail="Permission denied: You are not the author of this comment",
+            detail="You are not the author of this comment",
         )
 
     await crud.delete_comment(db, comment)
     return {"message": "Comment deleted successfully"}
 
 
-@app.post("/image/upload", response_model=Image)
+@app.post("/image/{temp_post_id}", response_model=Image)
 async def upload_image(
+    temp_post_id: int,
     file: UploadFile,
     user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -338,7 +373,47 @@ async def upload_image(
         shutil.copyfileobj(file.file, buffer)
 
     image = Image(image_id=image_id, filename=filename)
-    return await crud.create_image(db, image)
+    return await crud.create_image(db, image, temp_post_id)
+
+
+@app.post("/follow/{followee_user_id}")
+async def follow_user(
+    followee_user_id: str,
+    follower_user_id: str = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    await crud.create_follow(db, follower_user_id, followee_user_id)
+    return {"message": "Followed successfully"}
+
+
+@app.delete("/follow/{followee_user_id}")
+async def unfollow_user(
+    followee_user_id: str,
+    follower_user_id: str = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    follow = await crud.read_follow(db, follower_user_id, followee_user_id)
+    if not follow:
+        raise HTTPException(status_code=404, detail="You are not following this user")
+
+    await crud.delete_follow(db, follow)
+    return {"message": "Unfollowed successfully"}
+
+
+@app.post("/followers", response_model=List[UserInfo])
+async def get_followers(
+    user_id: str = Depends(get_current_user), db: Session = Depends(get_db)
+):
+    user = await crud.read_user_by_id(db, user_id)
+    return user.followers
+
+
+@app.post("/followees", response_model=List[UserInfo])
+async def get_followees(
+    user_id: str = Depends(get_current_user), db: Session = Depends(get_db)
+):
+    user = await crud.read_user_by_id(db, user_id)
+    return user.followees
 
 
 # test

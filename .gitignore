@@ -1,5 +1,6 @@
 venv/
 back/image/
+back/uploaded_images/
 **/__pycache__/
 front/.next
 front/.env
