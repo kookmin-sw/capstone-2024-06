@@ -40,20 +40,20 @@ def count_class(image_path, conf_threshold=0.25):
 
     return sum(object_counter)
 
-if __name__ == "__main__":
-    # 결과 이미지를 저장할 폴더 생성
-    result_folder = "./result"
-    os.makedirs(result_folder, exist_ok=True)
+# if __name__ == "__main__":
+#     # 결과 이미지를 저장할 폴더 생성
+#     result_folder = "./result"
+#     os.makedirs(result_folder, exist_ok=True)
 
-    # YOLO 모델 로드
-    model = YOLO("yolov8x.pt")
+#     # YOLO 모델 로드
+#     model = YOLO("yolov8x.pt")
 
-    # 이미지 경로
-    image_paths = '/Users/park_sh/Desktop/backend/back/train_image/독서실책상'
+#     # 이미지 경로
+#     image_paths = '/Users/park_sh/Desktop/backend/back/train_image/독서실책상'
 
-    for file_name in os.listdir(image_paths):
-        if file_name.endswith((".jpg", ".jpeg", ".png")):
-            image_path = os.path.join(image_paths, file_name)
-            result_image_path = detect(image_path, result_folder,0.1)
-            class_counts = count_class(image_path)
-            print(class_counts)
+#     for file_name in os.listdir(image_paths):
+#         if file_name.endswith((".jpg", ".jpeg", ".png")):
+#             image_path = os.path.join(image_paths, file_name)
+#             result_image_path = detect(image_path, result_folder,0.1)
+#             class_counts = count_class(image_path)
+#             print(class_counts)
