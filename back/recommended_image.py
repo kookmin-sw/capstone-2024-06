@@ -10,7 +10,9 @@ def recommend_image(image):
     class_count = count_class(image)
     
     # 이미지 모양 분류
-    model = tf.keras.models.load_model("./my_model2")
+    model = tf.keras.models.Sequential([
+    tf.keras.layers.TFSMLayer('./my_model', call_endpoint='serving_default')
+])    
     predictions = predict_image_class(image, model)
     image_shape = predictions[0]
     conf = predictions[1]

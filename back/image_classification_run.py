@@ -12,10 +12,14 @@ def load_and_preprocess_image(image_path, target_size=(224, 224)):
 
 def predict_image_class(image_path, model):
     preprocessed_img = load_and_preprocess_image(image_path)
-    prediction = model.predict(preprocessed_img)
-    predicted_class = np.argmax(prediction)
-    return predicted_class, prediction[0][predicted_class]
+    prediction = model(preprocessed_img)  # TFSMLayer를 사용하여 예측
 
+    # 딕셔너리에서 각 클래스에 대한 확률 값을 가져옴
+    prediction_values = list(prediction.values())[0].numpy()[0]
+
+    predicted_class = np.argmax(prediction_values)  # 클래스 인덱스 추출
+    confidence = prediction_values[predicted_class]  # 해당 클래스의 확률 값 추출
+    return predicted_class, confidence
 def predict_images(image_paths, model):
     predictions = []
     for image_path in image_paths:
@@ -30,14 +34,13 @@ def get_image_paths(folder_path):
             image_paths.append(os.path.join(folder_path, filename))
     return image_paths
 
-# # 모델 로드
-# model = tf.keras.models.load_model("back/my_model")
+# # 모델 로드 (TFSMLayer를 사용하여 로드)
+# model = tf.keras.layers.TFSMLayer('./back/my_model', call_endpoint='serving_default')
 
-# # {'h형책상': 0, '독서실책상': 1, '일자형책상': 2, '컴퓨터책상': 3, '코너형책상': 4}
-# image_folder_path = "/Users/park_sh/Desktop/backend/back/test_image/독서실책상"  # 대상 이미지 폴더
+# # 대상 이미지 폴더 경로 설정
+# image_folder_path = "/Users/park_sh/Desktop/backend/back/test_image/독서실책상"
 # image_paths = get_image_paths(image_folder_path)
 # predictions = predict_images(image_paths, model)
-
 
 # # 예측 결과 출력
 # for image_path, predicted_class, confidence in predictions:
