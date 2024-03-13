@@ -38,6 +38,7 @@ def get_image_paths(folder_path):
 # image_paths = get_image_paths(image_folder_path)
 # predictions = predict_images(image_paths, model)
 
+
 # # 예측 결과 출력
 # for image_path, predicted_class, confidence in predictions:
 #     print("Image:", image_path)
