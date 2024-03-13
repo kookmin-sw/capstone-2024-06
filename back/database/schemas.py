@@ -44,8 +44,10 @@ class CommentForm(BaseModel):
 class Comment(CommentForm):
     comment_id: int
     author_id: str | None = None
+    like_count: int
     created_at: datetime
     child_comments: List[Comment] | None = None
+    author_image: str | None = None
 
 
 class BasePost(BaseModel):
@@ -67,8 +69,13 @@ class PostPreview(BasePost):
 
 
 class Post(PostPreview):
+    images: List[Image] | None = None
     content: str
-    comments: List[Comment] | None = None
+    author_image: str | None = None
+
+
+class TempPost(BaseModel):
+    temp_post_id: int
 
 
 class Image(BaseModel):

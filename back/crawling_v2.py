@@ -72,6 +72,7 @@ def Process_image_by_number_of_objects(data_dir):
 
 if __name__ == "__main__":
     base_download_folder = "./train_image"
+
     queries = [
         "독서실책상",
         "컴퓨터책상",
@@ -79,6 +80,8 @@ if __name__ == "__main__":
         "코너형책상",
         "h형책상",
     ]  # 책상 종류
+
+    # queries = ["독서실책상"]
 
     for query in queries:
         download_folder = f"{base_download_folder}/{query}"
