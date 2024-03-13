@@ -31,11 +31,11 @@ def recommend_image(image):
     return [os.path.join(shape_folder_path, image_name) for image_name in recommended_images]
 
 
-image = "/Users/park_sh/Desktop/backend/back/test_image/h형책상/라인_H형_책상세트_LNDE01.png"
+# image = "/Users/park_sh/Desktop/backend/back/test_image/h형책상/라인_H형_책상세트_LNDE01.png"
 
-# 이미지와 함께 recommend_image 함수를 호출하여 추천 이미지 가져오기
-recommended_images = recommend_image(image)
+# # 이미지와 함께 recommend_image 함수를 호출하여 추천 이미지 가져오기
+# recommended_images = recommend_image(image)
 
-# 결과 출력
-for img in recommended_images:
-    print("추천된 이미지:", img)
+# # 결과 출력
+# for img in recommended_images:
+#     print("추천된 이미지:", img)
