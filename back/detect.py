@@ -38,7 +38,7 @@ def count_class(image_path, conf_threshold=0.25):
         object_counter[cls_to_idx[box.cls.item()]] += 1
     # print(object_counter)
 
-    return object_counter
+    return sum(object_counter)
 
 if __name__ == "__main__":
     # 결과 이미지를 저장할 폴더 생성
