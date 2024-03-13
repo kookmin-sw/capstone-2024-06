@@ -4,38 +4,34 @@ import os
 from detect import count_class
 from tqdm import tqdm
 
-## 책상 종류별 크롤링
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
 }
 
 
-def get_desks(query, page=1):
-    api_url = "https://ohou.se/productions/feed.json"
+def get_cards(query, page=1):
+    api_url = "https://ohou.se/cards/feed.json"
     params = {
-        "v": 7,
+        "v": 5,
         "query": query,
-        "search_affect_type": "CuratedLink",
-        "page": page,
-        "per": 20,
+        "search_affect_type": "Typing",
+        "per": 48
     }
 
     response = requests.get(api_url, params=params, headers=headers)
     if response.status_code != 200:
         raise Exception("Failed to fetch data")
-
-    desks = []
-    fetched_desks = response.json()["productions"]
-    for fetched_desk in fetched_desks:
-        desks.append(
-            {
-                "id": fetched_desk["id"],
-                "name": fetched_desk["name"],
-                "image_url": fetched_desk["original_image_url"],
-            }
-        )
-    return desks
+    
+    cards = []
+    fetched_cards = response.json()["cards"]
+    for fetched_card in fetched_cards:
+        card = {
+            "id": str(fetched_card["id"]),
+            "image_url": fetched_card["image"]["url"]
+        }
+        cards.append(card)
+    return cards
 
 
 def sanitize_filename(filename):
@@ -72,6 +68,7 @@ def Process_image_by_number_of_objects(data_dir):
 
 if __name__ == "__main__":
     base_download_folder = "./train_image"
+
     queries = [
         "독서실책상",
         "컴퓨터책상",
@@ -80,20 +77,23 @@ if __name__ == "__main__":
         "h형책상",
     ]  # 책상 종류
 
+    # queries = ["독서실책상"]
+
     for query in queries:
         download_folder = f"{base_download_folder}/{query}"
         if not os.path.exists(download_folder):
             os.makedirs(download_folder)
 
         for page in tqdm(range(1, 15), desc=f"Processing {query}"):  # 페이지 수 조절
-            desks = get_desks(query, page=page)
-            for desk in desks:
-                file_extension = os.path.splitext(desk["image_url"])[1]
+            cards = get_cards(query, page=page)
+            for card in cards:
+                image_url = card["image_url"]
+                file_extension = os.path.splitext(image_url)[1]
                 download_image(
-                    desk["image_url"],
-                    sanitize_filename(desk["name"]),
+                    image_url,
+                    sanitize_filename(card["id"]),
                     file_extension,
-                    download_folder,
+                    download_folder
                 )
 
     # data_dir = "./train_image"
