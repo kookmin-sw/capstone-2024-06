@@ -69,11 +69,8 @@ const credentialsProvider = CredentialsProvider({
 // 소셜로그인
 // 카카오 로그인 버튼
 const kakaoCustomProvider = KakaoProvider({
-  name: 'kakao',
-  kakao: {
-    clientId: process.env.KAKAO_CLIENT_ID || '',
-    clientSecret: process.env.KAKAO_CLIENT_SECRET || '',
-  }
+  clientId: process.env.KAKAO_CLIENT_ID || '',
+  clientSecret: process.env.KAKAO_CLIENT_SECRET || '',
 });
 
 kakaoCustomProvider.style = {
