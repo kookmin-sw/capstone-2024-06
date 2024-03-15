@@ -1,0 +1,219 @@
+.desktop {
+  /* Desktop - 7 */
+  position: relative;
+  width: 1930px;
+  height: 952px;
+
+  background: #FFFFFF;
+}
+
+.title {
+  /* 이름 */
+
+  position: absolute;
+  width: 168px;
+  height: 40px;
+  left: 600px;
+  top: 50px;
+
+  font-style: normal;
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 39px;
+
+  color: #A26D07;
+}
+
+.rectangle56 {
+  /* Rectangle 56 아이디 */
+
+  box-sizing: border-box;
+
+  position: absolute;
+  width: 394px;
+  height: 60px;
+  left: 766px;
+  top: 292px;
+
+  background: #F3F3F3;
+  border-radius: 5px;
+}
+
+.inputField56 {
+  width: 394px;
+  height: 60px;
+  left: 766px;
+  top: 292px;
+
+  background: #F3F3F3;
+  border: 1px solid #A26D07;
+  border-radius: 5px;
+}
+
+.rectangle57 {
+  /* Rectangle 56 비밀번호 */
+
+  box-sizing: border-box;
+
+  position: absolute;
+  width: 394px;
+  height: 60px;
+  left: 766px;
+  top: 352px;
+
+  background: #F3F3F3;
+  border-radius: 5px;
+}
+
+.inputField57 {
+  width: 394px;
+  height: 60px;
+  left: 766px;
+  top: 352px;
+
+  background: #F3F3F3;
+  border: 1px solid #A26D07;
+  border-radius: 5px;
+}
+
+
+.header {
+  /* 상단바 */
+
+  position: absolute;
+  width: 168px;
+  height: 40px;
+  left: 880px;
+  top: 217px;
+
+}
+
+
+
+.rectangle55 {
+  /* Rectangle 55 로그인버튼 */
+
+  position: absolute;
+  width: 394px;
+  height: 59px;
+  left: 766px;
+  top: 438px;
+
+  background: #A26D07;
+  border-radius: 5px;
+}
+
+.inputField55 {
+  width: 394px;
+  height: 59px;
+  left: 766px;
+  top: 438px;
+
+  background: #F3F3F3;
+}
+
+.loginbutton {
+  /* 로그인 */
+
+  position: absolute;
+  width: 56px;
+  height: 24px;
+  left: 936px;
+  top: 456px;
+
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 24px;
+
+  color: #FFFFFF;
+
+}
+
+.singupbutton {
+  /* 회원가입 */
+
+  position: absolute;
+  width: 56px;
+  height: 18px;
+  left: 844px;
+  top: 532px;
+
+  font-style: normal;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 18px;
+
+  color: #000000;
+}
+
+.findaccountbutton {
+  /* 계정찾기 */
+
+  position: absolute;
+  width: 56px;
+  height: 18px;
+  left: 1021px;
+  top: 532px;
+
+  font-style: normal;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 18px;
+
+  color: #000000;
+}
+
+
+.sociallogin {
+  /* 소셜로그인 */
+  /* 간편 회원가입 */
+
+  position: absolute;
+  width: 75px;
+  height: 15.91px;
+  left: 926px;
+  top: 567.09px;
+
+  font-style: normal;
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 16px;
+  /* identical to box height */
+
+  color: #000000;
+
+}
+
+.kakao {
+  /* ri:kakao-talk-fill */
+  position: absolute;
+  width: 55px;
+  height: 51px;
+  left: 843px;
+  top: 598px;
+}
+
+.google {
+  /* flat-color-icons:google */
+
+  position: absolute;
+  width: 55px;
+  height: 48px;
+  left: 938px;
+  top: 601px;
+}
+
+.naver {
+  /* Vector */
+
+  position: absolute;
+  left: 54.09%;
+  right: 43.83%;
+  top: 63.87%;
+  bottom: 32.67%;
+
+  background: #0FA958;
+
+}
