@@ -70,8 +70,11 @@ const credentialsProvider = CredentialsProvider({
 // 소셜로그인
 // 카카오 로그인 버튼
 const kakaoCustomProvider = KakaoProvider({
-  clientId: process.env.KAKAO_CLIENT_ID || '',
-  clientSecret: process.env.KAKAO_CLIENT_SECRET || '',
+  name: 'kakao',
+  kakao: {
+    clientId: process.env.KAKAO_CLIENT_ID || '',
+    clientSecret: process.env.KAKAO_CLIENT_SECRET || '',
+  }
 });
 
 kakaoCustomProvider.style = {
@@ -166,7 +169,10 @@ const authOptions: NextAuthOptions = {
       console.log("session", session);
       return session
     },
-  }
+  },
+  pages: {
+    signIn: "/sign-in",
+  },
 };
 
 // NextAuth 초기화

@@ -74,7 +74,7 @@ const RegisterForm = () => {
         회원가입하기</button>
       <div className={style.loginbutton}>로그인</div>
       <div>
-        <Link href="/api/auth/signin">
+        <Link href="/sign-in">
           <span className={style.loginbutton}>로그인</span>
         </Link>
       </div>
