@@ -103,7 +103,12 @@ async def read_user_external_map(db: Session, external_id: str, provider: str):
 
 
 async def read_post(db: Session, post_id: int):
-    return db.query(Posts).filter(Posts.post_id == post_id).first()
+    return (
+        db.query(Posts)
+        .filter(Posts.post_id == post_id)
+        .options(joinedload(Posts.author))
+        .first()
+    )
 
 
 async def read_post_with_view(db: Session, post_id: int):
@@ -111,16 +116,14 @@ async def read_post_with_view(db: Session, post_id: int):
         db.query(Posts)
         .filter(Posts.post_id == post_id)
         .options(joinedload(Posts.images))
+        .options(joinedload(Posts.author))
         .first()
     )
     if post:
         post.increment_view_count()
     db.commit()
 
-    post_data = post.__dict__
-    post_data["author_image"] = post.author.image
-
-    return post_data
+    return post
 
 
 async def read_comment(db: Session, comment_id: int):
