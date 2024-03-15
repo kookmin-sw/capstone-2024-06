@@ -31,7 +31,7 @@ const credentialsProvider = CredentialsProvider({
 
   async authorize(credentials, req) {
     try {
-      const res = await fetch("http://192.168.194.253/token", {
+      const res = await fetch(`${process.env.Localhost}/token`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -44,7 +44,6 @@ const credentialsProvider = CredentialsProvider({
 
       if (res.ok) {
         const user = await res.json();
-        console.log("authorize", user);
 
         if (user) {
           // 사용자 정보 반환
@@ -70,11 +69,8 @@ const credentialsProvider = CredentialsProvider({
 // 소셜로그인
 // 카카오 로그인 버튼
 const kakaoCustomProvider = KakaoProvider({
-  name: 'kakao',
-  kakao: {
-    clientId: process.env.KAKAO_CLIENT_ID || '',
-    clientSecret: process.env.KAKAO_CLIENT_SECRET || '',
-  }
+  clientId: process.env.KAKAO_CLIENT_ID || '',
+  clientSecret: process.env.KAKAO_CLIENT_SECRET || '',
 });
 
 kakaoCustomProvider.style = {
@@ -143,7 +139,7 @@ const authOptions: NextAuthOptions = {
             user_id: user.id,
             id: undefined
           };
-          const res = await fetch(`http://192.168.194.253:8080/token/${account.access_token}?provider=${account.provider}`, {
+          const res = await fetch(`${process.env.Localhost}/token/${account.access_token}?provider=${account.provider}`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -154,7 +150,6 @@ const authOptions: NextAuthOptions = {
             const body = await res.json();
             token.user = body.user;
             token.access_token = body.access_token;
-            console.log(token.user);
           } else {
             console.log(res.status, await res.text());
             throw Error("Custom Error");
@@ -166,7 +161,6 @@ const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       session.user = token.user;
       session.access_token = token.access_token;
-      console.log("session", session);
       return session
     },
   },

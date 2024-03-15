@@ -1,6 +1,8 @@
 "use client";
 import { SetStateAction, useState, ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+
 
 interface ImagePreview {
   url: string;
@@ -26,6 +28,9 @@ const PostCreates = () => {
     SetPostCreateContent(e.target.value);
   };
 
+  const {data: session} = useSession()
+  
+ 
   const PostCreateBt = async () => {
     try {
       const PostCreateData = {
@@ -36,6 +41,7 @@ const PostCreates = () => {
       const response = await fetch(`${process.env.Localhost}/post`, {
         method: "POST",
         headers: {
+          Authorization: `Bearer ${session?.access_token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(PostCreateData),

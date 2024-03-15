@@ -2,22 +2,29 @@
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { SetStateAction, useState } from "react";
+import { useSession } from "next-auth/react";
 
 const Nav = () => {
+  const { data: session } = useSession();
 
   const router = useRouter();
   const pathname = usePathname();
 
-  const [SearchValue, SetSearchValue] = useState("")
+  const [SearchValue, SetSearchValue] = useState("");
 
-  const SearchValueChange = (e: { target: { value: SetStateAction<string>; }; }) => {
-      SetSearchValue(e.target.value)
-  }
+  const SearchValueChange = (e: {
+    target: { value: SetStateAction<string> };
+  }) => {
+    SetSearchValue(e.target.value);
+  };
 
   const LogoImgClick = () => {
     router.push("/");
   };
 
+  const LoginClick = () => {
+    router.push("/api/auth/signin");
+  };
   const CommunityClick = () => {
     router.push("/Community");
   };
@@ -46,7 +53,9 @@ const Nav = () => {
         <div className="font-mono w-1/4 text-semibold font-[600] flex space-x-4">
           <div
             className={`cursor-pointer hover:text-[#F4A460] ${
-              pathname.startsWith("/Community") ? "text-[#F4A460]" : "text-[#808080]"
+              pathname.startsWith("/Community")
+                ? "text-[#F4A460]"
+                : "text-[#808080]"
             }`}
             onClick={CommunityClick}
           >
@@ -74,17 +83,38 @@ const Nav = () => {
             </div>
           </div>
         </div>
-        <div className="flex justify-center w-1/3">
-          <div className="text-sm text-[#808080] mx-1 cursor-pointer">
-            로그인
+        {!session && (
+          <div className="flex justify-center w-1/3">
+            <div
+              className="text-sm text-[#808080] mx-1 cursor-pointer"
+              onClick={LoginClick}
+            >
+              로그인
+            </div>
+            <div className="text-sm text-[#808080] mx-1 cursor-pointer">
+              회원가입
+            </div>
+            <div
+              className="text-sm text-[#808080] mx-1 cursor-pointer"
+              onClick={MyPageClick}
+            >
+              마이페이지
+            </div>
           </div>
-          <div className="text-sm text-[#808080] mx-1 cursor-pointer">
-            회원가입
+        )}
+        {session && (
+          <div className="flex justify-center w-1/3">
+            <div className="text-sm text-[#808080] mx-1 cursor-pointer">
+              {session.user?.name}
+            </div>
+            <div
+              className="text-sm text-[#808080] mx-1 cursor-pointer"
+              onClick={MyPageClick}
+            >
+              마이페이지
+            </div>
           </div>
-          <div className="text-sm text-[#808080] mx-1 cursor-pointer" onClick={MyPageClick}>
-            마이페이지
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
