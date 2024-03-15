@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: false,
   env: {
-    Localhost: "http://175.194.198.155:8080",
+    Localhost: "http://10.30.118.215:8080",
   },
   images: {
     remotePatterns: [

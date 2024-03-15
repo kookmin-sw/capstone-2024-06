@@ -43,6 +43,8 @@
 
     const chunkedPosts = chunkArray(Posts, 3);
 
+    console.log(Posts)
+
     return (
       <main className="flex-col w-full h-auto justify-center items-center mt-5">
         {chunkedPosts.map((row: any[], rowIndex: number) => (

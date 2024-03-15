@@ -1,6 +1,4 @@
 import Nav from "@/app/components/Nav";
-import Image from "next/image";
-import Comment from "@/app/components/Comment";
 import Posting from "@/app/components/Posting";
 
 export default function FreePost() {

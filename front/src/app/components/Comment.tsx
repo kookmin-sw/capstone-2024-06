@@ -164,8 +164,6 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
     }
   };
 
-  console.log(Comments);
-
   return (
     <main className="flex-col w-full mt-4">
       <div className="flex items-center mb-3">
