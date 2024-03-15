@@ -2,6 +2,8 @@ venv/
 back/image/
 back/uploaded_images/
 back/test_image/
+back/*model*/
+back/*.pt
 **/__pycache__/
 front/.next
 front/.env

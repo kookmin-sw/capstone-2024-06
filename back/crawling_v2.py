@@ -46,8 +46,8 @@ def download_image(url, file_name, file_extension, download_folder):
         with open(f"{download_folder}/{file_name}.{file_extension}", "wb") as f:
             f.write(response.content)
 
-
 def Process_image_by_number_of_objects(data_dir):
+
     for folder_name in os.listdir(data_dir):
         folder_path = os.path.join(data_dir, folder_name)
         # 해당 폴더가 디렉터리인지 확인
@@ -60,8 +60,8 @@ def Process_image_by_number_of_objects(data_dir):
                 # 이미지 파일인지 확인
                 if file_name.endswith((".jpg", ".jpeg", ".png")):
                     class_counts = count_class(file_path)
-                    # 클래스별 객체 수가 2개 이하인 이미지 삭제
-                    if class_counts <= 2:
+                    # 클래스별 객체 수로 이미지 처리
+                    if class_counts <= cutline:
                         print("Deleting image:", file_name)
                         os.remove(file_path)
 

@@ -5,8 +5,11 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
 from tensorflow.keras.applications import VGG16
+from PIL import ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
-data_dir = "back/image"
+data_dir = "./train_image"
+
 batch_size = 32
 img_height = 224
 img_width = 224
@@ -21,17 +24,19 @@ train_generator = train_data_gen.flow_from_directory(data_dir,
                                                      target_size=(img_height, img_width),
                                                      batch_size=batch_size,
                                                      class_mode='categorical',
-                                                     subset='training')
+                                                     subset='training',
+                                                     )
 
 val_generator = train_data_gen.flow_from_directory(data_dir,
                                                    target_size=(img_height, img_width),
                                                    batch_size=batch_size,
                                                    class_mode='categorical',
-                                                   subset='validation')
+                                                   subset='validation',
+                                                   )
 
 num_classes = len(train_generator.class_indices)
 
-weights_path = "back/vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5"
+weights_path = "./vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5"
 
 # VGG16 모델 로드
 base_model = VGG16(weights=weights_path, include_top=False, input_shape=(img_height, img_width, 3))
@@ -61,4 +66,5 @@ history = model.fit(
 )
 
 # 모델 저장
-model.save("my_model")
+# 2 : 오브젝트 개수 2개 이상인 이미지만 학습
+model.save("my_model2")
