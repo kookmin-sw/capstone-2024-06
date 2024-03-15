@@ -103,7 +103,7 @@ export default function LoginPage({ searchParams }: PageProps) {
             <div>
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-yellow-700 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-yellow-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="flex w-full justify-center rounded-md bg-yellow-700 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
                 로그인
               </button>
@@ -120,27 +120,36 @@ export default function LoginPage({ searchParams }: PageProps) {
           <form className="space-y-6" onSubmit={handlekakao}>
             <button
               onClick={() => signIn("kakao", { redirect: true, callbackUrl: "/" })}
-              className="flex w-full justify-center rounded-md bg-yellow-700 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-yellow-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              className="flex w-full justify-center rounded-md bg-yellow-300 px-3 py-1.5 text-sm font-semibold leading-6 text-black shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
-              kakao
+              <img src='https://developers.kakao.com/tool/resource/static/img/button/kakaotalksharing/kakaotalk_sharing_btn_small.png'
+                alt="Kakao Logo"
+                className="w-6 h-6" />
+              카카오 로그인
             </button>
           </form>
           <line className="flex items-center justify-center mt-2"></line>
           <form className="space-y-6" onSubmit={handlenaver}>
             <button
               onClick={() => signIn("naver", { redirect: true, callbackUrl: "/" })}
-              className="flex w-full justify-center rounded-md bg-yellow-700 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-yellow-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              className="flex w-full justify-center rounded-md bg-green-500 px-3 py-1.5 text-sm font-semibold leading-6 text-black shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
-              naver
+              <img src='https://logoproject.naver.com/favicon.ico'
+                alt="naver Logo"
+                className="w-6 h-6" />
+              네이버 로그인
             </button>
           </form>
           <line className="flex items-center justify-center mt-2"></line>
           <form className="space-y-6" onSubmit={handlegoogle}>
             <button
               onClick={() => signIn("google", { redirect: true, callbackUrl: "/" })}
-              className="flex w-full justify-center rounded-md bg-yellow-700 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-yellow-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              className="flex w-full justify-center rounded-md bg-slate-50 px-3 py-1.5 text-sm font-semibold leading-6 text-black shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
-              google
+              <img src='https://w7.pngwing.com/pngs/326/85/png-transparent-google-logo-google-text-trademark-logo-thumbnail.png'
+                alt="Google Logo"
+                className="w-6 h-6" />
+              구글 로그인
             </button>
           </form>
         </div>
