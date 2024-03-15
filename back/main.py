@@ -7,7 +7,6 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 from fastapi.staticfiles import StaticFiles
-from typing import List, Annotated
 
 import os
 import shutil
@@ -240,7 +239,7 @@ async def create_post(
     return {"message": "Post created successfully"}
 
 
-@app.get("/post/search", response_model=List[PostPreview])
+@app.get("/post/search", response_model=list[PostPreview])
 async def search_posts(
     category: str | None = None,
     author_id: str | None = None,
@@ -265,7 +264,7 @@ async def read_post(post_id: int, db: Session = Depends(get_db)):
     return post
 
 
-@app.get("/comment/{post_id}", response_model=List[Comment])
+@app.get("/comment/{post_id}", response_model=list[Comment])
 async def read_comment(post_id: int, db: Session = Depends(get_db)):
     comments = await crud.read_comments(db, post_id)
     return comments
@@ -400,7 +399,7 @@ async def unfollow_user(
     return {"message": "Unfollowed successfully"}
 
 
-@app.post("/followers", response_model=List[UserInfo])
+@app.post("/followers", response_model=list[UserInfo])
 async def get_followers(
     user_id: str = Depends(get_current_user), db: Session = Depends(get_db)
 ):
@@ -408,7 +407,7 @@ async def get_followers(
     return user.followers
 
 
-@app.post("/followees", response_model=List[UserInfo])
+@app.post("/followees", response_model=list[UserInfo])
 async def get_followees(
     user_id: str = Depends(get_current_user), db: Session = Depends(get_db)
 ):

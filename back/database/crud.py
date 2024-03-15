@@ -103,12 +103,7 @@ async def read_user_external_map(db: Session, external_id: str, provider: str):
 
 
 async def read_post(db: Session, post_id: int):
-    return (
-        db.query(Posts)
-        .filter(Posts.post_id == post_id)
-        .options(joinedload(Posts.author))
-        .first()
-    )
+    return db.query(Posts).filter(Posts.post_id == post_id).first()
 
 
 async def read_post_with_view(db: Session, post_id: int):
@@ -130,18 +125,6 @@ async def read_comment(db: Session, comment_id: int):
     return db.query(Comments).filter(Comments.comment_id == comment_id).first()
 
 
-def construct_comment_with_image(comment):
-    comment_data = comment.__dict__
-    comment_data["image"] = comment.author.image if comment.author else None
-
-    if comment.child_comment_count > 0:
-        comment_data["chlid_comments"] = [
-            construct_comment_with_image(child_comment)
-            for child_comment in comment.child_comments
-        ]
-    return comment_data
-
-
 async def read_comments(db: Session, post_id: int):
     comments = (
         db.query(Comments)
@@ -153,10 +136,7 @@ async def read_comments(db: Session, post_id: int):
         .all()
     )
 
-    comments_with_image = [
-        construct_comment_with_image(comment) for comment in comments
-    ]
-    return comments_with_image
+    return comments
 
 
 async def read_follow(db: Session, follower_user_id: str, followee_user_id: str):
@@ -204,6 +184,7 @@ async def search_posts(
     elif order == "most_liked":
         query = query.order_by(desc(Posts.like_count))
 
+    query = query.options(joinedload(Posts.author))
     offset = per * (page - 1)
     query = query.limit(per).offset(offset)
     return query.all()
