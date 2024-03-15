@@ -66,12 +66,12 @@ class PostPreview(BasePost):
     view_count: int
     comment_count: int
     created_at: datetime
+    author: UserInfo
 
 
 class Post(PostPreview):
     images: List[Image] | None = None
     content: str
-    author_image: str | None = None
 
 
 class TempPost(BaseModel):
