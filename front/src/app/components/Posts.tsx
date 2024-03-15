@@ -54,7 +54,8 @@
                 key={post.post_id}
                 className="flex flex-col  cursor-pointer w-auto h-auto"
               >
-                <MyProfile UserName="테스트 유저" UserProfile="/Profilex2.webp"/>
+                
+                <MyProfile UserName={post.author.name} UserProfile={post.author.image}/>
                 <Image
                   src="/desk4.jpg"
                   alt="Post Image"

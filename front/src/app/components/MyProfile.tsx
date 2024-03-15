@@ -9,6 +9,10 @@ interface MyProfileProps {
 
 const MyProfile: React.FC<MyProfileProps> = ({UserName, UserProfile}) => {
 
+  if (UserProfile === null) {
+    UserProfile = "/Profilex2.webp"
+  }
+
   const ProfileDummyData = {
     User: UserName,
     ProfileImage: UserProfile,

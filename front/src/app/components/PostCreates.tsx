@@ -1,8 +1,8 @@
 "use client";
-import { SetStateAction, useState, ChangeEvent } from "react";
+import { SetStateAction, useState, ChangeEvent, DragEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-
+import SelectCategory from "./SelectCategory"
 
 interface ImagePreview {
   url: string;
@@ -28,9 +28,8 @@ const PostCreates = () => {
     SetPostCreateContent(e.target.value);
   };
 
-  const {data: session} = useSession()
-  
- 
+  const { data: session } = useSession();
+
   const PostCreateBt = async () => {
     try {
       const PostCreateData = {
@@ -53,8 +52,8 @@ const PostCreates = () => {
     }
     router.push("/Community");
   };
-  
-  const [imagePreview, setImagePreview] = useState<ImagePreview | null>(null); 
+
+  const [imagePreview, setImagePreview] = useState<ImagePreview | null>(null);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -63,34 +62,96 @@ const PostCreates = () => {
       setImagePreview({ url, file });
     }
   };
-  const TestBt = async () => {
-    try {
-      const formData = new FormData();
-      formData.append("file",  imagePreview.file);
 
-      const response = await fetch(`http://192.168.194.28:8080/process_image/`, {
-        method: "POST",
-        body: formData,
-      });
-      const data = await response.json();
-      console.log(data.result_filename);
-      const test = await fetch(`http://192.168.194.28:8080/get_image/${data.result_filename}`,{
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      const tests = await test;
-      console.log(tests.url)
+  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
 
-    } catch (error) {
-      console.error("Error", error);
+  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const file = e.dataTransfer.files[0];
+      const url = URL.createObjectURL(file);
+      setImagePreview({ url, file });
     }
   };
 
+  const ImageDeleteBt = () => {
+    setImagePreview(null);
+  };
+
+  // const TestBt = async () => {
+  //   try {
+  //     const formData = new FormData();
+  //     formData.append("file",  imagePreview.file);
+
+  //     const response = await fetch(`http://192.168.194.28:8080/process_image/`, {
+  //       method: "POST",
+  //       body: formData,
+  //     });
+  //     const data = await response.json();
+  //     console.log(data.result_filename);
+  //     const test = await fetch(`http://192.168.194.28:8080/get_image/${data.result_filename}`,{
+  //       method: "GET",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     })
+  //     const tests = await test;
+  //     console.log(tests.url)
+
+  //   } catch (error) {
+  //     console.error("Error", error);
+  //   }
+  // };
+
   return (
     <main>
-      <input type="file" onChange={handleFileChange} />
+      <div className="flex flex-col items-center justify-center mt-4">
+        <div
+          className="m-2 relative"
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+        >
+          {imagePreview ? (
+            <img
+              src={imagePreview.url}
+              alt="Image preview"
+              className="w-[500px] h-[400px] cursor-pointer"
+            />
+          ) : (
+            <div className="flex my-4 items-center justify-center border-dashed border-2 text-[#808080] text-sm w-[600px] h-[400px] cursor-pointer">
+              드래그하여 사진 업로드
+            </div>
+          )}
+        </div>
+        {!imagePreview ? (
+          <div className="flex">
+            <input
+              type="file"
+              id="file-upload"
+              className="hidden"
+              onChange={handleFileChange}
+            />
+            <label
+              htmlFor="file-upload"
+              className="cursor-pointer bg-blue-500 text-white flex items-center justify-center w-[100px] h-[45px] rounded hover:scale-105"
+            >
+              파일 선택
+            </label>
+          </div>
+        ) : (
+          <div className="flex">
+            <div
+              className="cursor-pointer bg-blue-500 text-white flex items-center justify-center w-[100px] h-[45px] rounded hover:scale-105"
+              onClick={ImageDeleteBt}
+            >
+              사진제거
+            </div>
+          </div>
+        )}
+      </div>
       <div className="flex mt-10 border-b pb-2 text-[#808080] text-3xl font-semi">
         <input
           type="text"
@@ -110,14 +171,12 @@ const PostCreates = () => {
           onChange={PostCreateContentChange}
         />
       </div>
+      <SelectCategory />
       <button
         className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
         onClick={PostCreateBt}
       >
         글 작성하기
-      </button>
-      <button className="" onClick={TestBt}>
-        테스트 버튼
       </button>
     </main>
   );
