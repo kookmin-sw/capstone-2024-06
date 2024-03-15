@@ -123,10 +123,7 @@ async def read_post_with_view(db: Session, post_id: int):
         post.increment_view_count()
     db.commit()
 
-    post_data = post.__dict__
-    post_data["author_image"] = post.author.image
-
-    return post_data
+    return post
 
 
 async def read_comment(db: Session, comment_id: int):

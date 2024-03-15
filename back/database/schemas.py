@@ -60,7 +60,6 @@ class PostForm(BasePost):
 
 
 class PostPreview(BasePost):
-    author_id: str
     post_id: int
     like_count: int
     view_count: int
