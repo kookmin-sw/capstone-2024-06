@@ -1,4 +1,4 @@
-from sqlalchemy import and_, or_, desc
+from sqlalchemy import and_, or_, desc, exists
 from sqlalchemy.orm import Session, joinedload, selectinload
 from sqlalchemy.sql import alias, select, column
 from database.models import *
@@ -160,6 +160,7 @@ async def search_posts(
     order: str,
     per: int,
     page: int,
+    user_id: str | None
 ):
     query = db.query(Posts)
 
@@ -187,6 +188,13 @@ async def search_posts(
     query = query.options(joinedload(Posts.author))
     offset = per * (page - 1)
     query = query.limit(per).offset(offset)
+    
+    if user_id:
+        liked_subquery = db.query(exists().where(PostLikes.post_id == Posts.post_id).where(PostLikes.user_id == user_id)).label('liked')
+        query = query.add_column(liked_subquery)
+        
+    from pprint import pprint
+    pprint(query.column_descriptions)
     return query.all()
 
 
