@@ -81,6 +81,12 @@ const PostCreates = () => {
     setImagePreview(null);
   };
 
+  const [SelectedCategory, SetSelectedCategory] = useState("자유");
+
+  const SelectCategoryChange = (category: string) => {
+    SetSelectedCategory(category);
+    console.log(SelectedCategory);
+  };
   // const TestBt = async () => {
   //   try {
   //     const formData = new FormData();
@@ -171,7 +177,7 @@ const PostCreates = () => {
           onChange={PostCreateContentChange}
         />
       </div>
-      <SelectCategory />
+      <SelectCategory OnSelectCategory={SelectCategoryChange}/>
       <button
         className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
         onClick={PostCreateBt}
