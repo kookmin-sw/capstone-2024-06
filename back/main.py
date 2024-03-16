@@ -85,27 +85,25 @@ def decode_jwt_payload(token):
     return parsed_payload
 
 
-def get_current_user(token: str = Depends(oauth2_scheme)):
-    return "admin"
-    payload = decode_jwt_payload(token)
+def validate_token(token):
     try:
-        validation = jwt.decode(token, SECRET_KEY, ALGORITHM)
+        jwt.decode(token, SECRET_KEY, ALGORITHM)
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
+
+
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    payload = decode_jwt_payload(token)
+    validate_token(token)
     return payload["sub"]
 
 
 def get_current_user_if_signed_in(token: str | None = Depends(optional_oauth2_scheme)):
-    return "admin"
-
     if not token:
         return None
 
     payload = decode_jwt_payload(token)
-    try:
-        validation = jwt.decode(token, SECRET_KEY, ALGORITHM)
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+    validate_token(token)
     return payload["sub"]
 
 

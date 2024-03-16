@@ -1,8 +1,9 @@
 from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, Sequence, DateTime
 from sqlalchemy.ext.hybrid import hybrid_method
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, query_expression, Mapped
 from database.database import Base
 from datetime import datetime
+from typing import Optional
 
 
 class Follows(Base):
@@ -80,6 +81,7 @@ class Posts(Base):
         uselist=True,
     )
     images = relationship("Images", cascade="all, delete-orphan")
+    liked: Mapped[Optional[bool]] = query_expression()
 
     @hybrid_method
     def increment_view_count(self):

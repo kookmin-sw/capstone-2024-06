@@ -1,5 +1,5 @@
-from sqlalchemy import and_, or_, desc, exists
-from sqlalchemy.orm import Session, joinedload, selectinload
+from sqlalchemy import and_, or_, desc, exists, case, literal
+from sqlalchemy.orm import Session, joinedload, selectinload, with_expression
 from sqlalchemy.sql import alias, select, column
 from database.models import *
 from database.schemas import *
@@ -38,6 +38,7 @@ async def create_temp_post(db: Session, author_id: str):
     temp_post = db.query(TempPosts).filter(TempPosts.author_id == author_id).first()
     if temp_post:
         db.delete(temp_post)
+        db.flush()
 
     temp_post = TempPosts(author_id=author_id)
     db.add(temp_post)
@@ -160,9 +161,29 @@ async def search_posts(
     order: str,
     per: int,
     page: int,
-    user_id: str | None
+    user_id: str | None,
 ):
+
     query = db.query(Posts)
+
+    if user_id:
+        query = query.outerjoin(
+            PostLikes,
+            and_(Posts.post_id == PostLikes.post_id, PostLikes.user_id == user_id),
+        )
+        query = query.options(
+            with_expression(
+                Posts.liked,
+                case((PostLikes.user_id.isnot(None), True), else_=False).label("liked")
+            )
+        )
+    else:
+        query = query.options(
+            with_expression(
+                Posts.liked,
+                literal(False).label("liked")
+            )
+        )
 
     if category:
         query = query.filter(Posts.category == category)
@@ -188,13 +209,7 @@ async def search_posts(
     query = query.options(joinedload(Posts.author))
     offset = per * (page - 1)
     query = query.limit(per).offset(offset)
-    
-    if user_id:
-        liked_subquery = db.query(exists().where(PostLikes.post_id == Posts.post_id).where(PostLikes.user_id == user_id)).label('liked')
-        query = query.add_column(liked_subquery)
-        
-    from pprint import pprint
-    pprint(query.column_descriptions)
+
     return query.all()
 
 

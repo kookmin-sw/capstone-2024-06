@@ -64,6 +64,7 @@ class PostPreview(BasePost):
     comment_count: int
     created_at: datetime
     author: UserInfo
+    liked: bool
 
 
 class Post(PostPreview):
