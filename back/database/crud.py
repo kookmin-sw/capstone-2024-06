@@ -107,18 +107,35 @@ async def read_post(db: Session, post_id: int):
     return db.query(Posts).filter(Posts.post_id == post_id).first()
 
 
-async def read_post_with_view(db: Session, post_id: int):
+async def read_post_with_view(db: Session, post_id: int, user_id: str | None):
+    query = db.query(Posts)
+
+    if user_id:
+        query = query.outerjoin(
+            PostLikes,
+            and_(Posts.post_id == PostLikes.post_id, PostLikes.user_id == user_id),
+        )
+        query = query.options(
+            with_expression(
+                Posts.liked,
+                case((PostLikes.user_id.isnot(None), True), else_=False).label("liked"),
+            )
+        )
+    else:
+        query = query.options(
+            with_expression(Posts.liked, literal(False).label("liked"))
+        )
+
     post = (
-        db.query(Posts)
-        .filter(Posts.post_id == post_id)
-        .options(joinedload(Posts.images))
-        .options(joinedload(Posts.author))
+        query.filter(Posts.post_id == post_id)
+        .options(joinedload(Posts.author), joinedload(Posts.images))
         .first()
     )
+
     if post:
         post.increment_view_count()
-    db.commit()
-
+        post = Post.model_validate(post)
+        db.commit()
     return post
 
 
@@ -163,7 +180,6 @@ async def search_posts(
     page: int,
     user_id: str | None,
 ):
-
     query = db.query(Posts)
 
     if user_id:
@@ -174,15 +190,12 @@ async def search_posts(
         query = query.options(
             with_expression(
                 Posts.liked,
-                case((PostLikes.user_id.isnot(None), True), else_=False).label("liked")
+                case((PostLikes.user_id.isnot(None), True), else_=False).label("liked"),
             )
         )
     else:
         query = query.options(
-            with_expression(
-                Posts.liked,
-                literal(False).label("liked")
-            )
+            with_expression(Posts.liked, literal(False).label("liked"))
         )
 
     if category:
