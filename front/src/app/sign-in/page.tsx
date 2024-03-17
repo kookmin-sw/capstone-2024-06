@@ -2,6 +2,7 @@
 import { signIn } from "next-auth/react";
 import { ChangeEvent, FormEvent, useState } from "react";
 import style from "./signinStyle.module.css";
+import Link from "next/link";
 
 
 type LoginInput = {
@@ -59,6 +60,7 @@ export default function LoginPage({ searchParams }: PageProps) {
   return (
     <>
       <div className={style.title}>what_desk</div>
+      <line className="flex items-center justify-center mt-10"></line>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form className="space-y-6" onSubmit={handleSubmit}>
@@ -103,24 +105,40 @@ export default function LoginPage({ searchParams }: PageProps) {
             <div>
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-yellow-700 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="flex w-full justify-center rounded-md bg-yellow-700 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
               >
                 로그인
               </button>
             </div>
+            <div className="flex mt-2">
+              <div className="mr-auto">
+                <Link href="/sign-up">
+                  <span className="text-gray-500 text-sm hover:underline">회원가입</span>
+                </Link>
+              </div>
+              <div className="ml-auto">
+                <Link href="/findAccount">
+                  <span className="text-gray-500 text-sm hover:underline">계정 찾기</span>
+                </Link>
+              </div>
+            </div>
+
+
             {searchParams.error && (
               <p className="text-red-600 text-center capitalize">
                 Login failed.
               </p>
             )}
           </form>
-          <div>
-            간편 로그인
-          </div>
+          <line className="flex items-center justify-center mt-5"></line>
+          <svg className="mt-2" width="100%" height="2">
+            <line x1="0" y1="0" x2="100%" y2="0" stroke="hsl(39, 70%, 70%)" strokeWidth="3" />
+          </svg>
+          <line className="flex items-center justify-center mt-5"></line>
           <form className="space-y-6" onSubmit={handlekakao}>
             <button
               onClick={() => signIn("kakao", { redirect: true, callbackUrl: "/" })}
-              className="flex w-full justify-center rounded-md bg-yellow-300 px-3 py-1.5 text-sm font-semibold leading-6 text-black shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              className="flex w-full justify-center rounded-md bg-yellow-300 px-3 py-1.5 text-sm font-semibold leading-6 text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
             >
               <img src='https://developers.kakao.com/tool/resource/static/img/button/kakaotalksharing/kakaotalk_sharing_btn_small.png'
                 alt="Kakao Logo"
@@ -132,7 +150,7 @@ export default function LoginPage({ searchParams }: PageProps) {
           <form className="space-y-6" onSubmit={handlenaver}>
             <button
               onClick={() => signIn("naver", { redirect: true, callbackUrl: "/" })}
-              className="flex w-full justify-center rounded-md bg-green-500 px-3 py-1.5 text-sm font-semibold leading-6 text-black shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              className="flex w-full justify-center rounded-md bg-green-500 px-3 py-1.5 text-sm font-semibold leading-6 text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
             >
               <img src='https://logoproject.naver.com/favicon.ico'
                 alt="naver Logo"
@@ -144,7 +162,7 @@ export default function LoginPage({ searchParams }: PageProps) {
           <form className="space-y-6" onSubmit={handlegoogle}>
             <button
               onClick={() => signIn("google", { redirect: true, callbackUrl: "/" })}
-              className="flex w-full justify-center rounded-md bg-slate-50 px-3 py-1.5 text-sm font-semibold leading-6 text-black shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              className="flex w-full justify-center rounded-md bg-slate-50 px-3 py-1.5 text-sm font-semibold leading-6 text-black shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
             >
               <img src='https://w7.pngwing.com/pngs/326/85/png-transparent-google-logo-google-text-trademark-logo-thumbnail.png'
                 alt="Google Logo"
