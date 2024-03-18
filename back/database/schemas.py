@@ -1,6 +1,5 @@
 from __future__ import annotations
-from pydantic import BaseModel
-from typing import List
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 
 
@@ -14,6 +13,8 @@ class UserInfo(BaseModel):
     name: str | None = None
     email: str | None = None
     image: str | None = None
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserForm(UserSignIn, UserInfo): ...
@@ -43,9 +44,10 @@ class CommentForm(BaseModel):
 
 class Comment(CommentForm):
     comment_id: int
-    author_id: str | None = None
+    like_count: int
     created_at: datetime
-    child_comments: List[Comment] | None = None
+    child_comments: list[Comment] | None = None
+    author: UserInfo | None = None
 
 
 class BasePost(BaseModel):
@@ -58,19 +60,29 @@ class PostForm(BasePost):
 
 
 class PostPreview(BasePost):
-    author_id: str
     post_id: int
     like_count: int
     view_count: int
     comment_count: int
     created_at: datetime
+    author: UserInfo
+    liked: bool
 
 
 class Post(PostPreview):
+    images: list[Image] | None = None
     content: str
-    comments: List[Comment] | None = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class TempPost(BaseModel):
+    temp_post_id: int
 
 
 class Image(BaseModel):
     image_id: str
     filename: str
+
+    model_config = ConfigDict(from_attributes=True)
+
