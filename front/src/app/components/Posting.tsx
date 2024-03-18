@@ -84,7 +84,6 @@ const Posting = () => {
     );
   };
 
-
   return (
     <main className="flex">
       <div className="flex-col w-[900px] h-auto mr-2">
@@ -110,16 +109,14 @@ const Posting = () => {
           </div>
         </div>
         <div className="flex w-full justify-center items-center my-10">
-          <Image
-            src={`http://10.223.114.14:8080/uploaded_images/${
-              Posting.images && Posting.images.length > 0
-                ? Posting.images[0].image_id
-                : "desk4.jpg"
-            }`}
-            width={600}
-            height={300}
-            alt={""}
-          />
+          {Posting.images && Posting.images.length > 0 && (
+            <Image
+              src={`http://10.223.114.14:8080/uploaded_images/${Posting.images[0].image_id}`}
+              width={600}
+              height={300}
+              alt=""
+            />
+          )}
         </div>
         <div className="flex justify-start items-center text-lg">
           {Posting.content}
