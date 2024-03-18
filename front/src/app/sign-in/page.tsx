@@ -3,10 +3,11 @@ import { signIn } from "next-auth/react";
 import { ChangeEvent, FormEvent, useState } from "react";
 import style from "./signinStyle.module.css";
 import Link from "next/link";
+import Nav from "../components/Nav";
 
 
 type LoginInput = {
-  username: string;
+  user_id: string;
   password: string;
 }
 
@@ -15,7 +16,7 @@ type PageProps = {
 }
 
 export default function LoginPage({ searchParams }: PageProps) {
-  const [inputs, setInputs] = useState<LoginInput>({ username: "", password: "" });
+  const [inputs, setInputs] = useState<LoginInput>({ user_id: "", password: "" });
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const name = event.target.name;
@@ -26,7 +27,7 @@ export default function LoginPage({ searchParams }: PageProps) {
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     await signIn("credentials", {
-      username: inputs.username,
+      user_id: inputs.user_id,
       password: inputs.password,
       callbackUrl: '/'
     });
@@ -59,23 +60,24 @@ export default function LoginPage({ searchParams }: PageProps) {
 
   return (
     <>
+      <Nav />
       <div className={style.title}>what_desk</div>
       <line className="flex items-center justify-center mt-10"></line>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="username" className="block text-sm font-medium leading-6 text-gray-900">
+              <label htmlFor="user_id" className="block text-sm font-medium leading-6 text-gray-900">
                 아이디
               </label>
               <div className="mt-">
                 <input
-                  id="username"
-                  name="username"
+                  id="user_id"
+                  name="user_id"
                   type="text"
                   autoComplete="off"
                   required
-                  value={inputs.username || ""}
+                  value={inputs.user_id || ""}
                   onChange={handleChange}
                   className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-yellow-600 sm:text-sm sm:leading-6"
                 />
