@@ -90,7 +90,6 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
         body: JSON.stringify(PostCommentData),
       });
       const data = await response.json();
-      console.log(data);
     } catch (error) {
       console.error("Error", error);
     }
@@ -110,7 +109,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
         }
       );
       const data = await response.json();
-      console.log(data);
+      
     } catch (error) {
       console.log("Error", error);
     }

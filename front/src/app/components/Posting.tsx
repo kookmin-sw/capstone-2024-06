@@ -43,7 +43,6 @@ const Posting = () => {
       }
     };
     PostLoadBt();
-    console.log(Posting);
   }, [Postid]);
 
   const PostingDeleteBt = async () => {
@@ -59,7 +58,6 @@ const Posting = () => {
         }
       );
       const data = await response.json();
-      console.log(data);
     } catch (error) {
       console.error("Error", error);
     }
@@ -78,7 +76,6 @@ const Posting = () => {
         }
       );
       const data = await response.json();
-      console.log(data);
     } catch (error) {
       console.error("Error", error);
     }
@@ -86,7 +83,7 @@ const Posting = () => {
       `http://localhost:3000/Community/FreePost/${Postid.FreePostId}`
     );
   };
-  
+
 
   return (
     <main className="flex">
@@ -113,7 +110,16 @@ const Posting = () => {
           </div>
         </div>
         <div className="flex w-full justify-center items-center my-10">
-          <Image src="/desk5.png" width={600} height={300} alt={""} />
+          <Image
+            src={`http://10.223.114.14:8080/uploaded_images/${
+              Posting.images && Posting.images.length > 0
+                ? Posting.images[0].image_id
+                : "desk4.jpg"
+            }`}
+            width={600}
+            height={300}
+            alt={""}
+          />
         </div>
         <div className="flex justify-start items-center text-lg">
           {Posting.content}
