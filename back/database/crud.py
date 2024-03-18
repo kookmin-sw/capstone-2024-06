@@ -28,8 +28,9 @@ async def create_post(db: Session, post: PostForm, author_id: str, temp_post_id:
     for image in temp_post.images:
         image.temp_post_id = None
         image.post_id = post.post_id
-    db.delete(temp_post)
+        db.commit()
 
+    db.delete(temp_post)
     db.commit()
     return post
 
