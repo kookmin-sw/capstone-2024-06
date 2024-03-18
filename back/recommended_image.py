@@ -1,6 +1,6 @@
 from detect import count_class
-from image_classification_run import predict_image_class
-from image_classification_run import get_image_paths
+# from image_classification_run import predict_image_class
+# from image_classification_run import get_image_paths
 import tensorflow as tf
 import os
 import random

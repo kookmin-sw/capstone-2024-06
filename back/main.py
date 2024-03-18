@@ -85,27 +85,25 @@ def decode_jwt_payload(token):
     return parsed_payload
 
 
-def validate_token(token):
+def get_current_user(token: str = Depends(oauth2_scheme)):
     try:
+        payload = decode_jwt_payload(token)
         jwt.decode(token, SECRET_KEY, ALGORITHM)
-    except JWTError:
+        return payload["sub"]
+    except:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 
-def get_current_user(token: str = Depends(oauth2_scheme)):
-    payload = decode_jwt_payload(token)
-    validate_token(token)
-    return payload["sub"]
-
-
 def get_current_user_if_signed_in(token: str | None = Depends(optional_oauth2_scheme)):
-    return "admin"
-    if not token:
-        return None
+    try:
+        if not token or token == "undefined":
+            return None
 
-    payload = decode_jwt_payload(token)
-    validate_token(token)
-    return payload["sub"]
+        payload = decode_jwt_payload(token)
+        jwt.decode(token, SECRET_KEY, ALGORITHM)
+        return payload["sub"]
+    except:
+        raise HTTPException(status_code=401, detail="Invalid token")
 
 
 # 메인
@@ -233,6 +231,15 @@ async def current_user(
     user_id: str = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     return await crud.read_user_by_id(db, user_id)
+
+
+@app.get("/user/{user_id}", response_model=UserInfo)
+async def get_user_profile(user_id: str, db: Session = Depends(get_db)):
+    user = await crud.read_user_by_id(db, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detali="User not found")
+
+    return user
 
 
 @app.get("/post/temp", response_model=TempPost)
@@ -435,6 +442,12 @@ async def get_followees(
 ):
     user = await crud.read_user_by_id(db, user_id)
     return user.followees
+
+
+@app.post("/liked_posts", response_model=list[PostPreview])
+async def get_liked_posts(user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    user = await crud.read_user_by_id(db, user_id)
+    return user.liked_posts
 
 
 # test
