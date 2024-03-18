@@ -1,0 +1,58 @@
+.desktop {
+  /* Desktop - 7 */
+  position: relative;
+  width: 1930px;
+  height: 952px;
+
+  background: #FFFFFF;
+}
+
+.title {
+  /* 이름 */
+
+  position: absolute;
+  width: 168px;
+  height: 40px;
+  left: 600px;
+  top: 80px;
+
+  font-style: normal;
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 39px;
+
+  color: #A26D07;
+}
+
+.subtitle {
+  /* 이름 */
+
+  position: absolute;
+  width: 168px;
+  height: 40px;
+  left: 645px;
+  top: 150px;
+
+  font-style: normal;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 24px;
+
+  color: #231F20;
+}
+
+.rectangle56 {
+  /* Rectangle 56 아이디 */
+
+  box-sizing: border-box;
+
+  position: absolute;
+  width: 168px;
+  height: 40px;
+  left: 570px;
+  top: 220px;
+
+  background: #F3F3F3;
+  border-radius: 5px;
+  border-color: #231F20;
+}

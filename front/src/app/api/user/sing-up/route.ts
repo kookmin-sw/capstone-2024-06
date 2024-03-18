@@ -26,7 +26,7 @@ const handleSubmit = async (
 
   // 회원가입 요청
   try {
-    const response = await fetch("http://10.30.113.194:8080/user", {
+    const response = await fetch("http://10.223.114.14:8080/user", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
