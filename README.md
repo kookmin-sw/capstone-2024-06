@@ -1,7 +1,7 @@
 ## 어떤데스크 (what_desk)
----
+
 > 2024 KMU SW 캡스톤 디자인 06조  
-> https://kookmin-sw.github.io/capstone-2023-06/
+> https://kookmin-sw.github.io/capstone-2024-06/
 
 </br>
 
@@ -52,9 +52,59 @@
 
 프로젝트 소개하는 영상을 추가하세요
 
-### 3. 팀 소개
+## 👩‍💻 팀 소개
 
-팀을 소개하세요.
+<table>
+    <tr align="center">
+        <td style="min-width: 160px;">
+            <a href="https://github.com/gustmdqkr321">
+              <b>박승현</b>
+            </a>
+            <br/>
+              XXXX1595
+        </td>
+        <td style="min-width: 160px;">
+              <b>박근우</b>
+            </a>
+            <br/>
+              XXXX
+        </td>
+        <td style="min-width: 160px;">
+              <b>마준영</b>
+            </a> 
+            <br/>
+              XXXX
+        </td>
+        <td style="min-width: 160px;">
+              <b>윤유진</b>
+            </a> 
+            <br/>
+              XXXX
+        </td>
+                <td style="min-width: 160px;">
+              <b>조한울</b>
+            </a> 
+            <br/>
+              XXXX
+        </td>
+    </tr>
+    <tr align="center">
+        <td>
+            역할 추가
+        </td>
+        <td>
+        </td>
+        <td>
+        </td>
+                <td>
+        </td>
+                <td>
+                
+        </td>
+    </tr>
+</table>
+
+</br>
 
 팀원정보 및 담당이나 사진 및 SNS를 이용하여 소개하세요.
 
