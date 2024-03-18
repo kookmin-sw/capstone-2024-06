@@ -31,7 +31,7 @@ const Posting = () => {
           {
             method: "GET",
             headers: {
-              Authorization: `Bearer ${session?.access_token}`,
+              Authorization: `Bearer ${(session as any)?.access_token}`,
               "Content-Type": "application/json",
             },
           }
@@ -43,6 +43,7 @@ const Posting = () => {
       }
     };
     PostLoadBt();
+    console.log(Posting);
   }, [Postid]);
 
   const PostingDeleteBt = async () => {
@@ -52,6 +53,7 @@ const Posting = () => {
         {
           method: "DELETE",
           headers: {
+            Authorization: `Bearer ${(session as any)?.access_token}`,
             "Content-Type": "application/json",
           },
         }
@@ -84,7 +86,7 @@ const Posting = () => {
       `http://localhost:3000/Community/FreePost/${Postid.FreePostId}`
     );
   };
-  console.log(Posting);
+  
 
   return (
     <main className="flex">

@@ -1,8 +1,10 @@
 "use client";
 import { useRouter, usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 const Category = () => {
   const router = useRouter();
+  const { data: session } = useSession();
   const pathname = usePathname();
 
   const HomePostClick = () => {
@@ -21,9 +23,21 @@ const Category = () => {
     router.push("/Community");
   };
 
-  const PostCreateBt = () => {
-    router.push("/Community/PostCreate")
-  }
+  const PostCreateBt = async () => {
+    try {
+      const response = await fetch(`${process.env.Localhost}/post/temp`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${(session as any)?.access_token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      router.push(`/Community/PostCreate/${data.temp_post_id}`);
+    } catch (error) {
+      console.error("Error", error);
+    }
+  };
 
   return (
     <main className="flex w-full h-full justify-center items-center">
@@ -66,8 +80,12 @@ const Category = () => {
           좀더 추가
         </div>
       </div>
-      <button className={`items-center w-[80px] h-[30px] bg-blue-500 hover:bg-blue-700 text-white font-bold rounded`}
-       onClick={PostCreateBt}>글쓰기</button>
+      <button
+        className={`items-center w-[80px] h-[30px] bg-blue-500 hover:bg-blue-700 text-white font-bold rounded`}
+        onClick={PostCreateBt}
+      >
+        글쓰기
+      </button>
     </main>
   );
 };

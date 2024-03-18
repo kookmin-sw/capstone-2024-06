@@ -1,8 +1,14 @@
 "use client";
-import { SetStateAction, useState, ChangeEvent, DragEvent } from "react";
-import { useRouter } from "next/navigation";
+import {
+  SetStateAction,
+  useState,
+  ChangeEvent,
+  DragEvent,
+  useEffect,
+} from "react";
+import { useRouter, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import SelectCategory from "./SelectCategory"
+import SelectCategory from "./SelectCategory";
 
 interface ImagePreview {
   url: string;
@@ -10,8 +16,12 @@ interface ImagePreview {
 }
 
 const PostCreates = () => {
+  const { data: session } = useSession();
+
   const router = useRouter();
 
+  // Temp ID GET
+  const PostCreateTempId = useParams();
   const [PostCreateTitle, SetPostCreateTitle] = useState("");
 
   const PostCreateTitleChange = (e: {
@@ -28,25 +38,44 @@ const PostCreates = () => {
     SetPostCreateContent(e.target.value);
   };
 
-  const { data: session } = useSession();
-
   const PostCreateBt = async () => {
     try {
+      // image Post
+      if (imagePreview) {
+        const formData = new FormData();
+        formData.append("file", imagePreview.file);
+        const ImagePost = await fetch(
+          `${process.env.Localhost}/image/${PostCreateTempId.PostCreateId}`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${(session as any)?.access_token}`,
+            },
+            body: formData,
+          }
+        );
+        const ImageDatas = await ImagePost.json();
+        console.log(ImageDatas);
+      }
+      // Posting Post
       const PostCreateData = {
         title: PostCreateTitle,
-        category: "None",
+        category: SelectedCategory,
         content: PostCreateContent,
       };
-      const response = await fetch(`${process.env.Localhost}/post`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${session?.access_token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(PostCreateData),
-      });
-      const data = await response.json();
-      console.log(data);
+      const PostCreate = await fetch(
+        `${process.env.Localhost}/post/${PostCreateTempId.PostCreateId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${(session as any)?.access_token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(PostCreateData),
+        }
+      );
+      const PostCreateDatas = await PostCreate.json();
+      console.log(PostCreateDatas);
     } catch (error) {
       console.error("Error", error);
     }
@@ -85,32 +114,7 @@ const PostCreates = () => {
 
   const SelectCategoryChange = (category: string) => {
     SetSelectedCategory(category);
-    console.log(SelectedCategory);
   };
-  // const TestBt = async () => {
-  //   try {
-  //     const formData = new FormData();
-  //     formData.append("file",  imagePreview.file);
-
-  //     const response = await fetch(`http://192.168.194.28:8080/process_image/`, {
-  //       method: "POST",
-  //       body: formData,
-  //     });
-  //     const data = await response.json();
-  //     console.log(data.result_filename);
-  //     const test = await fetch(`http://192.168.194.28:8080/get_image/${data.result_filename}`,{
-  //       method: "GET",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //     })
-  //     const tests = await test;
-  //     console.log(tests.url)
-
-  //   } catch (error) {
-  //     console.error("Error", error);
-  //   }
-  // };
 
   return (
     <main>
@@ -177,7 +181,7 @@ const PostCreates = () => {
           onChange={PostCreateContentChange}
         />
       </div>
-      <SelectCategory OnSelectCategory={SelectCategoryChange}/>
+      <SelectCategory OnSelectCategory={SelectCategoryChange} />
       <button
         className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
         onClick={PostCreateBt}

@@ -20,6 +20,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
       author_id: "string",
       created_at: "2024-03-09T05:18:36.965Z",
       child_comments: ["string"],
+      like_count: 0,
     },
   ]);
 
@@ -65,8 +66,11 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
       e.preventDefault();
       if (index !== null) {
         await AddReply(index);
+        SetReply("");
+        toggleReplyTextarea(index);
       } else {
         await AddComment();
+        SetComment("")
       }
     }
   };
@@ -80,7 +84,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
       const response = await fetch(`${process.env.Localhost}/comment`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${session?.access_token}`,
+          Authorization: `Bearer ${(session as any)?.access_token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(PostCommentData),
@@ -100,7 +104,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
         {
           method: "DELETE",
           headers: {
-            Authorization: `Bearer ${session?.access_token}`,
+            Authorization: `Bearer ${(session as any)?.access_token}`,
             "Content-Type": "application/json",
           },
         }
@@ -123,7 +127,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
       const response = await fetch(`${process.env.Localhost}/comment`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${session?.access_token}`,
+          Authorization: `Bearer ${(session as any)?.access_token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(PostReplyData),
@@ -149,7 +153,9 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
   const getTimeDifference = (createdAt: string | number | Date) => {
     const createdTime = new Date(createdAt);
     const currentTime = new Date();
-    const difference = Math.floor((currentTime - createdTime) / 1000); // Difference in seconds
+    const difference: number = Math.floor(
+      (currentTime.getTime() - createdTime.getTime()) / 1000
+    );
 
     if (difference < 60) {
       return "방금 전";
