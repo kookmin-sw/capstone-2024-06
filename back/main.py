@@ -391,11 +391,12 @@ async def upload_image(
     upload_path = config["PATH"]["upload"]
     filename = file.filename
     file_extension = os.path.splitext(filename)[1]
-    image_id = os.path.join(upload_path, str(uuid.uuid4()) + file_extension)
+    file_path = os.path.join(upload_path, str(uuid.uuid4()) + file_extension)
 
-    with open(image_id, "wb") as buffer:
+    with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
+    image_id = "/" + file_path
     image = Image(image_id=image_id, filename=filename)
     return await crud.create_image(db, image, temp_post_id)
 
