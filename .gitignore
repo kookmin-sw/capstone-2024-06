@@ -1,12 +1,10 @@
 venv/
-back/image/
-back/uploaded_images/
-back/test_image/
-back/*model*/
-back/train*/
-back/test*/
-back/*.pt
 **/__pycache__/
+
+back/config.ini
+back/images/
+back/models/
+
 front/.next
 front/.env
 front/node_modules
