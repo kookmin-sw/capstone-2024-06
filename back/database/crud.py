@@ -1,5 +1,5 @@
-from sqlalchemy import and_, or_, desc
-from sqlalchemy.orm import Session, joinedload, selectinload
+from sqlalchemy import and_, or_, desc, exists, case, literal
+from sqlalchemy.orm import Session, joinedload, selectinload, with_expression
 from sqlalchemy.sql import alias, select, column
 from database.models import *
 from database.schemas import *
@@ -28,8 +28,9 @@ async def create_post(db: Session, post: PostForm, author_id: str, temp_post_id:
     for image in temp_post.images:
         image.temp_post_id = None
         image.post_id = post.post_id
-    db.delete(temp_post)
+        db.commit()
 
+    db.delete(temp_post)
     db.commit()
     return post
 
@@ -38,6 +39,7 @@ async def create_temp_post(db: Session, author_id: str):
     temp_post = db.query(TempPosts).filter(TempPosts.author_id == author_id).first()
     if temp_post:
         db.delete(temp_post)
+        db.flush()
 
     temp_post = TempPosts(author_id=author_id)
     db.add(temp_post)
@@ -106,37 +108,40 @@ async def read_post(db: Session, post_id: int):
     return db.query(Posts).filter(Posts.post_id == post_id).first()
 
 
-async def read_post_with_view(db: Session, post_id: int):
+async def read_post_with_view(db: Session, post_id: int, user_id: str | None):
+    query = db.query(Posts)
+
+    if user_id:
+        query = query.outerjoin(
+            PostLikes,
+            and_(Posts.post_id == PostLikes.post_id, PostLikes.user_id == user_id),
+        )
+        query = query.options(
+            with_expression(
+                Posts.liked,
+                case((PostLikes.user_id.isnot(None), True), else_=False).label("liked"),
+            )
+        )
+    else:
+        query = query.options(
+            with_expression(Posts.liked, literal(False).label("liked"))
+        )
+
     post = (
-        db.query(Posts)
-        .filter(Posts.post_id == post_id)
-        .options(joinedload(Posts.images))
+        query.filter(Posts.post_id == post_id)
+        .options(joinedload(Posts.author), joinedload(Posts.images))
         .first()
     )
+
     if post:
         post.increment_view_count()
-    db.commit()
-
-    post_data = post.__dict__
-    post_data["author_image"] = post.author.image
-
-    return post_data
+        post = Post.model_validate(post)
+        db.commit()
+    return post
 
 
 async def read_comment(db: Session, comment_id: int):
     return db.query(Comments).filter(Comments.comment_id == comment_id).first()
-
-
-def construct_comment_with_image(comment):
-    comment_data = comment.__dict__
-    comment_data["image"] = comment.author.image if comment.author else None
-
-    if comment.child_comment_count > 0:
-        comment_data["chlid_comments"] = [
-            construct_comment_with_image(child_comment)
-            for child_comment in comment.child_comments
-        ]
-    return comment_data
 
 
 async def read_comments(db: Session, post_id: int):
@@ -150,10 +155,7 @@ async def read_comments(db: Session, post_id: int):
         .all()
     )
 
-    comments_with_image = [
-        construct_comment_with_image(comment) for comment in comments
-    ]
-    return comments_with_image
+    return comments
 
 
 async def read_follow(db: Session, follower_user_id: str, followee_user_id: str):
@@ -177,8 +179,25 @@ async def search_posts(
     order: str,
     per: int,
     page: int,
+    user_id: str | None,
 ):
     query = db.query(Posts)
+
+    if user_id:
+        query = query.outerjoin(
+            PostLikes,
+            and_(Posts.post_id == PostLikes.post_id, PostLikes.user_id == user_id),
+        )
+        query = query.options(
+            with_expression(
+                Posts.liked,
+                case((PostLikes.user_id.isnot(None), True), else_=False).label("liked"),
+            )
+        )
+    else:
+        query = query.options(
+            with_expression(Posts.liked, literal(False).label("liked"))
+        )
 
     if category:
         query = query.filter(Posts.category == category)
@@ -201,8 +220,10 @@ async def search_posts(
     elif order == "most_liked":
         query = query.order_by(desc(Posts.like_count))
 
+    query = query.options(joinedload(Posts.author))
     offset = per * (page - 1)
     query = query.limit(per).offset(offset)
+
     return query.all()
 
 

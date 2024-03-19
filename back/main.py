@@ -7,7 +7,6 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 from fastapi.staticfiles import StaticFiles
-from typing import List, Annotated
 
 import os
 import shutil
@@ -33,7 +32,8 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 1440
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
+optional_oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
 
 
 Base.metadata.create_all(bind=engine)
@@ -86,12 +86,24 @@ def decode_jwt_payload(token):
 
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
-    payload = decode_jwt_payload(token)
     try:
-        validation = jwt.decode(token, SECRET_KEY, ALGORITHM)
-    except JWTError:
+        payload = decode_jwt_payload(token)
+        jwt.decode(token, SECRET_KEY, ALGORITHM)
+        return payload["sub"]
+    except:
         raise HTTPException(status_code=401, detail="Invalid token")
-    return payload["sub"]
+
+
+def get_current_user_if_signed_in(token: str | None = Depends(optional_oauth2_scheme)):
+    try:
+        if not token or token == "undefined":
+            return None
+
+        payload = decode_jwt_payload(token)
+        jwt.decode(token, SECRET_KEY, ALGORITHM)
+        return payload["sub"]
+    except:
+        raise HTTPException(status_code=401, detail="Invalid token")
 
 
 # 메인
@@ -221,6 +233,15 @@ async def current_user(
     return await crud.read_user_by_id(db, user_id)
 
 
+@app.get("/user/{user_id}", response_model=UserInfo)
+async def get_user_profile(user_id: str, db: Session = Depends(get_db)):
+    user = await crud.read_user_by_id(db, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detali="User not found")
+
+    return user
+
+
 @app.get("/post/temp", response_model=TempPost)
 async def create_temporary_code(
     user_id: str = Depends(get_current_user), db: Session = Depends(get_db)
@@ -240,7 +261,7 @@ async def create_post(
     return {"message": "Post created successfully"}
 
 
-@app.get("/post/search", response_model=List[PostPreview])
+@app.get("/post/search", response_model=list[PostPreview])
 async def search_posts(
     category: str | None = None,
     author_id: str | None = None,
@@ -248,24 +269,31 @@ async def search_posts(
     order: str = "newest",
     per: int = 24,
     page: int = 1,
+    user_id: str | None = Depends(get_current_user_if_signed_in),
     db: Session = Depends(get_db),
 ):
     if order not in ["newest", "most_viewed", "most_liked"]:
         return HTTPException(status_code=400, detail="Invalid order parameter")
 
-    posts = await crud.search_posts(db, author_id, category, keyword, order, per, page)
+    posts = await crud.search_posts(
+        db, author_id, category, keyword, order, per, page, user_id
+    )
     return posts
 
 
 @app.get("/post/{post_id}", response_model=Post)
-async def read_post(post_id: int, db: Session = Depends(get_db)):
-    post = await crud.read_post_with_view(db, post_id)
+async def read_post(
+    post_id: int,
+    user_id: str | None = Depends(get_current_user_if_signed_in),
+    db: Session = Depends(get_db),
+):
+    post = await crud.read_post_with_view(db, post_id, user_id)
     if post is None:
         raise HTTPException(status_code=404, detail="Post does not exist.")
     return post
 
 
-@app.get("/comment/{post_id}", response_model=List[Comment])
+@app.get("/comment/{post_id}", response_model=list[Comment])
 async def read_comment(post_id: int, db: Session = Depends(get_db)):
     comments = await crud.read_comments(db, post_id)
     return comments
@@ -400,7 +428,7 @@ async def unfollow_user(
     return {"message": "Unfollowed successfully"}
 
 
-@app.post("/followers", response_model=List[UserInfo])
+@app.post("/followers", response_model=list[UserInfo])
 async def get_followers(
     user_id: str = Depends(get_current_user), db: Session = Depends(get_db)
 ):
@@ -408,12 +436,18 @@ async def get_followers(
     return user.followers
 
 
-@app.post("/followees", response_model=List[UserInfo])
+@app.post("/followees", response_model=list[UserInfo])
 async def get_followees(
     user_id: str = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     user = await crud.read_user_by_id(db, user_id)
     return user.followees
+
+
+@app.post("/liked_posts", response_model=list[PostPreview])
+async def get_liked_posts(user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    user = await crud.read_user_by_id(db, user_id)
+    return user.liked_posts
 
 
 # test

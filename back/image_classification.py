@@ -1,70 +1,67 @@
 import os
 import numpy as np
-import tensorflow as tf
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
-from tensorflow.keras.applications import VGG16
-from PIL import ImageFile
-ImageFile.LOAD_TRUNCATED_IMAGES = True
+from tensorflow.keras.layers import Dense, Dropout
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.utils import to_categorical
 
-data_dir = "./train_image"
+# 데이터 폴더 경로
+data_dir = "./train_vector"
 
-batch_size = 32
-img_height = 224
-img_width = 224
+# 데이터와 레이블 초기화
+data = []
+labels = []
 
-train_data_gen = ImageDataGenerator(rescale=1./255,
-                                    shear_range=0.2,
-                                    zoom_range=0.2,
-                                    horizontal_flip=True,
-                                    validation_split=0.2)  # 20%는 검증 데이터로 사용
+# 각 클래스 폴더를 반복하면서 벡터 파일을 로드하고 레이블 지정
+for class_name in os.listdir(data_dir):
+    class_dir = os.path.join(data_dir, class_name)
+    for file_name in os.listdir(class_dir):
+        vector_path = os.path.join(class_dir, file_name)
+        # 벡터 파일 로드
+        vector = np.load(vector_path)
+        data.append(vector)
+        labels.append(class_name)
 
-train_generator = train_data_gen.flow_from_directory(data_dir,
-                                                     target_size=(img_height, img_width),
-                                                     batch_size=batch_size,
-                                                     class_mode='categorical',
-                                                     subset='training',
-                                                     )
+# 데이터와 레이블을 넘파이 배열로 변환
+data = np.array(data)
+labels = np.array(labels)
 
-val_generator = train_data_gen.flow_from_directory(data_dir,
-                                                   target_size=(img_height, img_width),
-                                                   batch_size=batch_size,
-                                                   class_mode='categorical',
-                                                   subset='validation',
-                                                   )
+# 레이블 인코딩
+label_encoder = LabelEncoder()
+labels_encoded = label_encoder.fit_transform(labels)
 
-num_classes = len(train_generator.class_indices)
+# 클래스 개수 계산
+num_classes = len(label_encoder.classes_)
 
-weights_path = "./vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5"
+# 데이터를 학습 세트와 테스트 세트로 분할
+train_data, test_data, train_labels, test_labels = train_test_split(data, labels_encoded, test_size=0.2, random_state=42)
 
-# VGG16 모델 로드
-base_model = VGG16(weights=weights_path, include_top=False, input_shape=(img_height, img_width, 3))
+# 레이블을 원-핫 인코딩
+train_labels = to_categorical(train_labels, num_classes=num_classes)
+test_labels = to_categorical(test_labels, num_classes=num_classes)
 
-# VGG16 모델의 특징 추출 부분을 고정
-for layer in base_model.layers:
-    layer.trainable = False
-
-# 새로운 모델 생성 (VGG16 기반)
+# 새로운 모델 생성
 model = Sequential([
-    base_model,
-    Flatten(),
-    Dense(512, activation='relu'),
-    Dropout(0.5),  # 드롭아웃 추가
+    Dense(512, activation='relu', input_shape=(train_data.shape[1],)),  # 입력 벡터의 크기를 지정합니다.
+    Dropout(0.5),
+    Dense(256, activation='relu'),
+    Dropout(0.5),
     Dense(num_classes, activation='softmax')
 ])
 
-model.compile(optimizer='adam',
-              loss='categorical_crossentropy',
-              metrics=['accuracy'])
+# 모델 컴파일
+model.compile(optimizer=Adam(), loss='categorical_crossentropy', metrics=['accuracy'])
 
-epochs = 30
-history = model.fit(
-    train_generator,
-    epochs=epochs,
-    validation_data=val_generator
-)
+# 모델 학습
+history = model.fit(train_data, train_labels, epochs=300, batch_size=32, validation_split=0.1)
 
+# 모델 평가
+test_loss, test_accuracy = model.evaluate(test_data, test_labels)
+print("Test Loss:", test_loss)
+print("Test Accuracy:", test_accuracy)
+class_names = label_encoder.classes_
+print("Class Names:", class_names)
 # 모델 저장
-# 2 : 오브젝트 개수 2개 이상인 이미지만 학습
-model.save("my_model2")
+model.save("my_vector_model.keras")
