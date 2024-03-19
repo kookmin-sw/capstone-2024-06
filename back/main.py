@@ -276,7 +276,7 @@ async def search_posts(
         return HTTPException(status_code=400, detail="Invalid order parameter")
 
     posts = await crud.search_posts(
-        db, author_id, category, keyword, order, per, page, user_id
+        db, category, author_id, keyword, order, per, page, user_id
     )
     return posts
 
