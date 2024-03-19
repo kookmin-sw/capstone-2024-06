@@ -15,12 +15,16 @@ const Category = () => {
     router.push("/Community/FreePost");
   };
 
+  const PopularityPostClick = () => {
+    router.push("/Community/PopularityPost");
+  };
+
   const SellPostClick = () => {
-    router.push("/Community");
+    router.push("/Community/SellPost");
   };
 
   const BuyPostClick = () => {
-    router.push("/Community");
+    router.push("/Community/BuyPost");
   };
 
   const PostCreateBt = async () => {
@@ -60,24 +64,37 @@ const Category = () => {
           }`}
           onClick={FreePostClick}
         >
-          자유게시판
+          자유
         </div>
         <div
-          className={`flex items-center cursor-pointer hover:text-[#F4A460] hover:border-b-2 border-[#F4A460] h-[40px]`}
+          className={`flex items-center cursor-pointer hover:text-[#F4A460] hover:border-b-2 border-[#F4A460] h-[40px] ${
+            pathname === "/Community/PopularityPost"
+              ? "text-[#F4A460] border-b border-[#F4A460]"
+              : "text-[#808080]"
+          }`}
+          onClick={PopularityPostClick}
+        >
+          인기
+        </div>
+        <div
+          className={`flex items-center cursor-pointer hover:text-[#F4A460] hover:border-b-2 border-[#F4A460] h-[40px] ${
+            pathname === "/Community/SellPost"
+              ? "text-[#F4A460] border-b border-[#F4A460]"
+              : "text-[#808080]"
+          }`}
           onClick={SellPostClick}
         >
           팝니다
         </div>
         <div
-          className={`flex items-center cursor-pointer hover:text-[#F4A460] hover:border-b-2 border-[#F4A460] h-[40px]`}
+          className={`flex items-center cursor-pointer hover:text-[#F4A460] hover:border-b-2 border-[#F4A460] h-[40px] ${
+            pathname === "/Community/BuyPost"
+              ? "text-[#F4A460] border-b border-[#F4A460]"
+              : "text-[#808080]"
+          }`}
           onClick={BuyPostClick}
         >
           삽니다
-        </div>
-        <div
-          className={`flex items-center cursor-pointer hover:text-[#F4A460] hover:border-b-2 border-[#F4A460] h-[40px]`}
-        >
-          좀더 추가
         </div>
       </div>
       <button

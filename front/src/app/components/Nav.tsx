@@ -1,5 +1,4 @@
 "use client";
-import type { Metadata } from 'next'
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { SetStateAction, useState } from "react";
@@ -51,6 +50,7 @@ const Nav = () => {
             height={27}
             onClick={LogoImgClick}
             className="cursor-pointer"
+            priority
           />
         </div>
         <div className="font-mono w-1/4 text-semibold font-[600] flex space-x-4">

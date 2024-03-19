@@ -13,6 +13,7 @@ import 'swiper/css/navigation';
 
 
 const RecommendImgSlider = () => {
+  
   const DeskImages = [ "/desk1.png", "/desk2.png", "/desk3.png", "/desk4.jpg", "/desk5.png", "/desk6.jpg", "/desk5.png",  "/desk5.png", "/desk5.png", "/desk5.png",];
 
   return (
@@ -34,11 +35,9 @@ const RecommendImgSlider = () => {
       >
           {DeskImages.map((src, index) => (
             <SwiperSlide key={index}>
-              
               <Image
                 src={src}
                 alt={`Desk ${index + 1}`}
-                objectFit="cover"
                 className="cursor-pointer transition-transform hover:scale-105"
                 width={300}
                 height={300}

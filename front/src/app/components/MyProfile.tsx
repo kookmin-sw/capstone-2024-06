@@ -7,10 +7,9 @@ interface MyProfileProps {
   UserProfile: string;
 }
 
-const MyProfile: React.FC<MyProfileProps> = ({UserName, UserProfile}) => {
-
+const MyProfile: React.FC<MyProfileProps> = ({ UserName, UserProfile }) => {
   if (UserProfile === null) {
-    UserProfile = "/Profilex2.webp"
+    UserProfile = "/Profilex2.webp";
   }
 
   const ProfileDummyData = {
@@ -18,18 +17,18 @@ const MyProfile: React.FC<MyProfileProps> = ({UserName, UserProfile}) => {
     ProfileImage: UserProfile,
   };
 
-
   return (
-    <main className="flex mb-2 w-full h-[30px] justify-center items-center mt-1">
-      <Image
-        src={ProfileDummyData.ProfileImage}
-        alt="name"
-        width={30}
-        height={20}
-        className="cursor-pointer mr-1"
-      />
-      <div className="font-semibold text-l">{ProfileDummyData.User}</div>
-      
+    <main className="flex w-1/3 h-full items-center ml-1">
+      <div className="flex w-[20px] h-[20px] mr-1">
+        <Image
+          src={ProfileDummyData.ProfileImage}
+          alt="name"
+          width={100}
+          height={100}
+          className="cursor-pointer rounded-full"
+        />
+      </div>
+      <div className="flex items-center font-semibold text-[10.5px]">{ProfileDummyData.User}</div>
     </main>
   );
 };
