@@ -4,11 +4,11 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 
-const Comment = ({ comment_count }: { comment_count: number }) => {
+const Comment = ({ comment_count }: { comment_count: number}) => {
+
   const { data: session } = useSession();
 
   const Postid = useParams();
-
   const [Reply, SetReply] = useState("");
   const [Comment, SetComment] = useState("");
   const [Comments, SetComments] = useState([
@@ -26,8 +26,9 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
 
   const CommentLoad = async () => {
     try {
+      const postIdKey = Object.keys(Postid)[0];
       const response = await fetch(
-        `${process.env.Localhost}/comment/${Postid.FreePostId}`,
+        `${process.env.Localhost}/comment/${Postid[postIdKey]}`,
         {
           method: "GET",
           headers: {
@@ -77,8 +78,9 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
 
   const AddComment = async () => {
     try {
+      const postIdKey = Object.keys(Postid)[0];
       const PostCommentData = {
-        post_id: Postid.FreePostId,
+        post_id: Postid[postIdKey],
         content: Comment,
       };
       const response = await fetch(`${process.env.Localhost}/comment`, {
@@ -118,8 +120,9 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
 
   const AddReply = async (index: number) => {
     try {
+      const postIdKey = Object.keys(Postid)[0];
       const PostReplyData = {
-        post_id: Postid.FreePostId,
+        post_id: Postid[postIdKey],
         parent_comment_id: Comments[index].comment_id,
         content: Reply,
       };
