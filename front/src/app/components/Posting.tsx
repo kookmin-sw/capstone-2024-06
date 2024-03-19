@@ -26,8 +26,9 @@ const Posting = () => {
   useEffect(() => {
     const PostLoadBt = async () => {
       try {
+        const postIdKey = Object.keys(Postid)[0];
         const response = await fetch(
-          `${process.env.Localhost}/post/${Postid.FreePostId}`,
+          `${process.env.Localhost}/post/${Postid[postIdKey]}`,
           {
             method: "GET",
             headers: {
@@ -47,8 +48,9 @@ const Posting = () => {
 
   const PostingDeleteBt = async () => {
     try {
+      const postIdKey = Object.keys(Postid)[0];
       const response = await fetch(
-        `${process.env.Localhost}/post/${Postid.FreePostId}`,
+        `${process.env.Localhost}/post/${Postid[postIdKey]}`,
         {
           method: "DELETE",
           headers: {
@@ -64,26 +66,28 @@ const Posting = () => {
     router.push("/Community");
   };
 
-  const HeartBtClick = async () => {
-    try {
-      const response = await fetch(
-        `${process.env.Localhost}/like/post/${Postid.FreePostId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = await response.json();
-    } catch (error) {
-      console.error("Error", error);
-    }
-    router.push(
-      `http://localhost:3000/Community/FreePost/${Postid.FreePostId}`
-    );
-  };
+  // const HeartBtClick = async () => {
+  //   try {
+  //     const response = await fetch(
+  //       `${process.env.Localhost}/like/post/${Postid.FreePostId}`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+  //     const data = await response.json();
+  //   } catch (error) {
+  //     console.error("Error", error);
+  //   }
+  //   router.push(
+  //     `http://localhost:3000/Community/FreePost/${Postid.FreePostId}`
+  //   );
+  // };
 
+  console.log(Posting)
+  
   return (
     <main className="flex">
       <div className="flex-col w-[900px] h-auto mr-2">
@@ -111,7 +115,7 @@ const Posting = () => {
         <div className="flex w-full justify-center items-center my-10">
           {Posting.images && Posting.images.length > 0 && (
             <Image
-              src={`http://10.223.114.14:8080/uploaded_images/${Posting.images[0].image_id}`}
+              src={`${process.env.Localhost}/uploaded_images/${Posting.images[0].image_id}`}
               width={600}
               height={300}
               alt=""

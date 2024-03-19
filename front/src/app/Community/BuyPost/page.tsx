@@ -2,7 +2,7 @@ import Nav from "@/app/components/Nav";
 import Category from "@/app/components/Category";
 import Posts from "@/app/components/Posts"
 
-export default function FreePost() {
+export default function BuyPost() {
   return (
     <main className="flex-col w-full h-full">
       <Nav />
@@ -14,7 +14,7 @@ export default function FreePost() {
       <div className="flex justify-center w-full h-auto">
         <div className="flex-col items-center min-w-[700px] max-w-[1000px] w-11/12 h-auto">
           <div className="w-full">
-            <Posts PostCateGory="자유"/>
+            <Posts PostCateGory="삽니다"/>
           </div>
         </div>
       </div>

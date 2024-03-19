@@ -1,7 +1,7 @@
 import Nav from "@/app/components/Nav";
 import Posting from "@/app/components/Posting";
 
-export default function FreePost() {
+export default function PopularityPost() {
   return (
     <main className="flex-col justify-center w-full h-full">
       <Nav />
