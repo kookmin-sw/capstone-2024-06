@@ -1,5 +1,5 @@
 from sqlalchemy import and_, or_, desc, exists, case, literal
-from sqlalchemy.orm import Session, joinedload, selectinload, with_expression
+from sqlalchemy.orm import Session, joinedload, selectinload, subqueryload, with_expression
 from sqlalchemy.sql import alias, select, column
 from database.models import *
 from database.schemas import *
@@ -198,7 +198,7 @@ async def search_posts(
         query = query.options(
             with_expression(Posts.liked, literal(False).label("liked"))
         )
-
+    
     if category:
         query = query.filter(Posts.category == category)
 
@@ -220,7 +220,7 @@ async def search_posts(
     elif order == "most_liked":
         query = query.order_by(desc(Posts.like_count))
 
-    query = query.options(joinedload(Posts.author))
+    query = query.options(joinedload(Posts.author), subqueryload(Posts.images))
     offset = per * (page - 1)
     query = query.limit(per).offset(offset)
 

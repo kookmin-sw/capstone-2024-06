@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, Sequence, DateTime
-from sqlalchemy.ext.hybrid import hybrid_method
+from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
 from sqlalchemy.orm import relationship, query_expression, Mapped
 from database.database import Base
 from datetime import datetime
@@ -98,6 +98,13 @@ class Posts(Base):
     @hybrid_method
     def decrement_comment_count(self):
         self.comment_count -= 1
+
+    @hybrid_property
+    def thumbnail(self):
+        if self.images:
+            return self.images[0]
+        else:
+            return {"image_id": "default_thumbnail.png", "filename": "default_thumbnail.png"}
 
 
 class Comments(Base):
