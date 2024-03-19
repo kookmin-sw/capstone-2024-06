@@ -1,29 +1,29 @@
 from detect import count_class
-# from image_classification_run import predict_image_class
-# from image_classification_run import get_image_paths
+from image_classification_run import predict_image_class
+from image_classification_run import get_image_paths
 import tensorflow as tf
 import os
 import random
 
 def recommend_image(image):
     # 이미지 내 클래스 또는 레이블 수 세기
-    class_count = count_class(image)
+#     class_count = count_class(image)
     
-    # 이미지 모양 분류
-    model = tf.keras.models.Sequential([
-    tf.keras.layers.TFSMLayer('./my_model', call_endpoint='serving_default')
-])    
-    predictions = predict_image_class(image, model)
-    image_shape = predictions[0]
-    conf = predictions[1]
+#     # 이미지 모양 분류
+#     model = tf.keras.models.Sequential([
+#     tf.keras.layers.TFSMLayer('./my_model', call_endpoint='serving_default')
+# ])    
+#     predictions = predict_image_class(image, model)
+#     image_shape = predictions[0]
+#     conf = predictions[1]
 
     # 추천 이미지 리스트 초기화
     recommended_images = []
     shapes = ['h형책상', '독서실책상', '일자형책상', '컴퓨터책상', '코너형책상']
     
     # 해당 모양의 폴더에서 랜덤하게 이미지 선택하여 추천 이미지 리스트에 추가
-    shape_folder = shapes[image_shape]
-    shape_folder_path = os.path.join("./train_image/",shape_folder)
+    shape_folder = "./result"
+    shape_folder_path = "./result"
     if os.path.isdir(shape_folder_path):
         images_in_folder = os.listdir(shape_folder_path)
         if len(images_in_folder) >= 3:
