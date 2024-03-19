@@ -25,8 +25,7 @@ class DeskCrawler:
 
         for query in self.queries:
             directory_path = os.path.join(base_download_path, query)
-            if not os.path.exists(directory_path):
-                os.makedirs(directory_path)
+            os.makedirs(directory_path, exist_ok=True)
 
     def crawling(self):
         with ThreadPoolExecutor(max_workers=self.num_workers) as executor:
@@ -103,6 +102,11 @@ class DeskCrawler:
 
 
 if __name__ == "__main__":
+
+    from config_loader import config
+
+    train_path = config["PATH"]["train"]
+
     queries = [
         "독서실책상",
         "컴퓨터책상",
@@ -110,7 +114,5 @@ if __name__ == "__main__":
         "코너형책상",
         "h형책상",
     ]
-    desk_crawler = DeskCrawler(
-        "./images/train", queries=queries, num_pages=5, verbose=True
-    )
+    desk_crawler = DeskCrawler(train_path, queries=queries, num_pages=5, verbose=True)
     desk_crawler.crawling()

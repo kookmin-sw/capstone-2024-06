@@ -1,10 +1,9 @@
 from datetime import datetime, timedelta, timezone
 
 from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, status, Body
-from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
-from jose import jwt, JWTError
+from jose import jwt
 from passlib.context import CryptContext
 from fastapi.staticfiles import StaticFiles
 
@@ -24,6 +23,7 @@ from database import crud
 from database.models import *
 from database.schemas import *
 from database.database import SessionLocal, engine
+from config_loader import config
 
 Base.metadata.create_all(bind=engine)
 
@@ -38,8 +38,14 @@ optional_oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False
 
 Base.metadata.create_all(bind=engine)
 app = FastAPI()
+
+os.makedirs(config["PATH"]["upload"], exist_ok=True)
+os.makedirs(config["PATH"]["result"], exist_ok=True)
 app.mount(
-    "/uploaded_images", StaticFiles(directory="uploaded_images"), name="uploaded_images"
+    "/images/upload", StaticFiles(directory=config["PATH"]["upload"]), name="uploaded_images"
+)
+app.mount(
+    "/images/result", StaticFiles(directory=config["PATH"]["result"]), name="result_images"
 )
 
 
@@ -123,18 +129,9 @@ app.add_middleware(
     allow_methods=["*"],  # 모든 HTTP 메서드를 허용하려면 "*" 사용
     allow_headers=["*"],  # 모든 헤더를 허용하려면 "*" 사용
 )
-result_folder = "/Users/park_sh/Desktop/what-desk/back/result"
-upload_folder = "/Users/park_sh/Desktop/what-desk/back/uploads"
-
-
-@app.get("/get_image/{image_filename}")
-async def get_image(image_filename: str):
-    image_path = os.path.join(result_folder, image_filename)
-    return FileResponse(image_path, media_type="image/jpeg")
-
 
 # 이미지 업로드 및 처리 결과 반환
-@app.post("/process_image/")
+@app.post("/process_image")
 async def process_image(file: UploadFile):
     return process(file)
 
@@ -391,13 +388,12 @@ async def upload_image(
     user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    os.makedirs("uploaded_images", exist_ok=True)
-
+    upload_path = config["PATH"]["upload"]
     filename = file.filename
     file_extension = os.path.splitext(filename)[1]
-    image_id = str(uuid.uuid4()) + file_extension
+    image_id = os.path.join(upload_path, str(uuid.uuid4()) + file_extension)
 
-    with open(f"uploaded_images/{image_id}", "wb") as buffer:
+    with open(image_id, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
     image = Image(image_id=image_id, filename=filename)
