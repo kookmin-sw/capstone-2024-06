@@ -163,6 +163,7 @@ const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       session.user = token.user;
       session.access_token = token.access_token;
+      console.log("inside session callback", session);
       return session
     },
   },

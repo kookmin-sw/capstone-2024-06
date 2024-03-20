@@ -6,10 +6,12 @@ import style from './signupStyle.module.css';
 import Nav from '../components/Nav';
 
 const RegisterForm = () => {
+
+
   const [user_id, setUserid] = useState<string>('');
   const [name, setUsername] = useState<string>('');
   const [email, setEmail] = useState<string>('');
-  const [image, setImage] = useState<string>('');
+  const image = '/Profilex2.webp';
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
@@ -18,7 +20,6 @@ const RegisterForm = () => {
     e.preventDefault();
     await handleSubmit(user_id, name, email, image, password, confirmPassword, setError);
   };
-
 
   return (
     <>
