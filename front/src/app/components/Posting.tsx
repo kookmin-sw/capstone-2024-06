@@ -115,7 +115,7 @@ const Posting = () => {
         <div className="flex w-full justify-center items-center my-10">
           {Posting.images && Posting.images.length > 0 && (
             <Image
-              src={`${process.env.Localhost}/uploaded_images/${Posting.images[0].image_id}`}
+              src={`${process.env.Localhost}${Posting.images[0].image_id}`}
               width={600}
               height={300}
               alt=""
