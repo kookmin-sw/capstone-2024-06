@@ -36,6 +36,18 @@ const FindUserIDpage = () => {
         <div className={style.subtitle}>아이디 찾기</div>
         <div className={style.Rectangle103}></div>
         <div className={style.Rectangle104}></div>
+        <div className={style.Desktop}></div>
+        <div className={style.topbar}></div>
+        <div className={style.name}></div>
+        <div className={style.idFinder}></div>
+        <div className={style.passwordFinder}></div>
+        <div className={style.line13}></div>
+        <div className={style.registeredEmail}>회원정보에 등록된 이메일</div>
+        <div className={style.nickname}>닉네임</div>
+        <div className={style.emailAddress}>이메일주소</div>
+        <div className={style.Rectangle105}></div>
+        <div className={style.Rectangle106}></div>
+        
 
 
         
