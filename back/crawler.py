@@ -5,75 +5,29 @@ from mimetypes import guess_extension
 import requests
 from PIL import Image
 from pillow_heif import register_heif_opener
+from config_loader import config
 import re
 
 
-class DeskCrawler:
-    def __init__(
-        self, base_download_path, queries, num_pages, num_workers=8, verbose=False
-    ):
+class BaseCrawler:
+    def __init__(self, prefix, num_workers, verbose):
         register_heif_opener()
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         }
 
-        self.base_download_path = base_download_path
-        self.queries = queries
-        self.pages = num_pages
+        self.prefix = prefix
         self.num_workers = num_workers
         self.verbose = verbose
-
-        for query in self.queries:
-            directory_path = os.path.join(base_download_path, query)
-            os.makedirs(directory_path, exist_ok=True)
-
-    def crawling(self):
-        with ThreadPoolExecutor(max_workers=self.num_workers) as executor:
-            for query in self.queries:
-                for page in range(1, self.pages + 1):
-                    executor.submit(self.run_crawling_thread, query, page)
-
-    def run_crawling_thread(self, query, page):
-        if self.verbose:
-            print(f"start crawling, query={query}, page={page}")
-
-        download_path = os.path.join(self.base_download_path, query)
-        cards = self.fetch_cards(query, page)
-        for card in cards:
-            self.download_image(
-                card["image_url"], self.sanitize_filename(card["id"]), download_path
-            )
-
-    def fetch_cards(self, query, page):
-        api_url = "https://ohou.se/cards/feed.json"
-        params = {
-            "v": 5,
-            "query": query,
-            "search_affect_type": "Typing",
-            "page": page,
-            "per": 48,
-        }
-
-        response = requests.get(api_url, params=params, headers=self.headers)
-        if response.status_code != 200:
-            raise Exception("Failed to fetch data")
-
-        cards = []
-        fetched_cards = response.json()["cards"]
-        for fetched_card in fetched_cards:
-            card = {
-                "id": str(fetched_card["id"]),
-                "image_url": fetched_card["image"]["url"],
-            }
-            cards.append(card)
-        return cards
+        self.download_path = config["PATH"]["train"]
+        os.makedirs(self.download_path, exist_ok=True)
 
     def sanitize_filename(self, filename):
         sanitized_filename = re.sub(r"[\/\\\:\*\?\"\<\>\|\s]", "_", filename)
         sanitized_filename = "".join(c for c in sanitized_filename if c.isprintable())
         return sanitized_filename
 
-    def download_image(self, url, filename, download_path):
+    def download_image(self, url, filename):
         response = requests.get(url)
 
         if response.status_code == 200:
@@ -87,9 +41,9 @@ class DeskCrawler:
                 image_data = self.convert_heif_to_jpg(image_data)
                 file_extension = ".jpg"
 
-            filename = filename + file_extension
+            filename = self.prefix + "_" + filename + file_extension
 
-            with open(os.path.join(download_path, filename), "wb") as f:
+            with open(os.path.join(self.download_path, filename), "wb") as f:
                 f.write(image_data)
 
     def convert_heif_to_jpg(self, image_data):
@@ -101,18 +55,60 @@ class DeskCrawler:
             return buffer.getvalue()
 
 
+class DeskCrawler(BaseCrawler):
+    def __init__(self, query, num_pages, num_workers=8, verbose=False):
+        super().__init__("ohouse", num_workers, verbose)
+        self.query = query
+        self.pages = num_pages
+        self.num_workers = num_workers
+        self.verbose = verbose
+
+    def crawling(self):
+        with ThreadPoolExecutor(max_workers=self.num_workers) as executor:
+            for page in range(1, self.pages + 1):
+                executor.submit(self.run_crawling_thread, page)
+
+    def run_crawling_thread(self, page):
+        if self.verbose:
+            print(f"start crawling, query={self.query}, page={page}")
+
+        desks = self.fetch_desks(page)
+        for desk in desks:
+            self.download_image(
+                desk["image_url"],
+                desk["name"],
+            )
+
+    def fetch_desks(self, page):
+        api_url = "https://ohou.se/cards/feed.json"
+        params = {
+            "v": 5,
+            "query": self.query,
+            "search_affect_type": "Typing",
+            "page": page,
+            "per": 48,
+        }
+
+        response = requests.get(api_url, params=params, headers=self.headers)
+        if response.status_code != 200:
+            raise Exception("Failed to fetch data")
+
+        desks = []
+        fetched_desks = response.json()["cards"]
+        for fetched_desk in fetched_desks:
+            desk = {
+                "image_url": fetched_desk["image"]["url"],
+                "name": self.sanitize_filename(str(fetched_desk["id"]))
+            }
+            desks.append(desk)
+        return desks
+
+
 if __name__ == "__main__":
 
     from config_loader import config
 
     train_path = config["PATH"]["train"]
 
-    queries = [
-        "독서실책상",
-        "컴퓨터책상",
-        "일자형책상",
-        "코너형책상",
-        "h형책상",
-    ]
-    desk_crawler = DeskCrawler(train_path, queries=queries, num_pages=5, verbose=True)
+    desk_crawler = DeskCrawler(query="데스크셋업", num_pages=52, verbose=True)
     desk_crawler.crawling()
