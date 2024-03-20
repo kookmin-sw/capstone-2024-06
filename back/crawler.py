@@ -7,6 +7,7 @@ from PIL import Image
 from pillow_heif import register_heif_opener
 from config_loader import config
 import re
+import imghdr
 
 
 class BaseCrawler:
@@ -37,6 +38,9 @@ class BaseCrawler:
                 desk["image_url"],
                 desk["name"],
             )
+    
+    def fetch_desks(self, page):
+        ...
 
     def sanitize_filename(self, filename):
         sanitized_filename = re.sub(r"[\/\\\:\*\?\"\<\>\|\s]", "_", filename)
@@ -53,10 +57,11 @@ class BaseCrawler:
             if file_extension is None:
                 return
 
-            if file_extension == ".heif":
-                image_data = self.convert_heif_to_jpg(image_data)
-                file_extension = ".jpg"
+            image_data = self.validate_image_data(image_data)
+            if not image_data:
+                return
 
+            file_extension = ".jpg"
             filename = self.prefix + "_" + filename + file_extension
 
             with open(os.path.join(self.download_path, filename), "wb") as f:
@@ -69,6 +74,20 @@ class BaseCrawler:
         with BytesIO() as buffer:
             image.save(buffer, format="JPEG")
             return buffer.getvalue()
+    
+    def validate_image_data(self, image_data):
+        try:
+            image = Image.open(BytesIO(image_data))
+            pixels = image.load()
+            image = image.convert("RGB")
+
+            with BytesIO() as buffer:
+                image.save(buffer, format="JPEG")
+                image_data = buffer.getvalue()
+            
+            return image_data
+        except:
+            return None
 
 
 class DeskCrawler(BaseCrawler):
@@ -110,5 +129,5 @@ if __name__ == "__main__":
 
     train_path = config["PATH"]["train"]
 
-    desk_crawler = DeskCrawler(query="데스크셋업", num_pages=52, verbose=True)
+    desk_crawler = DeskCrawler(query="데스크셋업", num_pages=52, num_workers=8, verbose=True)
     desk_crawler.crawling()
