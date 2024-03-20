@@ -34,6 +34,11 @@ const FindUserIDpage = () => {
       <form onSubmit={onSubmit} className={style.desktop}>
         <div className={style.title}>what_desk</div>
         <div className={style.subtitle}>아이디 찾기</div>
+        <div className={style.Rectangle103}></div>
+        <div className={style.Rectangle104}></div>
+
+
+        
         <div className={style.rectangle56}>
           {/* 이메일 입력 필드 */}
           <input
