@@ -9,8 +9,16 @@ import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
 def image_to_vector(image_path, model):
-    # 이미지를 읽어옵니다.
-    image = Image.open(image_path).convert('RGB')
+    try:
+        # 이미지를 읽어옵니다.
+        image = Image.open(image_path).convert('RGB')
+    except OSError as e:
+        print(f"Error reading image {image_path}: {e}")
+        return None
+
+    # 이미지가 정상적으로 열리지 않은 경우 None을 반환합니다.
+    if image is None:
+        return None
     
     # 이미지를 PyTorch의 텐서로 변환합니다.
     preprocess = transforms.Compose([
@@ -35,17 +43,14 @@ def create_vector_files_from_images(image_folder, output_folder):
     model = models.vgg16(pretrained=True)
     
     # 이미지 폴더 내의 각 이미지를 벡터로 변환하여 파일로 저장합니다.
-    for class_name in os.listdir(image_folder):
-        class_folder = os.path.join(image_folder, class_name)
-        output_class_folder = os.path.join(output_folder, class_name)
-        if not os.path.exists(output_class_folder):
-            os.makedirs(output_class_folder)
-        
-        for image_name in os.listdir(class_folder):
-            image_path = os.path.join(class_folder, image_name)
-            if os.path.isfile(image_path) and image_name.lower().endswith((".jpg", ".jpeg", ".png")):
-                vector = image_to_vector(image_path, model)
-                output_vector_path = os.path.join(output_class_folder, f"{image_name.split('.')[0]}.npy")
+    for image_name in os.listdir(image_folder):
+        image_path = os.path.join(image_folder, image_name)
+        if os.path.isfile(image_path) and image_name.lower().endswith((".jpg", ".jpeg", ".png")):
+            # 이미지를 벡터로 변환합니다.
+            vector = image_to_vector(image_path, model)
+            if vector is not None:
+                # 벡터 파일을 저장합니다.
+                output_vector_path = os.path.join(output_folder, f"{image_name.split('.')[0]}.npy")
                 np.save(output_vector_path, vector)
 
 def merge_index_files(vector_folder, index_file_path):
@@ -74,12 +79,12 @@ def merge_index_files(vector_folder, index_file_path):
     print("Faiss index has been saved to:", index_file_path)
 
 # 이미지 폴더와 벡터 파일을 저장할 폴더를 지정합니다.
-image_folder = "./test_image"
+image_folder = "./images/train"
 vector_folder = "./vectors/train_vector"
 index_file_path = "image_index.index"
 
 # 이미지 폴더 내의 이미지를 벡터 파일로 변환하여 저장합니다.
-# create_vector_files_from_images(image_folder, vector_folder)
+create_vector_files_from_images(image_folder, vector_folder)
 
 # 이미지 벡터를 Faiss 인덱스에 추가하고 저장합니다.
 merge_index_files(vector_folder, index_file_path)
