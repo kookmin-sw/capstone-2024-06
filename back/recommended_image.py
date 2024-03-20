@@ -4,6 +4,7 @@ from detect import count_class
 import tensorflow as tf
 import os
 import random
+from config_loader import config
 
 def recommend_image(image):
     # 이미지 내 클래스 또는 레이블 수 세기
@@ -22,15 +23,14 @@ def recommend_image(image):
     shapes = ['h형책상', '독서실책상', '일자형책상', '컴퓨터책상', '코너형책상']
     
     # 해당 모양의 폴더에서 랜덤하게 이미지 선택하여 추천 이미지 리스트에 추가
-    shape_folder = "./result"
-    shape_folder_path = "./result"
+    shape_folder_path = config["PATH"]["result"]
     if os.path.isdir(shape_folder_path):
         images_in_folder = os.listdir(shape_folder_path)
         if len(images_in_folder) >= 3:
             recommended_images.extend(random.sample(images_in_folder, 3))
     
     # 추천 이미지 리턴
-    return [os.path.join(shape_folder_path, image_name) for image_name in recommended_images]
+    return ["/" + os.path.join(shape_folder_path, image_name) for image_name in recommended_images]
 
 
 # image = "/Users/park_sh/Desktop/backend/back/test_image/h형책상/라인_H형_책상세트_LNDE01.png"
