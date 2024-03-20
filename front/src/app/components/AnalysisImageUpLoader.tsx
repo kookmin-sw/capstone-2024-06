@@ -2,6 +2,7 @@
 import { useState, ChangeEvent, DragEvent } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import RecommendImgSlider from "./RecommendImgSlider";
 
 interface ImagePreview {
   url: string;
@@ -10,9 +11,16 @@ interface ImagePreview {
 
 const AnalysisImageUpLoader = () => {
   const { data: session } = useSession();
-  const [images, setImages] = useState<string[]>([]);
 
+  const [images, setImages] = useState<string[]>([]);
   const [imagePreview, setImagePreview] = useState<ImagePreview | null>(null);
+
+  // 분석하기 버튼을 눌렀을 때
+  const [AnalyBtClick, SetAnalyBtClick] = useState(true);
+  const AnalyBtClicks = () => {
+    SetAnalyBtClick(!AnalyBtClick);
+    console.log(AnalyBtClick)
+  };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -56,8 +64,8 @@ const AnalysisImageUpLoader = () => {
           }
         );
         const ImageDatas = await ImagePost.json();
-        console.log(ImageDatas.file_name)
         setImages(ImageDatas.file_name);
+        AnalyBtClicks();
       }
     } catch (error) {
       console.error("Error", error);
@@ -66,7 +74,7 @@ const AnalysisImageUpLoader = () => {
 
   return (
     <main>
-      <div className="flex flex-col items-center justify-center mt-4">
+      {AnalyBtClick && (<div className="flex flex-col items-center justify-center mt-4">
         <div
           className="m-2 relative"
           onDragOver={handleDragOver}
@@ -115,20 +123,9 @@ const AnalysisImageUpLoader = () => {
             </div>
           </div>
         )}
-      </div>
-      {images.length > 0 &&
-        images.map((fileName: string, index: number) => (
-          <div key={index} className="flex w-full">
-            <Image
-              src={`${process.env.Localhost}${fileName}`}
-              alt="Post Image"
-              width={1000}
-              height={1000}
-              objectFit="cover"
-              priority
-            />
-          </div>
-        ))}
+      </div>)}
+      {!AnalyBtClick && (<RecommendImgSlider Images={images}/>)}
+      
     </main>
   );
 };
