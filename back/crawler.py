@@ -22,6 +22,22 @@ class BaseCrawler:
         self.download_path = config["PATH"]["train"]
         os.makedirs(self.download_path, exist_ok=True)
 
+    def crawling(self):
+        with ThreadPoolExecutor(max_workers=self.num_workers) as executor:
+            for page in range(1, self.pages + 1):
+                executor.submit(self.run_crawling_thread, page)
+
+    def run_crawling_thread(self, page):
+        if self.verbose:
+            print(f"start crawling, query={self.query}, page={page}")
+
+        desks = self.fetch_desks(page)
+        for desk in desks:
+            self.download_image(
+                desk["image_url"],
+                desk["name"],
+            )
+
     def sanitize_filename(self, filename):
         sanitized_filename = re.sub(r"[\/\\\:\*\?\"\<\>\|\s]", "_", filename)
         sanitized_filename = "".join(c for c in sanitized_filename if c.isprintable())
@@ -62,22 +78,6 @@ class DeskCrawler(BaseCrawler):
         self.pages = num_pages
         self.num_workers = num_workers
         self.verbose = verbose
-
-    def crawling(self):
-        with ThreadPoolExecutor(max_workers=self.num_workers) as executor:
-            for page in range(1, self.pages + 1):
-                executor.submit(self.run_crawling_thread, page)
-
-    def run_crawling_thread(self, page):
-        if self.verbose:
-            print(f"start crawling, query={self.query}, page={page}")
-
-        desks = self.fetch_desks(page)
-        for desk in desks:
-            self.download_image(
-                desk["image_url"],
-                desk["name"],
-            )
 
     def fetch_desks(self, page):
         api_url = "https://ohou.se/cards/feed.json"
