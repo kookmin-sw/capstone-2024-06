@@ -56,7 +56,6 @@ const AnalysisImageUpLoader = () => {
           }
         );
         const ImageDatas = await ImagePost.json();
-        console.log(ImageDatas)
         console.log(ImageDatas.file_name)
         setImages(ImageDatas.file_name);
       }
@@ -121,7 +120,7 @@ const AnalysisImageUpLoader = () => {
         images.map((fileName: string, index: number) => (
           <div key={index} className="flex w-full">
             <Image
-              src={`${process.env.Localhost}/result/${fileName}`}
+              src={`${process.env.Localhost}${fileName}`}
               alt="Post Image"
               width={1000}
               height={1000}
