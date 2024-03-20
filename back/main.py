@@ -71,7 +71,7 @@ async def authenticate_user(db: Session, user: UserSignIn):
         return False
     if not verify_password(user.password, user_db.hashed_password):
         return False
-    return user
+    return user_db
 
 
 def create_access_token(data: dict, expires_delta: timedelta):
