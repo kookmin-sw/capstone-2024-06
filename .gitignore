@@ -1,11 +1,17 @@
 venv/
 **/__pycache__/
 */.DS_Store
+**/.DS_Store
+yolo*
+vgg*
 
 back/config.ini
 back/images/
 back/models/
+back/vectors/
+
 
 front/.next
 front/.env
 front/node_modules
+
