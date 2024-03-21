@@ -32,6 +32,13 @@ class Users(Base):
         cascade="all, delete",
         uselist=True,
     )
+    liked_posts = relationship(
+        "Posts",
+        secondary="post_likes",
+        back_populates="likers",
+        cascade="all, delete",
+        uselist=True,
+    )
     liked_comments = relationship(
         "Comments",
         secondary="comment_likes",
@@ -61,6 +68,7 @@ class Posts(Base):
     category = Column(String, nullable=False)
 
     scrap_count = Column(Integer, default=0, nullable=False)
+    like_count = Column(Integer, default=0, nullable=False)
     view_count = Column(Integer, default=0, nullable=False)
     comment_count = Column(Integer, default=0, nullable=False)
     created_at = Column(DateTime, default=datetime.now, nullable=False)
@@ -80,8 +88,16 @@ class Posts(Base):
         cascade="all, delete",
         uselist=True,
     )
+    likers = relationship(
+        "Users",
+        secondary="post_likes",
+        back_populates="liked_posts",
+        cascade="all, delete",
+        uselist=True,
+    )
     images = relationship("Images", cascade="all, delete-orphan")
     scrapped: Mapped[Optional[bool]] = query_expression()
+    liked: Mapped[Optional[bool]] = query_expression()
 
     @hybrid_method
     def increment_view_count(self):
@@ -90,6 +106,10 @@ class Posts(Base):
     @hybrid_method
     def increment_scrap_count(self):
         self.scrap_count += 1
+    
+    @hybrid_method
+    def increment_like_count(self):
+        self.like_count += 1
 
     @hybrid_method
     def increment_comment_count(self):
@@ -104,7 +124,7 @@ class Posts(Base):
         if self.images:
             return self.images[0]
         else:
-            return {"image_id": "default_thumbnail.png", "filename": "default_thumbnail.png"}
+            return {"image_id": "/images/default/deault_thumbnail.png", "filename": "default_thumbnail.png"}
 
 
 class Comments(Base):
@@ -157,6 +177,13 @@ class Comments(Base):
 
 class PostScraps(Base):
     __tablename__ = "post_scraps"
+
+    user_id = Column(String, ForeignKey("users.user_id"), primary_key=True)
+    post_id = Column(Integer, ForeignKey("posts.post_id"), primary_key=True)
+
+
+class PostLikes(Base):
+    __tablename__ = "post_likes"
 
     user_id = Column(String, ForeignKey("users.user_id"), primary_key=True)
     post_id = Column(Integer, ForeignKey("posts.post_id"), primary_key=True)

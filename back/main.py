@@ -47,10 +47,14 @@ app = FastAPI()
 os.makedirs(config["PATH"]["upload"], exist_ok=True)
 os.makedirs(config["PATH"]["result"], exist_ok=True)
 app.mount(
-    "/images/upload", StaticFiles(directory=config["PATH"]["upload"]), name="uploaded_images"
+    "/images/upload",
+    StaticFiles(directory=config["PATH"]["upload"]),
+    name="uploaded_images",
 )
 app.mount(
-    "/images/result", StaticFiles(directory=config["PATH"]["result"]), name="result_images"
+    "/images/result",
+    StaticFiles(directory=config["PATH"]["result"]),
+    name="result_images",
 )
 
 
@@ -134,6 +138,7 @@ app.add_middleware(
     allow_methods=["*"],  # 모든 HTTP 메서드를 허용하려면 "*" 사용
     allow_headers=["*"],  # 모든 헤더를 허용하려면 "*" 사용
 )
+
 
 # 이미지 업로드 및 처리 결과 반환
 @app.post("/process_image")
@@ -300,11 +305,18 @@ async def search_posts(
     user_id: str | None = Depends(get_current_user_if_signed_in),
     db: Session = Depends(get_db),
 ):
-    if order not in ["newest", "most_viewed", "most_scrapped"]:
+    if order not in ["newest", "most_viewed", "most_scrapped", "most_liked"]:
         return HTTPException(status_code=400, detail="Invalid order parameter")
 
     posts = await crud.search_posts(
-        db, category, author_id, keyword, order, per, page, user_id
+        db,
+        category=category,
+        author_id=author_id,
+        keyword=keyword,
+        order=order,
+        per=per,
+        page=page,
+        user_id=user_id,
     )
     return posts
 
@@ -359,6 +371,20 @@ async def scrap_post(
 
     await crud.create_post_scrap(db, user_id, post_id)
     return {"message": "User scrapped post successfully"}
+
+
+@app.post("/like/post/{post_id}")
+async def scrap_post(
+    post_id: int,
+    user_id: str = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    post = await crud.read_post(db, post_id)
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    await crud.create_post_like(db, user_id, post_id)
+    return {"message": "User liked post successfully"}
 
 
 @app.post("/scrap/comment/{comment_id}")
@@ -473,9 +499,11 @@ async def get_followees(
 
 
 @app.post("/scrapped_posts", response_model=list[PostPreview])
-async def get_scrapped_posts(user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
-    user = await crud.read_user_by_id(db, user_id)
-    return user.scrapped_posts
+async def get_scrapped_posts(
+    user_id: str = Depends(get_current_user), db: Session = Depends(get_db)
+):
+    posts = await crud.search_posts(db, user_id=user_id, scrapped=True)
+    return posts
 
 
 # test

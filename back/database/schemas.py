@@ -61,11 +61,13 @@ class BasePost(BaseModel):
     title: str
     category: str
     scrap_count: int
+    like_count: int
     view_count: int
     comment_count: int
     created_at: datetime
     author: UserInfo
     scrapped: bool
+    liked: bool
 
 
 class PostPreview(BasePost):
