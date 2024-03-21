@@ -1,5 +1,11 @@
 from sqlalchemy import and_, or_, desc, exists, case, literal
-from sqlalchemy.orm import Session, joinedload, selectinload, subqueryload, with_expression
+from sqlalchemy.orm import (
+    Session,
+    joinedload,
+    selectinload,
+    subqueryload,
+    with_expression,
+)
 from sqlalchemy.sql import alias, select, column
 from database.models import *
 from database.schemas import *
@@ -58,6 +64,14 @@ async def create_comment(db: Session, comment: CommentForm, user_id: str):
     return comment
 
 
+async def create_post_scrap(db: Session, user_id: str, post_id: int):
+    user = db.query(Users).filter(Users.user_id == user_id).first()
+    post = db.query(Posts).filter(Posts.post_id == post_id).first()
+    user.scrapped_posts.append(post)
+    post.increment_scrap_count()
+    db.commit()
+
+
 async def create_post_like(db: Session, user_id: str, post_id: int):
     user = db.query(Users).filter(Users.user_id == user_id).first()
     post = db.query(Posts).filter(Posts.post_id == post_id).first()
@@ -113,18 +127,26 @@ async def read_post_with_view(db: Session, post_id: int, user_id: str | None):
 
     if user_id:
         query = query.outerjoin(
+            PostScraps,
+            and_(Posts.post_id == PostScraps.post_id, PostScraps.user_id == user_id),
+        ).outerjoin(
             PostLikes,
             and_(Posts.post_id == PostLikes.post_id, PostLikes.user_id == user_id),
         )
         query = query.options(
             with_expression(
+                Posts.scrapped,
+                case((PostScraps.user_id.isnot(None), True), else_=False).label("scrapped"),
+            ),
+            with_expression(
                 Posts.liked,
                 case((PostLikes.user_id.isnot(None), True), else_=False).label("liked"),
-            )
+            ),
         )
     else:
         query = query.options(
-            with_expression(Posts.liked, literal(False).label("liked"))
+            with_expression(Posts.scrapped, literal(False).label("scrapped")),
+            with_expression(Posts.liked, literal(False).label("liked")),
         )
 
     post = (
@@ -173,32 +195,51 @@ async def read_follow(db: Session, follower_user_id: str, followee_user_id: str)
 
 async def search_posts(
     db: Session,
-    category: str,
-    author_id: str,
-    keyword: str,
-    order: str,
-    per: int,
-    page: int,
-    user_id: str | None,
+    category: str | None = None,
+    author_id: str | None = None,
+    keyword: str | None = None,
+    order: str = "newest",
+    per: int = 24,
+    page: int = 1,
+    user_id: str | None = None,
+    scrapped: bool = False
 ):
     query = db.query(Posts)
 
+    
     if user_id:
+        if scrapped:
+            query = query.join(
+                PostScraps,
+                and_(Posts.post_id == PostScraps.post_id, PostScraps.user_id == user_id),
+            )
+        else:
+            query = query.outerjoin(
+                PostScraps,
+                and_(Posts.post_id == PostScraps.post_id, PostScraps.user_id == user_id),
+            )
+        
         query = query.outerjoin(
             PostLikes,
             and_(Posts.post_id == PostLikes.post_id, PostLikes.user_id == user_id),
         )
+        
         query = query.options(
+            with_expression(
+                Posts.scrapped,
+                case((PostScraps.user_id.isnot(None), True), else_=False).label("scrapped"),
+            ),
             with_expression(
                 Posts.liked,
                 case((PostLikes.user_id.isnot(None), True), else_=False).label("liked"),
-            )
+            ),
         )
     else:
         query = query.options(
-            with_expression(Posts.liked, literal(False).label("liked"))
+            with_expression(Posts.scrapped, literal(False).label("scrapped")),
+            with_expression(Posts.liked, literal(False).label("liked")),
         )
-    
+
     if category:
         query = query.filter(Posts.category == category)
 
@@ -217,6 +258,8 @@ async def search_posts(
         query = query.order_by(desc(Posts.created_at))
     elif order == "most_viewed":
         query = query.order_by(desc(Posts.view_count))
+    elif order == "most_scrapped":
+        query = query.order_by(desc(Posts.scrap_count))
     elif order == "most_liked":
         query = query.order_by(desc(Posts.like_count))
 
@@ -237,6 +280,14 @@ async def search_comment(db: Session, author_id: str = None, post_id: int = None
         query = query.filter(Comments.author_id == author_id)
 
     return query.all()
+
+
+async def read_post_scrap(db: Session, user_id: str, post_id: int):
+    return (
+        db.query(PostScraps)
+        .filter(PostScraps.user_id == user_id, PostScraps.post_id == post_id)
+        .first()
+    )
 
 
 async def read_post_like(db: Session, user_id: str, post_id: int):
