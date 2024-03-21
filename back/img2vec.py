@@ -7,11 +7,18 @@ import numpy as np
 import faiss
 from PIL import Image
 from tqdm import tqdm
-
+from ultralytics import YOLO
 from config_loader import config
 
 
 class Img2Vec:
+    def get_vector(self, image_path):
+        self.get_vectors(self, [image_path])
+
+    def get_vectors(self, image_paths): ...
+
+
+class FeatureExtractor(Img2Vec):
     def __init__(self, batch_size=32, verbose=False):
         self.batch_size = batch_size
         self.verbose = verbose
@@ -32,9 +39,6 @@ class Img2Vec:
                 ),
             ]
         )
-
-    def get_vector(self, image_path):
-        return self.get_vectors([image_path])[0]
 
     def get_vectors(self, image_paths):
         iterator = range(0, len(image_paths), self.batch_size)
@@ -60,6 +64,34 @@ class Img2Vec:
         return vectors
 
 
+class ObjectCounter(Img2Vec):
+    def __init__(self, conf_threshold=0.25, verbose=False):
+        self.conf_threshold = conf_threshold
+        self.verbose = verbose
+        self.model = YOLO("yolov8x.pt")
+        self.classes = [41, 56, 58, 59, 60, 62, 63, 64, 66, 73, 74, 75]
+        self.cls_to_idx = {x: i for i, x in enumerate(self.classes)}
+
+    def get_vectors(self, image_paths):
+        iterator = image_paths
+        if self.verbose:
+            iterator = tqdm(iterator)
+        
+        vectors = []
+        for image_path in iterator:
+            result = self.model(
+                image_path, conf=self.conf_threshold, classes=self.classes, verbose=False
+            )
+            counter = [0] * len(self.classes)
+
+            for box in result[0].boxes:
+                counter[self.cls_to_idx[box.cls.item()]] += 1
+                vectors.append(counter)
+
+        vectors = np.array(vectors, dtype=np.float32)
+        return vectors
+
+
 if __name__ == "__main__":
 
     def save_vectors(vectors, file_path):
@@ -68,12 +100,25 @@ if __name__ == "__main__":
         index.add(vectors)
         faiss.write_index(index, file_path)
 
-
-    img2vec = Img2Vec(verbose=True)
+    
+    # how to use feature extrator
+    feature_extractor = FeatureExtractor(verbose=True)
 
     image_dir = config["PATH"]["train"]
     image_paths = [
         os.path.join(image_dir, file_name) for file_name in os.listdir(image_dir)
     ]
-    vectors = img2vec.get_vectors(image_paths)
-    save_vectors(vectors, "vectors/VGG_features.index")
+    vectors = feature_extractor.get_vectors(image_paths)
+    save_vectors(vectors, "vectors/vgg_features.index")
+
+
+    # how to use object counter
+    object_counter = ObjectCounter(verbose=True)
+
+    image_dir = config["PATH"]["train"]
+    image_paths = [
+        os.path.join(image_dir, file_name) for file_name in os.listdir(image_dir)
+    ]
+    vectors = object_counter.get_vectors(image_paths)
+    print(vectors)
+    save_vectors(vectors, "vectors/object_counts.index")
