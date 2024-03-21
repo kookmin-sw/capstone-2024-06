@@ -1,43 +1,41 @@
 from detect import count_class
-from image_classification_run import predict_image_class
-from image_classification_run import get_image_paths
-import tensorflow as tf
 import os
-import random
+from vector_similar import find_similar_vectors
+from object_similar import cosine_similarity
+from PIL import Image
 
-def recommend_image(image):
-    # 이미지 내 클래스 또는 레이블 수 세기
-#     class_count = count_class(image)
+def recommend_image(image_path, top_n=5):
+    # csv_path = "./class_count.csv"  
+    vector_folder = "./vectors/train_vector" 
+    user_img_obj = count_class(image_path)
+    # 이미지 벡터 유사도를 계산하여 유사한 이미지 정보 가져오기
+    vector_similar_images = find_similar_vectors(vector_folder, image_path, top_n)
+    vector_similar_images_info = [{"image_path": image_path, "vector_similarity": similarity} for image_path, similarity in vector_similar_images]
     
-#     # 이미지 모양 분류
-#     model = tf.keras.models.Sequential([
-#     tf.keras.layers.TFSMLayer('./my_model', call_endpoint='serving_default')
-# ])    
-#     predictions = predict_image_class(image, model)
-#     image_shape = predictions[0]
-#     conf = predictions[1]
+    final_score = []
+    for vec_info in vector_similar_images_info:
+        # 이미지의 벡터 유사도가 가장 높은 이미지를 기준으로 오브젝트 유사도를 계산
+        detected_classes = count_class(vec_info["image_path"])  # 벡터 유사도가 가장 높은 이미지의 오브젝트 정보 가져오기
+        cosine_sim = cosine_similarity(user_img_obj, detected_classes)  # 오브젝트 유사도 계산
+        total_similarity = vec_info["vector_similarity"] * cosine_sim  # 벡터 유사도와 오브젝트 유사도를 곱하여 최종 유사도 계산
+        final_score.append({"image_path": vec_info["image_path"], "total_similarity": total_similarity})
 
-    # 추천 이미지 리스트 초기화
-    recommended_images = []
-    shapes = ['h형책상', '독서실책상', '일자형책상', '컴퓨터책상', '코너형책상']
-    
-    # 해당 모양의 폴더에서 랜덤하게 이미지 선택하여 추천 이미지 리스트에 추가
-    shape_folder = "./result"
-    shape_folder_path = "./result"
-    if os.path.isdir(shape_folder_path):
-        images_in_folder = os.listdir(shape_folder_path)
-        if len(images_in_folder) >= 3:
-            recommended_images.extend(random.sample(images_in_folder, 3))
-    
-    # 추천 이미지 리턴
-    return [os.path.join(shape_folder_path, image_name) for image_name in recommended_images]
+    # 최종 추천 이미지를 유사도를 기준으로 정렬
+    final_score.sort(key=lambda x: x["total_similarity"], reverse=True)
 
+    # 상위 N개의 최종 추천 이미지 정보 반환
+    return final_score[:top_n]
 
-# image = "/Users/park_sh/Desktop/backend/back/test_image/h형책상/라인_H형_책상세트_LNDE01.png"
+# 테스트할 이미지 경로와 상위 N개의 추천 이미지 설정
+image_path = "/Users/park_sh/Desktop/backend/back/images/test_image/자주스 책상.jpeg"  # 테스트할 이미지 경로
+top_n = 5  # 상위 N개의 추천 이미지
 
-# # 이미지와 함께 recommend_image 함수를 호출하여 추천 이미지 가져오기
-# recommended_images = recommend_image(image)
+# 최종 추천 이미지 순위를 가져오기
+ranked_recommendations = recommend_image(image_path, top_n)
 
-# # 결과 출력
-# for img in recommended_images:
-#     print("추천된 이미지:", img)
+print("Ranked Recommendations:")
+for idx, recommendation in enumerate(ranked_recommendations, 1):
+    print(f"{idx}. Image Path: {recommendation['image_path']}, Total Similarity: {recommendation['total_similarity']}")
+    # 이미지 표시
+    img = Image.open(recommendation['image_path'])
+    img.show()

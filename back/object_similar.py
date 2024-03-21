@@ -32,7 +32,7 @@ def find_similar_images(detected_classes, csv_data, top_n):
     
     return top_similar_images
 
-def main(image_path, csv_path, top_n):
+def object_similar(image_path, csv_path, top_n):
     # 이미지에서 오브젝트 검출
     detected_classes = count_class(image_path)
 
@@ -42,16 +42,32 @@ def main(image_path, csv_path, top_n):
     # 가장 유사한 이미지 찾기
     top_similar_images = find_similar_images(detected_classes, csv_data, top_n)
 
-    # 결과 출력
-    print(f"Top {top_n} most similar images:")
+    # 결과를 담을 배열 초기화
+    similar_images_info = []
+
+    # 유사한 이미지의 정보를 배열에 담기
     for idx, (image_path, similarity) in enumerate(top_similar_images, 1):
-        print(f"{idx}. Image Path: {image_path}, Similarity: {similarity}")
+        similar_images_info.append({"image_path": image_path, "similarity": similarity})
 
-if __name__ == "__main__":
-    # 이미지 경로와 CSV 파일 경로 설정
-    image_path = "/Users/park_sh/Desktop/backend/back/images/test_image/독서실책상/스터디플랜A_풀옵션_독서실책상_스터디카페_타공패널+LED+각도조절_경사판_820.png"  # 테스트할 이미지 경로
-    csv_path = "./class_count.csv"  # CSV 파일 경로
-    top_n = 3
+    return similar_images_info
 
-    # 메인 함수 실행
-    main(image_path, csv_path, top_n)
+def cosine_similarity(vector1, vector2):
+    dot_product = np.dot(vector1, vector2)
+    norm_vector1 = np.linalg.norm(vector1)
+    norm_vector2 = np.linalg.norm(vector2)
+    similarity = dot_product / (norm_vector1 * norm_vector2)
+    return similarity
+
+# if __name__ == "__main__":
+#     # 이미지 경로와 CSV 파일 경로 설정
+#     image_path = "/Users/park_sh/Desktop/backend/back/images/test_image/자주스 책상.jpeg"  # 테스트할 이미지 경로
+#     csv_path = "./class_count.csv"  # CSV 파일 경로
+#     top_n = 10
+
+#     # 메인 함수 실행
+#     similar_images_info = object_similar(image_path, csv_path, top_n)
+
+#     # 반환된 유사한 이미지 정보 출력
+#     for idx, info in enumerate(similar_images_info, 1):
+#         print(f"{idx}. Image Path: {info['image_path']}, Similarity: {info['similarity']}")
+
