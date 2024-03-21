@@ -1,12 +1,3 @@
-from datetime import datetime, timedelta, timezone
-
-from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, status, Body
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordBearer
-from jose import jwt
-from passlib.context import CryptContext
-from fastapi.staticfiles import StaticFiles
-
 import os
 import shutil
 import uuid
@@ -15,15 +6,29 @@ import json
 import requests
 import re
 
-from detect import detect
-from process_image import process
+from datetime import datetime, timedelta, timezone
+from jose import jwt
+from passlib.context import CryptContext
+
+from fastapi import FastAPI, UploadFile, HTTPException, Depends, status
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordBearer
+from fastapi.staticfiles import StaticFiles
+
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from database import crud
 from database.models import *
 from database.schemas import *
 from database.database import SessionLocal, engine
+
+import faiss
+
+from detect import detect
+from process_image import process
+from img2vec import Feat2Vec, Obj2Vec
 from config_loader import config
+
 
 Base.metadata.create_all(bind=engine)
 
@@ -134,6 +139,32 @@ app.add_middleware(
 @app.post("/process_image")
 async def process_image(file: UploadFile):
     return process(file)
+
+
+@app.post("/prototype_process")
+async def prototype_process(file: UploadFile):
+    file_path = os.path.join(config["PATH"]["upload"], file.filename)
+    with open(file_path, "wb") as buffer:
+        buffer.write(await file.read())
+
+    # how to use Img2Vec module to get nearest image
+    feat2vec = Feat2Vec()
+    feat_vec = feat2vec.get_vector(file_path)
+    feat_idx = faiss.read_index("vectors/vgg_features.index")
+    _, feat_result = feat_idx.search(feat_vec, 5)
+
+    # example
+    # obj2vec = Obj2Vec()
+    # obj_vec = obj2vec.get_vector(file_path)
+    # obj_idx = faiss.read_index("vectors/object_counts.index")
+    # _, obj_result = obj_idx.search(obj_vec, 5)
+
+    result = []
+    image_dir = config["PATH"]["train"]
+    image_paths = os.listdir(image_dir)
+    for i in feat_result[0]:
+        result.append(os.path.join(image_dir, image_paths[i]))
+    return {"result": result}
 
 
 @app.post("/user")
