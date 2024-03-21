@@ -4,7 +4,7 @@ from vector_similar import find_similar_vectors
 from object_similar import cosine_similarity
 from PIL import Image
 
-def recommend_image(image_path, top_n=5):
+def recommend_image(image_path, top_n):
     # csv_path = "./class_count.csv"  
     vector_folder = "./vectors/train_vector" 
     user_img_obj = count_class(image_path)
@@ -24,11 +24,11 @@ def recommend_image(image_path, top_n=5):
     final_score.sort(key=lambda x: x["total_similarity"], reverse=True)
 
     # 상위 N개의 최종 추천 이미지 정보 반환
-    return final_score[:top_n]
+    return final_score[:top_n//2]
 
 # 테스트할 이미지 경로와 상위 N개의 추천 이미지 설정
-image_path = "/Users/park_sh/Desktop/backend/back/images/test_image/자주스 책상.jpeg"  # 테스트할 이미지 경로
-top_n = 5  # 상위 N개의 추천 이미지
+image_path = "/Users/park_sh/Desktop/backend/back/images/test_image/학사책상.jpeg"  # 테스트할 이미지 경로2
+top_n = 10  # 상위 N개의 추천 이미지
 
 # 최종 추천 이미지 순위를 가져오기
 ranked_recommendations = recommend_image(image_path, top_n)
