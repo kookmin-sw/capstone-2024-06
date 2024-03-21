@@ -300,7 +300,7 @@ async def search_posts(
     user_id: str | None = Depends(get_current_user_if_signed_in),
     db: Session = Depends(get_db),
 ):
-    if order not in ["newest", "most_viewed", "most_liked"]:
+    if order not in ["newest", "most_viewed", "most_scrapped"]:
         return HTTPException(status_code=400, detail="Invalid order parameter")
 
     posts = await crud.search_posts(
@@ -347,8 +347,8 @@ async def delete_post(
     return {"message": "Post deleted successfully"}
 
 
-@app.post("/like/post/{post_id}")
-async def like_post(
+@app.post("/scrap/post/{post_id}")
+async def scrap_post(
     post_id: int,
     user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -357,12 +357,12 @@ async def like_post(
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
 
-    await crud.create_post_like(db, user_id, post_id)
-    return {"message": "User liked post successfully"}
+    await crud.create_post_scrap(db, user_id, post_id)
+    return {"message": "User scrapped post successfully"}
 
 
-@app.post("/like/comment/{comment_id}")
-async def like_comment(
+@app.post("/scrap/comment/{comment_id}")
+async def scrap_comment(
     comment_id: int,
     user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -371,8 +371,8 @@ async def like_comment(
     if not comment:
         raise HTTPException(status_code=404, detail="Comment not found")
 
-    await crud.create_comment_like(db, user_id, comment_id)
-    return {"message": "User liked comment successfully"}
+    await crud.create_comment_scrap(db, user_id, comment_id)
+    return {"message": "User scrapped comment successfully"}
 
 
 @app.post("/comment")
@@ -472,10 +472,10 @@ async def get_followees(
     return user.followees
 
 
-@app.post("/liked_posts", response_model=list[PostPreview])
-async def get_liked_posts(user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
+@app.post("/scrapped_posts", response_model=list[PostPreview])
+async def get_scrapped_posts(user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
     user = await crud.read_user_by_id(db, user_id)
-    return user.liked_posts
+    return user.scrapped_posts
 
 
 # test

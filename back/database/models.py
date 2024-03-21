@@ -25,17 +25,17 @@ class Users(Base):
 
     posts = relationship("Posts", back_populates="author", uselist=True)
     comments = relationship("Comments", back_populates="author", uselist=True)
-    liked_posts = relationship(
+    scrapped_posts = relationship(
         "Posts",
-        secondary="post_likes",
-        back_populates="liking_users",
+        secondary="post_scraps",
+        back_populates="scrappers",
         cascade="all, delete",
         uselist=True,
     )
     liked_comments = relationship(
         "Comments",
         secondary="comment_likes",
-        back_populates="liking_users",
+        back_populates="likers",
         cascade="all, delete",
         uselist=True,
     )
@@ -60,7 +60,7 @@ class Posts(Base):
     content = Column(String, nullable=False)
     category = Column(String, nullable=False)
 
-    like_count = Column(Integer, default=0, nullable=False)
+    scrap_count = Column(Integer, default=0, nullable=False)
     view_count = Column(Integer, default=0, nullable=False)
     comment_count = Column(Integer, default=0, nullable=False)
     created_at = Column(DateTime, default=datetime.now, nullable=False)
@@ -73,23 +73,23 @@ class Posts(Base):
         cascade="all, delete-orphan",
         uselist=True,
     )
-    liking_users = relationship(
+    scrappers = relationship(
         "Users",
-        secondary="post_likes",
-        back_populates="liked_posts",
+        secondary="post_scraps",
+        back_populates="scrapped_posts",
         cascade="all, delete",
         uselist=True,
     )
     images = relationship("Images", cascade="all, delete-orphan")
-    liked: Mapped[Optional[bool]] = query_expression()
+    scrapped: Mapped[Optional[bool]] = query_expression()
 
     @hybrid_method
     def increment_view_count(self):
         self.view_count += 1
 
     @hybrid_method
-    def increment_like_count(self):
-        self.like_count += 1
+    def increment_scrap_count(self):
+        self.scrap_count += 1
 
     @hybrid_method
     def increment_comment_count(self):
@@ -134,7 +134,7 @@ class Comments(Base):
         uselist=True,
         cascade="all, delete-orphan",
     )
-    liking_users = relationship(
+    likers = relationship(
         "Users",
         secondary="comment_likes",
         back_populates="liked_comments",
@@ -155,8 +155,8 @@ class Comments(Base):
         self.like_count += 1
 
 
-class PostLikes(Base):
-    __tablename__ = "post_likes"
+class PostScraps(Base):
+    __tablename__ = "post_scraps"
 
     user_id = Column(String, ForeignKey("users.user_id"), primary_key=True)
     post_id = Column(Integer, ForeignKey("posts.post_id"), primary_key=True)
