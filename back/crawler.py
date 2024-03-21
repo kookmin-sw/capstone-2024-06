@@ -1,13 +1,14 @@
 import os
+import re
+import requests
 from concurrent.futures import ThreadPoolExecutor
 from io import BytesIO
+
 from mimetypes import guess_extension
-import requests
 from PIL import Image
 from pillow_heif import register_heif_opener
+
 from config_loader import config
-import re
-import imghdr
 
 
 class BaseCrawler:
@@ -95,8 +96,6 @@ class DeskCrawler(BaseCrawler):
         super().__init__("ohouse", num_workers, verbose)
         self.query = query
         self.pages = num_pages
-        self.num_workers = num_workers
-        self.verbose = verbose
 
     def fetch_desks(self, page):
         api_url = "https://ohou.se/cards/feed.json"
