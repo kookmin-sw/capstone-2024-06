@@ -19,7 +19,7 @@ const AnalysisImageUpLoader = () => {
   const [AnalyBtClick, SetAnalyBtClick] = useState(true);
   const AnalyBtClicks = () => {
     SetAnalyBtClick(!AnalyBtClick);
-    console.log(AnalyBtClick)
+    console.log(AnalyBtClick);
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -74,58 +74,70 @@ const AnalysisImageUpLoader = () => {
 
   return (
     <main>
-      {AnalyBtClick && (<div className="flex flex-col items-center justify-center mt-4">
-        <div
-          className="m-2 relative"
-          onDragOver={handleDragOver}
-          onDrop={handleDrop}
-        >
-          {imagePreview ? (
-            <img
-              src={imagePreview.url}
-              alt="Image preview"
-              className="w-[500px] h-[400px] cursor-pointer"
-            />
+      {AnalyBtClick && (
+        <div className="flex flex-col items-center justify-center mt-4">
+          <div
+            className="m-2 relative"
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+          >
+            {imagePreview ? (
+              <img
+                src={imagePreview.url}
+                alt="Image preview"
+                className="w-[500px] h-[400px] cursor-pointer"
+              />
+            ) : (
+              <div className="flex my-4 items-center justify-center border-dashed border-2 text-[#808080] text-sm w-[600px] h-[400px] cursor-pointer">
+                드래그하여 사진 업로드
+              </div>
+            )}
+          </div>
+          {!imagePreview ? (
+            <div className="flex">
+              <input
+                type="file"
+                id="file-upload"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+              <label
+                htmlFor="file-upload"
+                className="cursor-pointer bg-blue-500 text-white flex items-center justify-center w-[100px] h-[45px] rounded hover:scale-105"
+              >
+                파일 선택
+              </label>
+            </div>
           ) : (
-            <div className="flex my-4 items-center justify-center border-dashed border-2 text-[#808080] text-sm w-[600px] h-[400px] cursor-pointer">
-              드래그하여 사진 업로드
+            <div className="flex">
+              <div
+                className="cursor-pointer bg-blue-500 text-white flex items-center justify-center w-[100px] h-[45px] rounded hover:scale-105"
+                onClick={ImageDeleteBt}
+              >
+                사진제거
+              </div>
+              <div
+                className="ml-1 cursor-pointer bg-blue-500 text-white flex items-center justify-center w-[100px] h-[45px] rounded hover:scale-105"
+                onClick={ImageAnalysisBt}
+              >
+                분석하기
+              </div>
             </div>
           )}
         </div>
-        {!imagePreview ? (
-          <div className="flex">
-            <input
-              type="file"
-              id="file-upload"
-              className="hidden"
-              onChange={handleFileChange}
-            />
-            <label
-              htmlFor="file-upload"
-              className="cursor-pointer bg-blue-500 text-white flex items-center justify-center w-[100px] h-[45px] rounded hover:scale-105"
-            >
-              파일 선택
-            </label>
-          </div>
-        ) : (
-          <div className="flex">
-            <div
-              className="cursor-pointer bg-blue-500 text-white flex items-center justify-center w-[100px] h-[45px] rounded hover:scale-105"
-              onClick={ImageDeleteBt}
-            >
-              사진제거
-            </div>
-            <div
-              className="ml-1 cursor-pointer bg-blue-500 text-white flex items-center justify-center w-[100px] h-[45px] rounded hover:scale-105"
-              onClick={ImageAnalysisBt}
-            >
-              분석하기
-            </div>
-          </div>
-        )}
-      </div>)}
-      {!AnalyBtClick && (<RecommendImgSlider Images={images}/>)}
-      
+      )}
+      {!AnalyBtClick && <RecommendImgSlider Images={images} />}
+      <div className="border w-full">
+        <div className="border font-semibold text-2xl">
+          이런 책상은 어떠세요 ?
+        </div>
+        <RecommendImgSlider
+          Images={["/desk4.jpg", "/desk4.jpg", "/desk4.jpg", "/desk4.jpg"]}
+        />
+        <RecommendImgSlider
+          Images={["/desk4.jpg", "/desk4.jpg", "/desk4.jpg", "/desk4.jpg"]}
+        />
+      </div>
     </main>
   );
 };
