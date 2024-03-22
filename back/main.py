@@ -506,8 +506,12 @@ async def get_scrapped_posts(
     return posts
 
 
+
+# webhook check
+# 서버 오픈 ->  uvicorn main:app --reload --host 0.0.0.0 --port 8000 
 # test
 # 서버 오픈 ->  uvicorn main:app --reload --host 0.0.0.0 --port 8000
+
 # 가상환경 -> source venv/bin/activate, 종료 -> deactivate
 # db -> db 실행(brew services start postgresql), db 확인(psql -U admin -d mydb), db 종료(brew services stop postgresql), SELECT * FROM users;
 # http://210.178.142.51:????
