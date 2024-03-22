@@ -1,5 +1,4 @@
-![header](https://capsule-render.vercel.app/api?type=Rounded&color=73&height=300&section=header&text=어떤데스크%20(what_desk)&fontColor=a16d07)
-
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&pause=1000&color=A16D07&random=false&width=435&lines=%EC%9D%B4+%EC%B1%85%EC%83%81+%EC%96%B4%EB%96%A4%EB%8D%B0%3F+++%EC%96%B4%EB%96%A4%EB%8D%B0%EC%8A%A4%ED%81%AC(what_desk))](https://git.io/typing-svg)
 
 > 2024 KMU SW 캡스톤 디자인 06조
 > https://kookmin-sw.github.io/capstone-2024-06/
@@ -9,7 +8,7 @@
 ## 📔 목차
 
 #### 후에 각각에 아이콘 추가하기
-- [ 프로젝트 소개](#-프로젝트-소개)
+- [프로젝트 소개](#-프로젝트-소개)
 - [ 기술스택](#%EF%B8%8F-기술스택)
 - [ 팀 소개](#-팀-소개)
 - [ 주요 기능](#-주요-기능)
@@ -68,61 +67,15 @@ What Desk aims to improve modern work culture and enhance productivity. The proj
 
 프로젝트 소개하는 영상을 추가하세요
 
-## 👩‍💻 팀 소개
+### 👩‍💻 팀 소개
 
-<table>
-    <tr align="center">
-        <td style="min-width: 160px;">
-            <a href="https://github.com/gustmdqkr321">
-              <b>박승현</b>
-            </a>
-            <br/>
-              XXXX1595
-        </td>
-        <td style="min-width: 160px;">
-              <b>박근우</b>
-            </a>
-            <br/>
-              XXXX
-        </td>
-        <td style="min-width: 160px;">
-              <b>마준영</b>
-            </a> 
-            <br/>
-              XXXX
-        </td>
-        <td style="min-width: 160px;">
-              <b>윤유진</b>
-            </a> 
-            <br/>
-              XXXX
-        </td>
-                <td style="min-width: 160px;">
-              <b>조한울</b>
-            </a> 
-            <br/>
-              XXXX
-        </td>
-    </tr>
-    <tr align="center">
-        <td>
-            역할 추가
-        </td>
-        <td>
-        </td>
-        <td>
-        </td>
-                <td>
-        </td>
-                <td>
-                
-        </td>
-    </tr>
-</table>
-
-</br>
-
-팀원정보 및 담당이나 사진 및 SNS를 이용하여 소개하세요.
+| 이름 | 사진 | 학번 | 역할 | 깃허브 주소 |
+|---|---|---|---|---|
+| 박승현 | ![박승현 이미지](박승현_이미지_URL) | xxxx1595 | Team Leader, Data Mining, Server | [박승현 GitHub](https://github.com/gustmdqkr321) |
+| 마준영 | ![마준영 이미지](마준영_이미지_URL) | xxxx | FrontEnd, BackEnd | [마준영 GitHub](마준영_GitHub_URL) |
+| 박근우 | ![박근우 이미지](박근우_이미지_URL) | xxxx | FrontEnd, BackEnd, Design | [박근우 GitHub](박근우_GitHub_URL) |
+| 윤유진 | ![윤유진 이미지](윤유진_이미지_URL) | xxxx | Role1, Role2, Role3 | [윤유진 GitHub](윤유진_GitHub_URL) |
+| 조한울 | ![조한울 이미지](조한울_이미지_URL) | xxxx | Role1, Role2, Role3 | [조한울 GitHub](조한울_GitHub_URL) |
 
 ### 4. 사용법
 
