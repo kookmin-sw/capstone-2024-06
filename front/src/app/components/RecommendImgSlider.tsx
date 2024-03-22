@@ -3,7 +3,7 @@ import React from "react";
 import Image from "next/image";
 
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Navigation, FreeMode } from "swiper/modules";
+import { Pagination, FreeMode } from "swiper/modules";
 
 import "swiper/css";
 import "swiper/css/pagination";
@@ -12,9 +12,9 @@ import "swiper/css/navigation";
 const RecommendImgSlider = ({ Images }: { Images: string[] }) => {
   return (
     <main className="flex w-full justify-center ">
-      <div className="swiper-container w-[1000px] border h-fit">
+      <div className="swiper-container w-[1000px] h-fit">
         <Swiper
-          slidesPerView={4}
+          slidesPerView={3}
           spaceBetween={30}
           freeMode={true}
           pagination={{
@@ -30,7 +30,7 @@ const RecommendImgSlider = ({ Images }: { Images: string[] }) => {
               src={src}
                 // src={`${process.env.Localhost}${src}`}
                 alt={`Desk ${index + 1}`}
-                width={400}
+                width={300}
                 height={300}
               
               />

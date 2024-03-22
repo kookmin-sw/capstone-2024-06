@@ -1,4 +1,5 @@
 "use client";
+import type { Metadata } from 'next'
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { SetStateAction, useState } from "react";
@@ -27,6 +28,7 @@ const Nav = () => {
   const LoginClick = () => {
     router.push("/api/auth/signin");
   };
+
   const CommunityClick = () => {
     router.push("/Community");
   };
@@ -39,6 +41,12 @@ const Nav = () => {
     router.push("/MyPage");
   };
 
+  const SignupClick = () => {
+    router.push("/sign-up");
+  }
+
+  console.log(session);
+
   return (
     <div className="flex justify-center w-full h-[70px] border-b">
       <div className="flex items-center min-w-[700px] max-w-[1000px] w-11/12">
@@ -50,7 +58,6 @@ const Nav = () => {
             height={27}
             onClick={LogoImgClick}
             className="cursor-pointer"
-            priority
           />
         </div>
         <div className="font-mono w-1/4 text-semibold font-[600] flex space-x-4">
@@ -92,15 +99,18 @@ const Nav = () => {
             >
               로그인
             </div>
-            <div className="text-sm text-[#808080] mx-1 cursor-pointer">
+            <div
+              className="text-sm text-[#808080] mx-1 cursor-pointer"
+              onClick={SignupClick}
+            >
               회원가입
             </div>
-            <div
+            {/* <div
               className="text-sm text-[#808080] mx-1 cursor-pointer"
               onClick={MyPageClick}
             >
               마이페이지
-            </div>
+            </div> */}
           </div>
         )}
         {session && (
