@@ -127,15 +127,31 @@ const AnalysisImageUpLoader = () => {
         </div>
       )}
       {!AnalyBtClick && <RecommendImgSlider Images={images} />}
-      <div className="border w-full">
-        <div className="border font-semibold text-2xl">
-          이런 책상은 어떠세요 ?
+      <div className="w-full">
+        <div className="font semi text-xl m-2">당신의 책상 분석결과 입니다</div>
+        <div className="w-[300px]">
+          <img
+            src="/desk4.jpg"
+            alt="Image preview"
+            className="cursor-pointer"
+          />
         </div>
+      </div>
+      <div className="w-full">
+        <div className="font-semi text-2xl m-2">이런 책상은 어떠세요 ?</div>
         <RecommendImgSlider
-          Images={["/desk4.jpg", "/desk4.jpg", "/desk4.jpg", "/desk4.jpg"]}
-        />
-        <RecommendImgSlider
-          Images={["/desk4.jpg", "/desk4.jpg", "/desk4.jpg", "/desk4.jpg"]}
+          Images={[
+            "/desk4.jpg",
+            "/desk4.jpg",
+            "/desk4.jpg",
+            "/desk4.jpg",
+            "/desk4.jpg",
+            "/desk4.jpg",
+            "/desk4.jpg",
+            "/desk4.jpg",
+            "/desk4.jpg",
+            "/desk4.jpg",
+          ]}
         />
       </div>
     </main>
