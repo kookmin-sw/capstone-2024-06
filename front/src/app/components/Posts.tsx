@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 const Posts = ({ PostCateGory }: { PostCateGory: string }) => {
   const [Posts, SetPosts] = useState([]);
-  
+
   useEffect(() => {
     const PostsLoad = async () => {
       try {
@@ -52,9 +52,9 @@ const Posts = ({ PostCateGory }: { PostCateGory: string }) => {
       case "인기":
         return "PopularityPost";
       case "삽니다":
-        return "BuyPost"
+        return "BuyPost";
       case "팝니다":
-        return "SellPost"
+        return "SellPost";
       default:
         return "";
     }
@@ -72,7 +72,7 @@ const Posts = ({ PostCateGory }: { PostCateGory: string }) => {
               <div className="flex w-full h-[250px]  justify-center items-center">
                 <div className="relative w-full h-full">
                   <Image
-                    src={`${process.env.Localhost}/uploaded_images/${post.thumbnail.image_id}`}
+                    src={`${process.env.Localhost}${post.thumbnail.image_id}`}
                     alt="Post Image"
                     layout="fill"
                     objectFit="cover"
