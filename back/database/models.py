@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, Sequence, DateTime
-from sqlalchemy.ext.hybrid import hybrid_method
+from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
 from sqlalchemy.orm import relationship, query_expression, Mapped
 from database.database import Base
 from datetime import datetime
@@ -25,17 +25,24 @@ class Users(Base):
 
     posts = relationship("Posts", back_populates="author", uselist=True)
     comments = relationship("Comments", back_populates="author", uselist=True)
+    scrapped_posts = relationship(
+        "Posts",
+        secondary="post_scraps",
+        back_populates="scrappers",
+        cascade="all, delete",
+        uselist=True,
+    )
     liked_posts = relationship(
         "Posts",
         secondary="post_likes",
-        back_populates="liking_users",
+        back_populates="likers",
         cascade="all, delete",
         uselist=True,
     )
     liked_comments = relationship(
         "Comments",
         secondary="comment_likes",
-        back_populates="liking_users",
+        back_populates="likers",
         cascade="all, delete",
         uselist=True,
     )
@@ -60,6 +67,7 @@ class Posts(Base):
     content = Column(String, nullable=False)
     category = Column(String, nullable=False)
 
+    scrap_count = Column(Integer, default=0, nullable=False)
     like_count = Column(Integer, default=0, nullable=False)
     view_count = Column(Integer, default=0, nullable=False)
     comment_count = Column(Integer, default=0, nullable=False)
@@ -73,7 +81,14 @@ class Posts(Base):
         cascade="all, delete-orphan",
         uselist=True,
     )
-    liking_users = relationship(
+    scrappers = relationship(
+        "Users",
+        secondary="post_scraps",
+        back_populates="scrapped_posts",
+        cascade="all, delete",
+        uselist=True,
+    )
+    likers = relationship(
         "Users",
         secondary="post_likes",
         back_populates="liked_posts",
@@ -81,12 +96,17 @@ class Posts(Base):
         uselist=True,
     )
     images = relationship("Images", cascade="all, delete-orphan")
+    scrapped: Mapped[Optional[bool]] = query_expression()
     liked: Mapped[Optional[bool]] = query_expression()
 
     @hybrid_method
     def increment_view_count(self):
         self.view_count += 1
 
+    @hybrid_method
+    def increment_scrap_count(self):
+        self.scrap_count += 1
+    
     @hybrid_method
     def increment_like_count(self):
         self.like_count += 1
@@ -98,6 +118,13 @@ class Posts(Base):
     @hybrid_method
     def decrement_comment_count(self):
         self.comment_count -= 1
+
+    @hybrid_property
+    def thumbnail(self):
+        if self.images:
+            return self.images[0]
+        else:
+            return {"image_id": "/images/default/deault_thumbnail.png", "filename": "default_thumbnail.png"}
 
 
 class Comments(Base):
@@ -127,7 +154,7 @@ class Comments(Base):
         uselist=True,
         cascade="all, delete-orphan",
     )
-    liking_users = relationship(
+    likers = relationship(
         "Users",
         secondary="comment_likes",
         back_populates="liked_comments",
@@ -146,6 +173,13 @@ class Comments(Base):
     @hybrid_method
     def increment_like_count(self):
         self.like_count += 1
+
+
+class PostScraps(Base):
+    __tablename__ = "post_scraps"
+
+    user_id = Column(String, ForeignKey("users.user_id"), primary_key=True)
+    post_id = Column(Integer, ForeignKey("posts.post_id"), primary_key=True)
 
 
 class PostLikes(Base):

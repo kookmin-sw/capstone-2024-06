@@ -1,13 +1,3 @@
-from datetime import datetime, timedelta, timezone
-
-from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, status, Body
-from fastapi.responses import FileResponse
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordBearer
-from jose import jwt, JWTError
-from passlib.context import CryptContext
-from fastapi.staticfiles import StaticFiles
-
 import os
 import shutil
 import uuid
@@ -16,14 +6,29 @@ import json
 import requests
 import re
 
-from detect import detect
-from process_image import process
+from datetime import datetime, timedelta, timezone
+from jose import jwt
+from passlib.context import CryptContext
+
+from fastapi import FastAPI, UploadFile, HTTPException, Depends, status
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordBearer
+from fastapi.staticfiles import StaticFiles
+
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from database import crud
 from database.models import *
 from database.schemas import *
 from database.database import SessionLocal, engine
+
+import faiss
+
+from detect import detect
+from process_image import process
+from img2vec import Feat2Vec, Obj2Vec
+from config_loader import config
+
 
 Base.metadata.create_all(bind=engine)
 
@@ -38,8 +43,18 @@ optional_oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False
 
 Base.metadata.create_all(bind=engine)
 app = FastAPI()
+
+os.makedirs(config["PATH"]["upload"], exist_ok=True)
+os.makedirs(config["PATH"]["result"], exist_ok=True)
 app.mount(
-    "/uploaded_images", StaticFiles(directory="uploaded_images"), name="uploaded_images"
+    "/images/upload",
+    StaticFiles(directory=config["PATH"]["upload"]),
+    name="uploaded_images",
+)
+app.mount(
+    "/images/result",
+    StaticFiles(directory=config["PATH"]["result"]),
+    name="result_images",
 )
 
 
@@ -65,7 +80,7 @@ async def authenticate_user(db: Session, user: UserSignIn):
         return False
     if not verify_password(user.password, user_db.hashed_password):
         return False
-    return user
+    return user_db
 
 
 def create_access_token(data: dict, expires_delta: timedelta):
@@ -123,20 +138,38 @@ app.add_middleware(
     allow_methods=["*"],  # 모든 HTTP 메서드를 허용하려면 "*" 사용
     allow_headers=["*"],  # 모든 헤더를 허용하려면 "*" 사용
 )
-result_folder = "/Users/park_sh/Desktop/what-desk/back/result"
-upload_folder = "/Users/park_sh/Desktop/what-desk/back/uploads"
-
-
-@app.get("/get_image/{image_filename}")
-async def get_image(image_filename: str):
-    image_path = os.path.join(result_folder, image_filename)
-    return FileResponse(image_path, media_type="image/jpeg")
 
 
 # 이미지 업로드 및 처리 결과 반환
-@app.post("/process_image/")
+@app.post("/process_image")
 async def process_image(file: UploadFile):
     return process(file)
+
+
+@app.post("/prototype_process")
+async def prototype_process(file: UploadFile):
+    file_path = os.path.join(config["PATH"]["upload"], file.filename)
+    with open(file_path, "wb") as buffer:
+        buffer.write(await file.read())
+
+    # how to use Img2Vec module to get nearest image
+    feat2vec = Feat2Vec()
+    feat_vec = feat2vec.get_vector(file_path)
+    feat_idx = faiss.read_index("vectors/vgg_features.index")
+    _, feat_result = feat_idx.search(feat_vec, 5)
+
+    # example
+    # obj2vec = Obj2Vec()
+    # obj_vec = obj2vec.get_vector(file_path)
+    # obj_idx = faiss.read_index("vectors/object_counts.index")
+    # _, obj_result = obj_idx.search(obj_vec, 5)
+
+    result = []
+    image_dir = config["PATH"]["train"]
+    image_paths = os.listdir(image_dir)
+    for i in feat_result[0]:
+        result.append(os.path.join(image_dir, image_paths[i]))
+    return {"result": result}
 
 
 @app.post("/user")
@@ -272,11 +305,18 @@ async def search_posts(
     user_id: str | None = Depends(get_current_user_if_signed_in),
     db: Session = Depends(get_db),
 ):
-    if order not in ["newest", "most_viewed", "most_liked"]:
+    if order not in ["newest", "most_viewed", "most_scrapped", "most_liked"]:
         return HTTPException(status_code=400, detail="Invalid order parameter")
 
     posts = await crud.search_posts(
-        db, author_id, category, keyword, order, per, page, user_id
+        db,
+        category=category,
+        author_id=author_id,
+        keyword=keyword,
+        order=order,
+        per=per,
+        page=page,
+        user_id=user_id,
     )
     return posts
 
@@ -319,8 +359,22 @@ async def delete_post(
     return {"message": "Post deleted successfully"}
 
 
+@app.post("/scrap/post/{post_id}")
+async def scrap_post(
+    post_id: int,
+    user_id: str = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    post = await crud.read_post(db, post_id)
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    await crud.create_post_scrap(db, user_id, post_id)
+    return {"message": "User scrapped post successfully"}
+
+
 @app.post("/like/post/{post_id}")
-async def like_post(
+async def scrap_post(
     post_id: int,
     user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -333,8 +387,8 @@ async def like_post(
     return {"message": "User liked post successfully"}
 
 
-@app.post("/like/comment/{comment_id}")
-async def like_comment(
+@app.post("/scrap/comment/{comment_id}")
+async def scrap_comment(
     comment_id: int,
     user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -343,8 +397,8 @@ async def like_comment(
     if not comment:
         raise HTTPException(status_code=404, detail="Comment not found")
 
-    await crud.create_comment_like(db, user_id, comment_id)
-    return {"message": "User liked comment successfully"}
+    await crud.create_comment_scrap(db, user_id, comment_id)
+    return {"message": "User scrapped comment successfully"}
 
 
 @app.post("/comment")
@@ -391,15 +445,15 @@ async def upload_image(
     user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    os.makedirs("uploaded_images", exist_ok=True)
-
+    upload_path = config["PATH"]["upload"]
     filename = file.filename
     file_extension = os.path.splitext(filename)[1]
-    image_id = str(uuid.uuid4()) + file_extension
+    file_path = os.path.join(upload_path, str(uuid.uuid4()) + file_extension)
 
-    with open(f"uploaded_images/{image_id}", "wb") as buffer:
+    with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
+    image_id = "/" + file_path
     image = Image(image_id=image_id, filename=filename)
     return await crud.create_image(db, image, temp_post_id)
 
@@ -444,10 +498,12 @@ async def get_followees(
     return user.followees
 
 
-@app.post("/liked_posts", response_model=list[PostPreview])
-async def get_liked_posts(user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
-    user = await crud.read_user_by_id(db, user_id)
-    return user.liked_posts
+@app.post("/scrapped_posts", response_model=list[PostPreview])
+async def get_scrapped_posts(
+    user_id: str = Depends(get_current_user), db: Session = Depends(get_db)
+):
+    posts = await crud.search_posts(db, user_id=user_id, scrapped=True)
+    return posts
 
 
 # test

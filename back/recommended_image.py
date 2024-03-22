@@ -4,6 +4,7 @@ from vector_similar import find_similar_vectors
 from object_similar import cosine_similarity
 from PIL import Image
 
+
 def recommend_image(image_path, top_n):
     # csv_path = "./class_count.csv"  
     vector_folder = "./vectors/train_vector" 
