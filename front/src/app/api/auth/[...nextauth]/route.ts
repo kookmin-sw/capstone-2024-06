@@ -168,7 +168,7 @@ const authOptions: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: "/sign-in",
+    signIn: "/login/sign-in",
   },
 };
 

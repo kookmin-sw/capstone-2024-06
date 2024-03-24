@@ -1,9 +1,9 @@
 "use client";
 import { useState } from 'react';
 import Link from 'next/link';
-import handleSubmit from '../api/user/findUserID/route';
+import handleSubmit from '../../../api/user/findUserID/route';
 import style from './findUserIDStyle.module.css';
-import Nav from '../components/Nav';
+import Nav from '../../../components/Nav';
 
 const FindUserIDpage = () => {
   const [email, setEmail] = useState<string>('');

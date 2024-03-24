@@ -2,8 +2,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import Nav from "../components/Nav";
-import MyPageProfile from "../components/MyPageProfile";
+import Nav from "../../../components/Nav";
+import MyPageProfile from "../../../components/MyPageProfile";
 
 const Notification = () => {
   const { data: session } = useSession();

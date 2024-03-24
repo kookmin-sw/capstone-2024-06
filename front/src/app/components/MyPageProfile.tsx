@@ -25,7 +25,7 @@ const MyPageProfile = () => {
         router.push("/Community/PostCreate");
         break;
       case 1:
-        router.push("/Scrap");
+        router.push("/Mypage/Scrap");
         break;
       case 2:
         router.push("/Following");
@@ -39,12 +39,18 @@ const MyPageProfile = () => {
   };
 
   const MyPostClick = () => {
-    router.push("/MyPost")
+    router.push("/Mypage/MyPost")
   }
 
   const NotificationClick = () => {
-    router.push("/Notification")
+    router.push("/Mypage/Notification")
   }
+
+  const MyAnalysisClick = () => {
+    router.push("/Mypage/MyAnalysis")
+  }
+
+
 
   return (
     <main className="w-[600px] mt-10 border h-[400px]">
@@ -59,7 +65,8 @@ const MyPageProfile = () => {
         onClick={MyPostClick}>
         내가 쓴 글
       </div>
-      <div className="absolute w-[173px] h-[83px] left-[1017px] top-[99px] font-semibold text-base leading-9 text-black hover:text-[#F4A460]">
+      <div className="absolute w-[173px] h-[83px] left-[1017px] top-[99px] font-semibold text-base leading-9 text-black hover:text-[#F4A460]"
+        onClick={MyAnalysisClick}>
         분석
       </div>
       <div className="absolute w-[500px] h-[0px] left-[644px] top-[151px] border border-gray-300 transform rotate-0.05"></div>

@@ -26,7 +26,7 @@ const Nav = () => {
   };
 
   const LoginClick = () => {
-    router.push("/api/auth/signin");
+    router.push("/login/sign-in");
   };
 
   const CommunityClick = () => {
@@ -38,11 +38,11 @@ const Nav = () => {
   };
 
   const MyPageClick = () => {
-    router.push("/MyPage");
+    router.push("/Mypage");
   };
 
   const SignupClick = () => {
-    router.push("/sign-up");
+    router.push("/login/sign-up");
   }
 
   console.log(session);
