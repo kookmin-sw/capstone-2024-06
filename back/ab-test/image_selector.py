@@ -1,13 +1,15 @@
 import os
 import random
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 import faiss
 from image_label import ImageLabel
 from img2vec import Feat2Vec
 
 
 class ImageSelector(QWidget):
+    clicked = pyqtSignal(bool)
+
     def __init__(self, image_dir):
         super().__init__()
         self.image_dir = image_dir
@@ -17,9 +19,6 @@ class ImageSelector(QWidget):
         self.feat_idx = faiss.read_index("vectors/vgg_features.index")
 
         self.query_image_label = ImageLabel()
-        self.query_image_label.mousePressEvent = (
-            lambda event: self.switch_image_position()
-        )
         query_label = QLabel("Query")
         query_layout = QVBoxLayout()
         query_label.setAlignment(Qt.AlignCenter)
@@ -27,7 +26,9 @@ class ImageSelector(QWidget):
         query_layout.addWidget(self.query_image_label)
 
         self.output_image_label = ImageLabel()
+        self.output_image_label.mousePressEvent = lambda event: self.image_clicked(True)
         self.random_image_label = ImageLabel()
+        self.random_image_label.mousePressEvent = lambda event: self.image_clicked(False)
 
         layout = QHBoxLayout()
         layout.addLayout(query_layout)
@@ -36,10 +37,10 @@ class ImageSelector(QWidget):
         self.setLayout(layout)
 
         self.load_image()
-
-    def choice_random_image_path(self):
-        image_name = random.choice(os.listdir(self.image_dir))
-        return os.path.join(self.image_dir, image_name)
+    
+    def image_clicked(self, correct):
+        self.load_image()
+        self.clicked.emit(correct)
 
     def load_image(self):
         query_image_path = self.choice_random_image_path()
@@ -63,6 +64,11 @@ class ImageSelector(QWidget):
         self.random_image_label.set_pixmap(random_image_path)
 
         self.switch_image_position()
+    
+    def choice_random_image_path(self):
+        image_name = random.choice(os.listdir(self.image_dir))
+        return os.path.join(self.image_dir, image_name)
+
 
     def switch_image_position(self):
         if random.random() < 0.5:
