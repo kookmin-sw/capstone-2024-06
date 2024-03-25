@@ -17,24 +17,24 @@
 
 ---
 
-### 프로젝트 소개
-"어떤데스크 (what_desk)"는 현대 사회에서 가장 많이 사용되는 책상을 중심으로 한 일의 효율성과 생산성을 증진시키기 위한 인테리어 디자인에 관한 것입니다. 이 프로젝트는 사용자에게 적합한 책상 디자인을 추천하는 것뿐만 아니라, 사용자의 책상을 분석하여 다양한 정보를 제공하고 있습니다.
+### 1. 프로젝트 소개
+"어떤데스크 (what_desk)"는 현대 사회에서 가장 많이 사용되는 책상을 중심으로 한 일의 효율성과 생산성을 증진시키기 위한 인테리어 디자인에 관한 것입니다. 이 프로젝트는 사용자에게 어울리는 책상 디자인을 추천하는 것뿐만 아니라, 사용자의 책상과 여러 사람들의 책상을 분석하여 다양한 정보를 제공하고 있습니다.
 
-어떤데스크는 사용자의 책상을 분석하여 그에 맞는 적절한 디자인을 추천하는데 그치지 않고, 사용자들에게 다양한 정보를 제공하는데 주력하고 있습니다. 이 프로젝트는 ### 여기에 사용자에게 알려줄 정보 추가 ###
+어떤데스크는 사용자의 책상을 분석하여 그에 맞는 적절한 디자인을 추천하는데 그치지 않고, 사용자들에게 다양한 정보를 제공하려고 합니다. 데스크테리어에 관련하여 어떤 키워드가 많이 검색되는지 혹은 어떤 아이템들이 인기가 많은지 사용자의 책상 정보를 분석하여 시각적으로 제공할 것입니다.
 
 어떤데스크는 커뮤니티 기능을 통해 사용자들끼리 정보를 공유하고 소통할 수 있는 플랫폼을 제공하고 있습니다. 사용자들은 자신의 작업 공간을 공유하고 다른 사용자들의 경험을 듣고 의견을 나눌 수 있습니다. 이를 통해 사용자들은 더 나은 작업 환경을 조성하는 데 도움을 받을 수 있습니다. 뿐만 아니라 사용자들간의 활발한 물건 거래도 지향하고 있습니다.
  
-어떤데스크는 현대 사회에서의 작업 문화를 개선하고 생산성을 향상시키는 데 기여하고자 합니다. 사용자들이 보다 효율적으로 일할 수 있도록 돕는 것을 목표로 하고 있으며, 이를 위해 계속해서 기능을 개선하고 새로운 아이디어를 제공하고 있습니다. 
+어떤데스크는 데스크테리어를 쉽게 만들어 사용자들이 작업 문화를 개선하고 생산성을 향상시키고 사용자들이 자신의 개성을 표현하는데 도움을 주려고 합니다.
 
 ---
 ### Abstract
-"What Desk" focuses on interior design aimed at enhancing efficiency and productivity in modern workspaces, with a particular emphasis on the most commonly used desk setups. The project not only recommends suitable desk designs to users but also provides various insights by analyzing users' desks.
+"What Desk" focuses on interior design aimed at enhancing efficiency and productivity in modern workspaces, with a particular emphasis on the most commonly used desks. This project not only recommends suitable desk designs to users but also provides various insights by analyzing users' desks and those of others.
 
-What Desk goes beyond merely recommending appropriate designs based on desk analysis; it prioritizes offering diverse information to users. This project provides ### Add additional information to inform users here ###.
+"What Desk" goes beyond merely recommending appropriate designs based on desk analysis; it aims to provide users with diverse information. It will visualize popular keywords related to desk decor and analyze which items are trending based on users' desk information.
 
-What Desk offers a community feature where users can share information and communicate with each other. Users can share their workspace setups, listen to others' experiences, and exchange opinions. This fosters a collaborative environment for users to create better workspaces. Additionally, What Desk encourages active trading among users.
+"What Desk" offers a community feature where users can share information and communicate with each other. Users can share their workspace setups, listen to others' experiences, and exchange opinions. This fosters a collaborative environment for users to create better workspaces. Additionally, "What Desk" encourages active trading among users.
 
-What Desk aims to improve modern work culture and enhance productivity. The project strives to assist users in working more efficiently by continually improving features and offering new ideas.
+"What Desk" aims to make desk decor easily accessible, enabling users to improve work culture, enhance productivity, and express their personalities.
 
 ---
 
@@ -67,11 +67,11 @@ What Desk aims to improve modern work culture and enhance productivity. The proj
 
 프로젝트 소개하는 영상을 추가하세요
 
-### 👩‍💻 팀 소개
+### 3. 팀 소개
 
 | 이름 | 사진 | 학번 | 역할 | 깃허브 주소 |
 |---|---|---|---|---|
-| 박승현 | ![박승현 이미지](/Users/park_sh/Desktop/backend/back/readme_image/깃허브 프사.jpeg) | xxxx1595 | Team Leader, Data Mining, Server | [박승현 GitHub](https://github.com/gustmdqkr321) |
+| 박승현 | ![박승현 이미지](/backend/back/readme_image/깃허브 프사.jpeg) | xxxx1595 | Team Leader, Data Mining, Server | [박승현 GitHub](https://github.com/gustmdqkr321) |
 | 마준영 | ![마준영 이미지](마준영_이미지_URL) | xxxx | FrontEnd, BackEnd | [마준영 GitHub](마준영_GitHub_URL) |
 | 박근우 | ![박근우 이미지](박근우_이미지_URL) | xxxx | FrontEnd, BackEnd, Design | [박근우 GitHub](박근우_GitHub_URL) |
 | 윤유진 | ![윤유진 이미지](윤유진_이미지_URL) | xxxx | Role1, Role2, Role3 | [윤유진 GitHub](윤유진_GitHub_URL) |
