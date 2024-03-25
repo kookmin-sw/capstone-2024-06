@@ -46,6 +46,8 @@ app = FastAPI()
 
 os.makedirs(config["PATH"]["upload"], exist_ok=True)
 os.makedirs(config["PATH"]["result"], exist_ok=True)
+os.makedirs(config["PATH"]["train"], exist_ok=True)
+
 app.mount(
     "/images/upload",
     StaticFiles(directory=config["PATH"]["upload"]),
@@ -56,7 +58,11 @@ app.mount(
     StaticFiles(directory=config["PATH"]["result"]),
     name="result_images",
 )
-
+app.mount(
+    "/images/train",
+    StaticFiles(directory=config["PATH"]["train"]),
+    name="train_images",
+)
 
 def get_db():
     db = SessionLocal()
@@ -168,8 +174,8 @@ async def prototype_process(file: UploadFile):
     image_dir = config["PATH"]["train"]
     image_paths = os.listdir(image_dir)
     for i in feat_result[0]:
-        result.append(os.path.join(image_dir, image_paths[i]))
-    return {"result": result}
+        result.append("/" + os.path.join(image_dir, image_paths[i]))
+    return {"file_name": result}
 
 
 @app.post("/user")
