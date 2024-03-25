@@ -2,16 +2,22 @@
 import MyProfile from "./MyProfile";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
-const Posts = ({ PostCateGory }: { PostCateGory: string }) => {
+const Posts = ({ PostCateGory }: { PostCateGory: string}) => {
   const [Posts, SetPosts] = useState([]);
+  const params = useSearchParams();
+  const keyword = params.get('keyword');
 
   useEffect(() => {
     const PostsLoad = async () => {
       try {
+        let tempkeyword = keyword
+        if (keyword == null) {
+          tempkeyword = ""
+        }
         const response = await fetch(
-          `${process.env.Localhost}/post/search?category=${PostCateGory}`,
+          `${process.env.Localhost}/post/search?category=${PostCateGory}&keyword=${tempkeyword}`,
           {
             method: "GET",
             headers: {
@@ -26,7 +32,7 @@ const Posts = ({ PostCateGory }: { PostCateGory: string }) => {
       }
     };
     PostsLoad();
-  }, []);
+  }, [keyword]);
 
   const router = useRouter();
 
