@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Nav from "../../../components/Nav";
+import MyPosting from "../../../components/MyPosting";
 import MyPageProfile from "../../../components/MyPageProfile";
 
 const MyPost = () => {
@@ -33,35 +34,8 @@ const MyPost = () => {
             임시 저장
           </button>
         </div>
-
-
-
         <div className="absolute w-[1049px] h-0 left-[179px] top-[184px] border border-gray-300 transform rotate-0.05" />
-        <div className="absolute w-[1032px] h-[182px] left-[189px] top-[224px] border border-gray-300" />
-        <div className="absolute left-[206px] top-[235px] font-semibold text-base leading-9 text-black">
-          제목
-        </div>
-        <div className="absolute w-[1205px] h-[173px] left-[209px] top-[285px] font-thin text-lg leading-[39px] text-black">
-          내용을 여기에 추가하세요
-        </div>
-        <div className="absolute left-[206px] top-[355px] ">
-          <Image
-            src="/Heart.png"
-            alt="Heart image"
-            width={20}
-            height={20}
-            className="cursor-pointer mr-1 rounded-full"
-          />
-        </div>
-        <div className="absolute left-[236px] top-[355px] ">
-          <Image
-            src="/Comments.png"
-            alt="Comments image"
-            width={22}
-            height={22}
-            className="cursor-pointer mr-1 rounded-full"
-          />
-        </div>
+        <MyPosting />
       </div >
     </>
   );

@@ -29,7 +29,7 @@ const Notification = () => {
       <div className="absolute left-[647px] top-[149px] container mx-auto p-4">
         <ul>
           {notifications.map((notification) => (
-            <li key={notification.id} className="border-b py-2 w-[480px]">
+            <li key={notification.id} className="border-b py-2 w-[450px]">
               <p className="text-lg">{notification.message}</p>
               <p className="max-w-[400px] text-sm text-gray-500">
                 {notification.date.toLocaleString()}
