@@ -4,8 +4,7 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 
-const Comment = ({ comment_count }: { comment_count: number}) => {
-
+const Comment = ({ comment_count }: { comment_count: number }) => {
   const { data: session } = useSession();
 
   const Postid = useParams();
@@ -15,12 +14,26 @@ const Comment = ({ comment_count }: { comment_count: number}) => {
     {
       post_id: 0,
       parent_comment_id: 0,
-      content: "string",
+      content: "",
       comment_id: 0,
-      author_id: "string",
-      created_at: "2024-03-09T05:18:36.965Z",
-      child_comments: ["string"],
       like_count: 0,
+      created_at: "",
+      child_comments: [
+        {
+          post_id: 0,
+          parent_comment_id: 0,
+          content: "",
+          comment_id: 0,
+          like_count: 0,
+          created_at: "",
+        },
+      ],
+      author: {
+        user_id: "",
+        name: "",
+        email: "",
+        image: "",
+      },
     },
   ]);
 
@@ -71,7 +84,7 @@ const Comment = ({ comment_count }: { comment_count: number}) => {
         toggleReplyTextarea(index);
       } else {
         await AddComment();
-        SetComment("")
+        SetComment("");
       }
     }
   };
@@ -111,7 +124,6 @@ const Comment = ({ comment_count }: { comment_count: number}) => {
         }
       );
       const data = await response.json();
-      
     } catch (error) {
       console.log("Error", error);
     }
