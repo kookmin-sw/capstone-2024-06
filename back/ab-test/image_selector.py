@@ -46,9 +46,9 @@ class ImageSelector(QWidget):
         query_image_path = self.choice_random_image_path()
 
         feat_vec = self.feat2vec.get_vector(query_image_path)
-        _, feat_result = self.feat_idx.search(feat_vec, 1)
+        _, feat_result = self.feat_idx.search(feat_vec, 2)
 
-        output_image_name = os.listdir(self.image_dir)[feat_result[0][0]]
+        output_image_name = os.listdir(self.image_dir)[feat_result[0][1]]
         output_image_path = os.path.join(self.image_dir, output_image_name)
 
         while True:
