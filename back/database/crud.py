@@ -340,3 +340,19 @@ async def delete_comment(db: Session, comment: Comments):
 async def delete_follow(db: Session, follow: Follows):
     db.delete(follow)
     db.commit()
+
+
+async def modify_user(db: Session, user_id: str, user_profile: UserProfile):
+    user = db.query(Users).filter(Users.user_id == user_id).first()
+
+    if user_profile.name:
+        user.name = user_profile.name
+    
+    if user_profile.email:
+        user.email = user_profile.email
+    
+    if user_profile.image:
+        user.image = user_profile.image
+    
+    db.commit()
+    return user
