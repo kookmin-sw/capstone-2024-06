@@ -4,6 +4,7 @@ from vector_similar import find_similar_vectors
 from object_similar import cosine_similarity
 from PIL import Image
 
+
 def recommend_image(image_path, top_n):
     # csv_path = "./class_count.csv"  
     vector_folder = "./vectors/train_vector" 
@@ -27,15 +28,15 @@ def recommend_image(image_path, top_n):
     return final_score[:top_n//2]
 
 # 테스트할 이미지 경로와 상위 N개의 추천 이미지 설정
-image_path = "/Users/park_sh/Desktop/backend/back/images/test_image/학사책상.jpeg"  # 테스트할 이미지 경로2
-top_n = 10  # 상위 N개의 추천 이미지
+# image_path = "/Users/park_sh/Desktop/backend/back/images/test_image/학사책상.jpeg"  # 테스트할 이미지 경로2
+# top_n = 10  # 상위 N개의 추천 이미지
 
-# 최종 추천 이미지 순위를 가져오기
-ranked_recommendations = recommend_image(image_path, top_n)
+# # 최종 추천 이미지 순위를 가져오기
+# ranked_recommendations = recommend_image(image_path, top_n)
 
-print("Ranked Recommendations:")
-for idx, recommendation in enumerate(ranked_recommendations, 1):
-    print(f"{idx}. Image Path: {recommendation['image_path']}, Total Similarity: {recommendation['total_similarity']}")
-    # 이미지 표시
-    img = Image.open(recommendation['image_path'])
-    img.show()
+# print("Ranked Recommendations:")
+# for idx, recommendation in enumerate(ranked_recommendations, 1):
+#     print(f"{idx}. Image Path: {recommendation['image_path']}, Total Similarity: {recommendation['total_similarity']}")
+#     # 이미지 표시
+#     img = Image.open(recommendation['image_path'])
+#     img.show()
