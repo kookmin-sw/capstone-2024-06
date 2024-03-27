@@ -360,3 +360,16 @@ async def modify_user(db: Session, user_id: str, user_profile: UserProfile):
 
 async def read_notifications(db: Session, user_id: str):
     return db.query(Notifications).filter(Notifications.receiver_id == user_id).all()
+
+
+async def check_notification(db: Session, notification_id: int):
+    notification = db.query(Notifications).filter(Notifications.notification_id == notification_id).first()
+    notification.checked = True
+    db.commit()
+    return notification
+
+
+async def delete_notification(db: Session, notification_id: int):
+    notification = db.query(Notifications).filter(Notifications.notification_id == notification_id).first()
+    db.delete(notification)
+    db.commit()
