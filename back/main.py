@@ -29,6 +29,8 @@ from process_image import process
 from img2vec import Feat2Vec, Obj2Vec
 from config_loader import config
 
+import plotly.express as px
+
 
 Base.metadata.create_all(bind=engine)
 
@@ -108,13 +110,12 @@ def decode_jwt_payload(token):
 
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
-    return "admin"
-    # try:
-    #     payload = decode_jwt_payload(token)
-    #     jwt.decode(token, SECRET_KEY, ALGORITHM)
-    #     return payload["sub"]
-    # except:
-    #     raise HTTPException(status_code=401, detail="Invalid token")
+    try:
+        payload = decode_jwt_payload(token)
+        jwt.decode(token, SECRET_KEY, ALGORITHM)
+        return payload["sub"]
+    except:
+        raise HTTPException(status_code=401, detail="Invalid token")
 
 
 def get_current_user_if_signed_in(token: str | None = Depends(optional_oauth2_scheme)):
@@ -177,7 +178,16 @@ async def prototype_process(file: UploadFile):
     image_paths = os.listdir(image_dir)
     for i in feat_result[0]:
         result.append("/" + os.path.join(image_dir, image_paths[i]))
-    return {"file_name": result}
+
+    df = px.data.tips()
+    fig = px.box(df, x="day", y="total_bill", color="smoker")
+    fig.update_traces(quartilemethod="inclusive")
+    plot_html = fig.to_html(include_plotlyjs="cdn")
+
+    return {
+        "file_name": result,
+        "plot": plot_html
+    }
 
 
 @app.post("/user")
