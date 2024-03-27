@@ -524,6 +524,14 @@ async def modify_user_profile(
     return user
 
 
+@app.get("/notification", response_model=list[Notification])
+async def get_notifications(
+    user_id: str = Depends(get_current_user), db: Session = Depends(get_db)
+):
+    notifications = await crud.read_notifications(db, user_id)
+    return notifications
+
+
 # webhook check
 # 서버 오픈 ->  uvicorn main:app --reload --host 0.0.0.0 --port 8000
 # test

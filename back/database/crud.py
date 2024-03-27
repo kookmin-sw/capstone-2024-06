@@ -356,3 +356,7 @@ async def modify_user(db: Session, user_id: str, user_profile: UserProfile):
     
     db.commit()
     return user
+
+
+async def read_notifications(db: Session, user_id: str):
+    return db.query(Notifications).filter(Notifications.receiver_id == user_id).all()
