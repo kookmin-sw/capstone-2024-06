@@ -96,3 +96,9 @@ class Image(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
+class Notification(BaseModel):
+    notification_id: int
+    reference_id: int
+    content: str
+    checked: bool
