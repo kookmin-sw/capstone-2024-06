@@ -60,6 +60,14 @@ async def create_comment(db: Session, comment: CommentForm, user_id: str):
     comment.post.increment_comment_count()
     if comment.parent_comment:
         comment.parent_comment.increment_child_comment_count()
+
+    notification = Notifications(
+        receiver_id=comment.post.author_id,
+        reference_id=comment.post.post_id,
+        content="댓글달림",
+    )
+    db.add(notification)
+
     db.commit()
     return comment
 
@@ -69,6 +77,14 @@ async def create_post_scrap(db: Session, user_id: str, post_id: int):
     post = db.query(Posts).filter(Posts.post_id == post_id).first()
     user.scrapped_posts.append(post)
     post.increment_scrap_count()
+
+    notification = Notifications(
+        receiver_id=post.author_id,
+        reference_id=post.post_id,
+        content="스크랩됨",
+    )
+    db.add(notification)
+
     db.commit()
 
 
@@ -77,6 +93,14 @@ async def create_post_like(db: Session, user_id: str, post_id: int):
     post = db.query(Posts).filter(Posts.post_id == post_id).first()
     user.liked_posts.append(post)
     post.increment_like_count()
+
+    notification = Notifications(
+        receiver_id=post.author_id,
+        reference_id=post.post_id,
+        content="좋아요눌림",
+    )
+    db.add(notification)
+
     db.commit()
 
 
@@ -85,6 +109,14 @@ async def create_comment_like(db: Session, user_id: str, comment_id: int):
     comment = db.query(Comments).filter(Comments.comment_id == comment_id).first()
     user.liked_comments.append(comment)
     comment.increment_like_count()
+
+    notification = Notifications(
+        receiver_id=comment.author_id,
+        reference_id=comment.post.post_id,
+        content="댓글 좋아요 눌림",
+    )
+    db.add(notification)
+
     db.commit()
 
 
@@ -93,6 +125,13 @@ async def create_follow(db: Session, follower_user_id: str, followee_user_id: st
         follower_user_id=follower_user_id, followee_user_id=followee_user_id
     )
     db.add(follow)
+
+    notification = Notifications(
+        receiver_id=followee_user_id,
+        content="팔로우됨",
+    )
+    db.add(notification)
+
     db.commit()
     return follow
 
@@ -136,7 +175,9 @@ async def read_post_with_view(db: Session, post_id: int, user_id: str | None):
         query = query.options(
             with_expression(
                 Posts.scrapped,
-                case((PostScraps.user_id.isnot(None), True), else_=False).label("scrapped"),
+                case((PostScraps.user_id.isnot(None), True), else_=False).label(
+                    "scrapped"
+                ),
             ),
             with_expression(
                 Posts.liked,
@@ -202,32 +243,37 @@ async def search_posts(
     per: int = 24,
     page: int = 1,
     user_id: str | None = None,
-    scrapped: bool = False
+    scrapped: bool = False,
 ):
     query = db.query(Posts)
 
-    
     if user_id:
         if scrapped:
             query = query.join(
                 PostScraps,
-                and_(Posts.post_id == PostScraps.post_id, PostScraps.user_id == user_id),
+                and_(
+                    Posts.post_id == PostScraps.post_id, PostScraps.user_id == user_id
+                ),
             )
         else:
             query = query.outerjoin(
                 PostScraps,
-                and_(Posts.post_id == PostScraps.post_id, PostScraps.user_id == user_id),
+                and_(
+                    Posts.post_id == PostScraps.post_id, PostScraps.user_id == user_id
+                ),
             )
-        
+
         query = query.outerjoin(
             PostLikes,
             and_(Posts.post_id == PostLikes.post_id, PostLikes.user_id == user_id),
         )
-        
+
         query = query.options(
             with_expression(
                 Posts.scrapped,
-                case((PostScraps.user_id.isnot(None), True), else_=False).label("scrapped"),
+                case((PostScraps.user_id.isnot(None), True), else_=False).label(
+                    "scrapped"
+                ),
             ),
             with_expression(
                 Posts.liked,
@@ -347,13 +393,13 @@ async def modify_user(db: Session, user_id: str, user_profile: UserProfile):
 
     if user_profile.name:
         user.name = user_profile.name
-    
+
     if user_profile.email:
         user.email = user_profile.email
-    
+
     if user_profile.image:
         user.image = user_profile.image
-    
+
     db.commit()
     return user
 
@@ -363,13 +409,21 @@ async def read_notifications(db: Session, user_id: str):
 
 
 async def check_notification(db: Session, notification_id: int):
-    notification = db.query(Notifications).filter(Notifications.notification_id == notification_id).first()
+    notification = (
+        db.query(Notifications)
+        .filter(Notifications.notification_id == notification_id)
+        .first()
+    )
     notification.checked = True
     db.commit()
     return notification
 
 
 async def delete_notification(db: Session, notification_id: int):
-    notification = db.query(Notifications).filter(Notifications.notification_id == notification_id).first()
+    notification = (
+        db.query(Notifications)
+        .filter(Notifications.notification_id == notification_id)
+        .first()
+    )
     db.delete(notification)
     db.commit()

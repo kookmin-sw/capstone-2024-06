@@ -244,6 +244,6 @@ class Notifications(Base):
     reference_id = Column(Integer, ForeignKey("posts.post_id"), nullable=True)
 
     content = Column(String, nullable=False)
-    checked = Column(Boolean, nullable=False)
+    checked = Column(Boolean, default=False, nullable=False)
 
     receiver = relationship("Users", back_populates="notifications")
