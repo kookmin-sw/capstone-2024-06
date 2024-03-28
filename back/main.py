@@ -176,13 +176,14 @@ async def prototype_process(file: UploadFile):
     result = []
     image_dir = config["PATH"]["train"]
     image_paths = os.listdir(image_dir)
+
     for i in feat_result[0]:
         result.append("/" + os.path.join(image_dir, image_paths[i]))
 
     df = px.data.tips()
     fig = px.box(df, x="day", y="total_bill", color="smoker")
     fig.update_traces(quartilemethod="inclusive")
-    plot_html = fig.to_html(include_plotlyjs="cdn")
+    plot_html = fig.to_html(include_plotlyjs="cdn", full_html=False)
 
     return {
         "file_name": result,
