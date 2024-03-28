@@ -42,59 +42,33 @@ Beyond recommending suitable designs based on users' desks, "What_desk" seeks to
 
 ### 2. 기술 스택
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>기술 스택</title>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        h3 {
-            margin-top: 0;
-        }
-    </style>
-</head>
-<body>
-    <table>
-        <tr>
-            <td>
-                <h3>FE</h3>
-                <img src="https://img.shields.io/badge/Next.JS-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js"><br>
-                <img src="https://img.shields.io/badge/Tailwindcss-06B6D4?style=for-the-badge&logo=Tailwindcss&logoColor=white" alt="Tailwind CSS"><br>
-                <img src="https://img.shields.io/badge/typescript-3178c6?style=for-the-badge&logo=TypeScript&logoColor=white" alt="TypeScript">
-            </td>
-            <td>
-                <h3>BE</h3>
-                <img src="https://img.shields.io/badge/fastapi-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI"><br>
-                <img src="https://img.shields.io/badge/postgresql-4169e1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL"><br>
-                <img src="https://img.shields.io/badge/plotly-3f4f75?style=for-the-badge&logo=plotly&logoColor=white" alt="Plotly"><br>
-                <img src="https://img.shields.io/badge/dbeaver-382923?style=for-the-badge&logo=dbeaver&logoColor=white" alt="DBeaver">
-            </td>
-            <td>
-                <h3>AI</h3>
-                <img src="https://img.shields.io/badge/tensorflow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white" alt="TensorFlow"><br>
-                <img src="https://img.shields.io/badge/pytorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" alt="PyTorch">
-            </td>
-            <td>
-                <h3>Tools</h3>
-                <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white" alt="Git">
-            </td>
-        </tr>
-    </table>
-</body>
-</html>
+
+<table>
+    <tr>
+        <td>
+            <h3>FE</h3>
+            <img src="https://img.shields.io/badge/Next.JS-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js"><br>
+            <img src="https://img.shields.io/badge/Tailwindcss-06B6D4?style=for-the-badge&logo=Tailwindcss&logoColor=white" alt="Tailwind CSS"><br>
+            <img src="https://img.shields.io/badge/typescript-3178c6?style=for-the-badge&logo=TypeScript&logoColor=white" alt="TypeScript">
+        </td>
+        <td>
+            <h3>BE</h3>
+            <img src="https://img.shields.io/badge/fastapi-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI"><br>
+            <img src="https://img.shields.io/badge/postgresql-4169e1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL"><br>
+            <img src="https://img.shields.io/badge/plotly-3f4f75?style=for-the-badge&logo=plotly&logoColor=white" alt="Plotly"><br>
+            <img src="https://img.shields.io/badge/dbeaver-382923?style=for-the-badge&logo=dbeaver&logoColor=white" alt="DBeaver">
+        </td>
+        <td>
+            <h3>AI</h3>
+            <img src="https://img.shields.io/badge/tensorflow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white" alt="TensorFlow"><br>
+            <img src="https://img.shields.io/badge/pytorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" alt="PyTorch">
+        </td>
+        <td>
+            <h3>Tools</h3>
+            <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white" alt="Git">
+        </td>
+    </tr>
+</table>
 
 
 ---
@@ -168,42 +142,19 @@ Beyond recommending suitable designs based on users' desks, "What_desk" seeks to
 
 ### 5. 프로젝트 구조도
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>이미지 표</title>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
-</head>
-<body>
-    <table>
-        <tr>
-            <th>구조도</th>
-            <th>Use Case</th>
-            <th>ERD</th>
-        </tr>
-        <tr>
-            <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/64b293b5-5d79-407b-b64a-611d552f523c" alt="구조도" width="300" height="200"></td>
-            <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/8fa9cce0-fea7-45b1-8583-d65f9b9b109f" alt="Use Case" width="300" height="200"></td>
-            <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/3cf9be4e-ff38-45be-b847-9ea32a2041f9" alt="ERD" width="300" height="200"></td>
-        </tr>
-    </table>
-</body>
-</html>
+<table>
+    <tr>
+        <th>구조도</th>
+        <th>Use Case</th>
+        <th>ERD</th>
+    </tr>
+    <tr>
+        <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/64b293b5-5d79-407b-b64a-611d552f523c" alt="구조도" width="300" height="200"></td>
+        <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/8fa9cce0-fea7-45b1-8583-d65f9b9b109f" alt="Use Case" width="300" height="200"></td>
+        <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/3cf9be4e-ff38-45be-b847-9ea32a2041f9" alt="ERD" width="300" height="200"></td>
+    </tr>
+</table>
+
 
 ---
 
