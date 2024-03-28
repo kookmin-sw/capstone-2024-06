@@ -15,6 +15,7 @@ const AnalysisImageUpLoader = () => {
   const { data: session } = useSession();
 
   const [images, setImages] = useState<string[]>([]);
+  const [plotlyHTML, setPlotlyHTML] = useState('');
   const [imagePreview, setImagePreview] = useState<ImagePreview | null>(null);
 
   // 버퍼링
@@ -72,6 +73,7 @@ const AnalysisImageUpLoader = () => {
         const ImageDatas = await ImagePost.json();
         console.log(ImageDatas);
         setImages(ImageDatas.file_name);
+        setPlotlyHTML(ImageDatas.plot);
         setIsAnalyzing(false);
         AnalyBtClicks();
       }
@@ -148,6 +150,7 @@ const AnalysisImageUpLoader = () => {
         </div>
       )}
       {!AnalyBtClick && <RecommendImgSlider Images={images} />}
+      <iframe className="plot" srcDoc={plotlyHTML} width="1000" height="800"></iframe>
     </main>
   );
 };
