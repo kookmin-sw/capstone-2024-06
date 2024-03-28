@@ -3,7 +3,9 @@ import { useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Nav from "../../../components/Nav";
-import SettingForm from "../../../components/settingUserinfo";
+import EditUserInfo from "../../../components/EditUserInfo";
+import EditUserProfileImg from "../../../components/EditUserprofileImg";
+
 
 interface IProps {
   profileImg?: any;
@@ -39,7 +41,8 @@ const EditPost = () => {
       <div className="absolute w-[173px] h-[83px] left-[260px] top-[600px] font-semibold text-base leading-9 text-black">
         프로필 사진 변경
       </div>
-      <SettingForm user={session?.user} />
+      <EditUserInfo />
+      <EditUserProfileImg />
     </>
   );
 };

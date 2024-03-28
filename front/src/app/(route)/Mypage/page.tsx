@@ -8,8 +8,6 @@ export default function MyPage() {
       <Nav />
       <div className="flex justify-center w-full h-auto">
         <div className="flex items-center min-w-[700px] max-w-[1000px] w-11/12 h-auto">
-          <MyPageProfile />
-          <MyPagePosts />
         </div>
       </div>
     </main>
