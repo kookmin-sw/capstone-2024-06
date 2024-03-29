@@ -55,7 +55,7 @@ const Nav = () => {
       <div className="flex items-center min-w-[700px] max-w-[1000px] w-11/12">
         <div className="mr-6 w-[120px]">
           <Image
-            src="/namet.png"
+            src="/logo.png"
             alt="name"
             width={100}
             height={27}
