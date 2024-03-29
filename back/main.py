@@ -10,7 +10,7 @@ from datetime import datetime, timedelta, timezone
 from jose import jwt
 from passlib.context import CryptContext
 
-from fastapi import FastAPI, UploadFile, HTTPException, Depends, status, WebSocket
+from fastapi import FastAPI, UploadFile, HTTPException, Depends, status, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.staticfiles import StaticFiles
@@ -108,13 +108,12 @@ def decode_jwt_payload(token):
 
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
-    return "admin"
-    # try:
-    #     payload = decode_jwt_payload(token)
-    #     jwt.decode(token, SECRET_KEY, ALGORITHM)
-    #     return payload["sub"]
-    # except:
-    #     raise HTTPException(status_code=401, detail="Invalid token")
+    try:
+        payload = decode_jwt_payload(token)
+        jwt.decode(token, SECRET_KEY, ALGORITHM)
+        return payload["sub"]
+    except:
+        raise HTTPException(status_code=401, detail="Invalid token")
 
 
 def get_current_user_if_signed_in(token: str | None = Depends(optional_oauth2_scheme)):
@@ -553,28 +552,32 @@ async def delete_notification(
     return {"message": "Notification deleted successfully"}
 
 
-connections = {}
+connections = dict()
 
-@app.websocket("/chat_prototype/{user_id}")
-async def websocket_endpoint(websocket: WebSocket, user_id: int):
+@app.websocket("/chat/{opponent_id}")
+async def chatting_websocket(opponent_id: str, websocket: WebSocket):
     await websocket.accept()
+    token = await websocket.receive_text()
+    user_id = get_current_user(token)
+
+    if user_id in connections:
+        del connections[user_id]
     connections[user_id] = websocket
-    print(f"WebSocket connection established for user {user_id}")
+
     try:
         while True:
-            data = await websocket.receive_json()
+            data = await websocket.receive_text()
             print(connections)
-            message = data.get("message")
-            print(f"Received message: {message} from user {user_id}")
-            for client_id, client_websocket in connections.items():
-                if client_id != user_id:
-                    await client_websocket.send_json({"message": f"Message from User {user_id}: {message}"})
-                    print(f"Message sent to user {client_id}")
-    except Exception as e:
+            print(data)
+            if opponent_id in connections:
+                print(f"{data} to {opponent_id}")
+                await connections[opponent_id].send_text(data)
+                
+    
+    except WebSocketDisconnect as e:
         print(f"WebSocket error: {e}")
     finally:
         del connections[user_id]
-        print(f"WebSocket connection closed for user {user_id}")
 
 
 # webhook check
