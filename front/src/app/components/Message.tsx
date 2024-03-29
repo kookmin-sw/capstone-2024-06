@@ -1,32 +1,36 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 
 const SingleClient = ({ userId }: { userId: number }) => {
+
+  const { data: session } = useSession();
+  const params = useSearchParams();
+  const another = params.get('another');
 
   const [message, setMessage] = useState("");
   const [receivedMessage, setReceivedMessage] = useState("");
   const [client, setClient] = useState<WebSocket | null>(null);
 
   useEffect(() => {
-    const newClient = new WebSocket(`ws://192.168.127.253:8080/chat/${userId}`);
+    if (!session) return;
+    const newClient = new WebSocket(`ws://192.168.127.253:8080/chat/${another}`);
     newClient.onopen = () => {
-      console.log(`WebSocket Client Connected for user ${userId}`); 
+      newClient.send((session as any)?.access_token)
+      console.log(`WebSocket Client Connected for user ${userId}`);
     };
     newClient.onmessage = (message) => {
-      const parsemessage = JSON.parse(message.data).message;
+      const parsemessage = message.data;
       setReceivedMessage(parsemessage);
-      console.log(parsemessage);
     };
     setClient(newClient);
-
-    return () => {
-      newClient.close();
-    };
-  }, [userId]);
+    
+  }, [userId, session, another]);
 
   const sendMessage = () => {
     if (message.trim() !== "" && client) {
-      client.send(JSON.stringify({ message: message }));
+      client.send(message);
       setMessage("");
     }
   };
@@ -48,8 +52,6 @@ const Message = () => {
   return (
     <div>
       <SingleClient userId={1} />
-      <SingleClient userId={2} />
-      <SingleClient userId={3} />
     </div>
   );
 };
