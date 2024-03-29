@@ -5,7 +5,8 @@
 </div>
 
 > 2024 KMU SW 캡스톤 디자인 06조
-> https://kookmin-sw.github.io/capstone-2024-06/
+> <a href="https://kookmin-sw.github.io/capstone-2024-06/">어떤데스크(what_desk)</a>
+
 
 ---
 
@@ -59,7 +60,7 @@ Beyond recommending suitable designs based on users' desks, "What_desk" seeks to
 
 ### 3. 기술 스택
 
-<div style="text-align: center;">
+<div align="center"> 
     <img src="https://img.shields.io/badge/Next.JS-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js">
     <img src="https://img.shields.io/badge/Tailwindcss-06B6D4?style=for-the-badge&logo=Tailwindcss&logoColor=white" alt="Tailwind CSS">
     <img src="https://img.shields.io/badge/typescript-3178c6?style=for-the-badge&logo=TypeScript&logoColor=white" alt="TypeScript"><br>
@@ -88,7 +89,7 @@ Beyond recommending suitable designs based on users' desks, "What_desk" seeks to
 
 ### 4. 팀 소개
 
-<table style="margin: 0 auto;">
+<table align="center">
   <tr>
     <th>이름</th>
     <th>사진</th>
@@ -138,7 +139,7 @@ Beyond recommending suitable designs based on users' desks, "What_desk" seeks to
 
 ### 5. 프로젝트 구조도
 
-<table>
+<table align="center">
     <tr>
         <th>구조도</th>
         <th>Use Case</th>
@@ -156,6 +157,7 @@ Beyond recommending suitable designs based on users' desks, "What_desk" seeks to
 
 ### 6. 문서
 
+<a href="https://drive.google.com/drive/folders/1zog5XhqHQVDgI3lmMYcss9qFbO88FDZJ?usp=drive_link">중간보고</a>
 
 ---
 ### 7. 사용법
