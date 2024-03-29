@@ -1,7 +1,8 @@
 [![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&pause=1000&color=A16D07&random=false&width=435&lines=%EC%9D%B4+%EC%B1%85%EC%83%81+%EC%96%B4%EB%96%A4%EB%8D%B0%3F+++%EC%96%B4%EB%96%A4%EB%8D%B0%EC%8A%A4%ED%81%AC(what_desk))](https://git.io/typing-svg)
 
 <div style="text-align: center;">
-  <img width="500" alt="로고 그림자" src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/4a6de910-b715-477c-8997-2e1ad5712a6f">
+  <img width="500" alt="로고 그림자" src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/5f292800-b047-4629-a8c9-47b66adb72b8)
+ssets/54922799/97345875-4419-411c-9023-ed032816f429">
 </div>
 
 > 2024 KMU SW 캡스톤 디자인 06조
@@ -99,14 +100,14 @@ Beyond recommending suitable designs based on users' desks, "What_desk" seeks to
   </tr>
   <tr>
     <td>박승현</td>
-    <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/f5d1c8ee-4724-4440-850f-66681411244a" alt="박승현" width="100" height="100"></td>
+    <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/1eedf542-55f7-408e-9916-72a3457b0795" alt="박승현" width="100" height="100"></td>
     <td>xxxx1595</td>
     <td>Team Leader, BackEnd, AI</td>
     <td><a href="https://github.com/gustmdqkr321"><img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white"></a></td>
   </tr>
   <tr>
     <td>마준영</td>
-    <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/2a6df6a6-a64e-4cab-89ac-20dee850b000" alt="마준영" width="100" height="100"></td>
+    <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/0f98c7ab-bca7-4943-9ddf-661e7b2b0cf6" alt="마준영" width="100" height="100"></td>
     <td>xxxx1588</td>
     <td>BackEnd, AI</td>
     <td><a href="https://github.com/joonyoung1"><img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white"></a></td>
