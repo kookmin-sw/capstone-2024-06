@@ -10,7 +10,7 @@ from datetime import datetime, timedelta, timezone
 from jose import jwt
 from passlib.context import CryptContext
 
-from fastapi import FastAPI, UploadFile, HTTPException, Depends, status
+from fastapi import FastAPI, UploadFile, HTTPException, Depends, status, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.staticfiles import StaticFiles
@@ -118,6 +118,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
 
 def get_current_user_if_signed_in(token: str | None = Depends(optional_oauth2_scheme)):
+    print(token)
     try:
         if not token or token == "undefined":
             return None
@@ -550,6 +551,30 @@ async def delete_notification(
 ):
     await crud.delete_notification(db, notification_id)
     return {"message": "Notification deleted successfully"}
+
+
+connections = {}
+
+@app.websocket("/chat_prototype/{user_id}")
+async def websocket_endpoint(websocket: WebSocket, user_id: int):
+    await websocket.accept()
+    connections[user_id] = websocket
+    print(f"WebSocket connection established for user {user_id}")
+    try:
+        while True:
+            data = await websocket.receive_json()
+            print(connections)
+            message = data.get("message")
+            print(f"Received message: {message} from user {user_id}")
+            for client_id, client_websocket in connections.items():
+                if client_id != user_id:
+                    await client_websocket.send_json({"message": f"Message from User {user_id}: {message}"})
+                    print(f"Message sent to user {client_id}")
+    except Exception as e:
+        print(f"WebSocket error: {e}")
+    finally:
+        del connections[user_id]
+        print(f"WebSocket connection closed for user {user_id}")
 
 
 # webhook check
