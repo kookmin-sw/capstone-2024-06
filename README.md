@@ -7,16 +7,18 @@
 
 ---
 
-## 📔 목차
+### 📔 목차
 
 - [ 프로젝트 소개](#-프로젝트-소개)
+- [ 주요 기능](#-주요-기능)
 - [ 기술스택](#-기술-스택)
 - [ 팀 소개](#-팀-소개)
-- [ 주요 기능](#-주요-기능)
+- [ 프로젝트 구조도](#-프로젝트-구조도)
+- [ 문서](#-문서)
 - [ 사용법](#-사용법)
-- [ 시연 영상](#-시연-영상)
 
 ---
+
 
 ### 1. 프로젝트 소개
 "어떤데스크 (what_desk)"는 현대 사회에서 가장 많이 사용되는 책상을 중심으로 한 일의 효율성과 생산성을 증진시키기 위한 인테리어 디자인에 관한 것입니다. 이 프로젝트는 사용자에게 어울리는 책상 디자인을 추천하는 것뿐만 아니라, 데스크테리어와 관련된 여러가지 도움을 주려고 합니다.
@@ -40,40 +42,58 @@ Beyond recommending suitable designs based on users' desks, "What_desk" seeks to
 
 ---
 
-### 2. 기술 스택
+### 2. 주요 기능
 
+  1. **책상 분석 및 디자인 추천**
+      - 내 책상은 어떤 책상인지 분석하고 사용자에게 어울리는 책상 디자인을 추천 해드립니다
+  2. **커뮤니티 제공**
+      - 게시글을 작성해 개성을 표현하거나 다른 사용자로부터 아이디어를 얻을 수 있습니다.
+  3. **통계 제공**
+      - 데스크테리어와 관련된 여러가지 재미있고 도움이 될만한 통계를 제공합니다.
+  4. **쪽지**
+      - 쪽지를 교환해 중고 물품을 거래하거나 의견을 교환할 수 있습니다.
+
+----
+
+### 3. 기술 스택
 
 <table>
     <tr>
         <td>
             <h3>FE</h3>
-            <img src="https://img.shields.io/badge/Next.JS-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js"><br>
+            <img src="https://img.shields.io/badge/Next.JS-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js">
             <img src="https://img.shields.io/badge/Tailwindcss-06B6D4?style=for-the-badge&logo=Tailwindcss&logoColor=white" alt="Tailwind CSS"><br>
             <img src="https://img.shields.io/badge/typescript-3178c6?style=for-the-badge&logo=TypeScript&logoColor=white" alt="TypeScript">
         </td>
         <td>
             <h3>BE</h3>
-            <img src="https://img.shields.io/badge/fastapi-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI"><br>
+            <img src="https://img.shields.io/badge/fastapi-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI">
             <img src="https://img.shields.io/badge/postgresql-4169e1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL"><br>
-            <img src="https://img.shields.io/badge/plotly-3f4f75?style=for-the-badge&logo=plotly&logoColor=white" alt="Plotly"><br>
-            <img src="https://img.shields.io/badge/dbeaver-382923?style=for-the-badge&logo=dbeaver&logoColor=white" alt="DBeaver">
+            <img src="https://img.shields.io/badge/plotly-3f4f75?style=for-the-badge&logo=plotly&logoColor=white" alt="Plotly">
+            <img src="https://img.shields.io/badge/dbeaver-382923?style=for-the-badge&logo=dbeaver&logoColor=white" alt="DBeaver"><br>
+            <img src="https://img.shields.io/badge/sqlalchemy-d71f00?style=for-the-badge&logo=sqlalchemy&logoColor=white" alt="sqla">
         </td>
         <td>
             <h3>AI</h3>
+            <img src="https://img.shields.io/badge/opencv-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white" alt="opencv">
             <img src="https://img.shields.io/badge/tensorflow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white" alt="TensorFlow"><br>
             <img src="https://img.shields.io/badge/pytorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" alt="PyTorch">
         </td>
         <td>
             <h3>Tools</h3>
             <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white" alt="Git">
+            <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=GitHub&logoColor=white" alt="GitHub"><br>
+            <img src="https://img.shields.io/badge/Figma-f24e1e?style=for-the-badge&logo=Figma&logoColor=white" alt="Figma">
+            <img src="https://img.shields.io/badge/Discord-5865f2?style=for-the-badge&logo=Discord&logoColor=white" alt="discord"><br>
+            <img src="https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white" alt="slcak">
+            <img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=Notion&logoColor=white" alt="notion"><br>
         </td>
     </tr>
 </table>
 
-
 ---
 
-### 3. 팀 소개
+### 4. 팀 소개
 
 <table>
   <tr>
@@ -127,19 +147,6 @@ Beyond recommending suitable designs based on users' desks, "What_desk" seeks to
 
 ---
 
-### 4. 주요 기능
-
-  1. **디자인 추천**
-      - 사용자에게 어울리는 책상 디자인을 추천 해드립니다
-  2. **커뮤니티 제공**
-      - 게시글을 작성해 개성을 표현하거나 다른이로부터 아이디어를 얻을 수 있습니다
-  3. **책상 분석**
-      - 내 책상은 어떤 책상인지 분석
-  4. **쪽지**
-      - 쪽지를 교환해 중고 물품을 거래하거나 의견을 교환할 수 있습니다.
-
----
-
 ### 5. 프로젝트 구조도
 
 <table>
@@ -158,7 +165,11 @@ Beyond recommending suitable designs based on users' desks, "What_desk" seeks to
 
 ---
 
-### 6. 사용법
+### 6. 문서
+
+
+---
+### 7. 사용법
 
 소스코드제출시 설치법이나 사용법을 작성하세요.
 
