@@ -42,15 +42,16 @@ const EditUserProfileImg = () => {
   };
 
   return (
-    <div>
-    { message && <p>{ message } < /p>}
-    < form onSubmit = { handleSubmit } >
-      <input type="file" accept = "image/*" onChange = { handleImageChange } />
-        { image && <img src={ URL.createObjectURL(image) } alt = "Preview" />}
-<button type="submit" > Save Changes < /button>
-  < /form>
-  < /div>
-  );
+    <div className='absolute left-[250px] top-[600px]'>
+      {message && <p>{message} < /p>}
+        < form onSubmit={handleSubmit} >
+          <input type="file" accept="image/*" onChange={handleImageChange} />
+          {image && <img src={URL.createObjectURL(image)} alt="Preview" />}
+          <button className='absolute left-[40px] top-[90px] justify-center rounded-md bg-yellow-700 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500'
+            type="submit" > 프로필 사진 저장 </button>
+        </form>
+      </div>
+            );
 };
 
-export default EditUserProfileImg;
+      export default EditUserProfileImg;

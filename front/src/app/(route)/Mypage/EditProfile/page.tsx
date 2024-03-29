@@ -26,6 +26,9 @@ const EditPost = () => {
         </div>
         <div className="absolute w-[1049px] h-0 left-[179px] top-[184px] border border-gray-300 transform rotate-0.05" />
       </div>
+      <div className="absolute w-[173px] h-[83px] left-[280px] top-[270px] font-semibold text-base leading-9 text-black">
+        프로필 사진 수정
+      </div>
       <div className="flex h-full w-1/2 justify-center items-center">
         <div className="absolute w-[200px] h-[200px] left-[220px] top-[384px]">
           <Image
@@ -37,9 +40,6 @@ const EditPost = () => {
             className="cursor-pointer mr-1 rounded-full"
           />
         </div>
-      </div>
-      <div className="absolute w-[173px] h-[83px] left-[260px] top-[600px] font-semibold text-base leading-9 text-black">
-        프로필 사진 변경
       </div>
       <EditUserInfo />
       <EditUserProfileImg />
