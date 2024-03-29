@@ -10,7 +10,7 @@ from datetime import datetime, timedelta, timezone
 from jose import jwt
 from passlib.context import CryptContext
 
-from fastapi import FastAPI, UploadFile, HTTPException, Depends, status
+from fastapi import FastAPI, UploadFile, HTTPException, Depends, status, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.staticfiles import StaticFiles
@@ -29,6 +29,8 @@ from process_image import process
 from img2vec import Feat2Vec, Obj2Vec
 from config_loader import config
 
+import plotly.express as px
+
 
 Base.metadata.create_all(bind=engine)
 
@@ -46,6 +48,8 @@ app = FastAPI()
 
 os.makedirs(config["PATH"]["upload"], exist_ok=True)
 os.makedirs(config["PATH"]["result"], exist_ok=True)
+os.makedirs(config["PATH"]["train"], exist_ok=True)
+
 app.mount(
     "/images/upload",
     StaticFiles(directory=config["PATH"]["upload"]),
@@ -55,6 +59,11 @@ app.mount(
     "/images/result",
     StaticFiles(directory=config["PATH"]["result"]),
     name="result_images",
+)
+app.mount(
+    "/images/train",
+    StaticFiles(directory=config["PATH"]["train"]),
+    name="train_images",
 )
 
 
@@ -110,6 +119,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
 
 def get_current_user_if_signed_in(token: str | None = Depends(optional_oauth2_scheme)):
+    print(token)
     try:
         if not token or token == "undefined":
             return None
@@ -167,9 +177,19 @@ async def prototype_process(file: UploadFile):
     result = []
     image_dir = config["PATH"]["train"]
     image_paths = os.listdir(image_dir)
+
     for i in feat_result[0]:
-        result.append(os.path.join(image_dir, image_paths[i]))
-    return {"result": result}
+        result.append("/" + os.path.join(image_dir, image_paths[i]))
+
+    df = px.data.tips()
+    fig = px.box(df, x="day", y="total_bill", color="smoker")
+    fig.update_traces(quartilemethod="inclusive")
+    plot_html = fig.to_html(include_plotlyjs="cdn", full_html=False)
+
+    return {
+        "file_name": result,
+        "plot": plot_html
+    }
 
 
 @app.post("/user")
@@ -506,9 +526,74 @@ async def get_scrapped_posts(
     return posts
 
 
+@app.put("/user/modification", response_model=UserInfo)
+async def modify_user_profile(
+    user_profile: UserProfile,
+    user_id: str = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    user = await crud.modify_user(db, user_id, user_profile)
+    return user
+
+
+@app.get("/notification", response_model=list[Notification])
+async def get_notifications(
+    user_id: str = Depends(get_current_user), db: Session = Depends(get_db)
+):
+    notifications = await crud.read_notifications(db, user_id)
+    return notifications
+
+
+@app.post("/notification/{notification_id}", response_model=Notification)
+async def check_notification(
+    notification_id: int,
+    user_id: str = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    notification = await crud.check_notification(db, notification_id)
+    return notification
+
+
+@app.delete("/notification/{notification_id}")
+async def delete_notification(
+    notification_id: int,
+    user_id: str = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    await crud.delete_notification(db, notification_id)
+    return {"message": "Notification deleted successfully"}
+
+
+connections = dict()
+
+@app.websocket("/chat/{opponent_id}")
+async def chatting_websocket(opponent_id: str, websocket: WebSocket):
+    await websocket.accept()
+    token = await websocket.receive_text()
+    user_id = get_current_user(token)
+
+    if user_id in connections:
+        del connections[user_id]
+    connections[user_id] = websocket
+
+    try:
+        while True:
+            data = await websocket.receive_text()
+            print(connections)
+            print(data)
+            if opponent_id in connections:
+                print(f"{data} to {opponent_id}")
+                await connections[opponent_id].send_text(data)
+                
+    
+    except WebSocketDisconnect as e:
+        print(f"WebSocket error: {e}")
+    finally:
+        del connections[user_id]
+
 
 # webhook check
-# 서버 오픈 ->  uvicorn main:app --reload --host 0.0.0.0 --port 8000 
+# 서버 오픈 ->  uvicorn main:app --reload --host 0.0.0.0 --port 8000
 # test
 # 서버 오픈 ->  uvicorn main:app --reload --host 0.0.0.0 --port 8000
 

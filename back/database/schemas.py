@@ -8,11 +8,14 @@ class UserSignIn(BaseModel):
     password: str
 
 
-class UserInfo(BaseModel):
-    user_id: str
+class UserProfile(BaseModel):
     name: str | None = None
     email: str | None = None
     image: str | None = None
+
+
+class UserInfo(UserProfile):
+    user_id: str
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -93,3 +96,9 @@ class Image(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
+class Notification(BaseModel):
+    notification_id: int
+    reference_id: int
+    content: str
+    checked: bool

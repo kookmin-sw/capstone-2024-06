@@ -53,6 +53,11 @@ class Users(Base):
         primaryjoin=user_id == Follows.followee_user_id,
         secondaryjoin=user_id == Follows.follower_user_id,
         backref="followees",
+        cascade="all, delete",
+        uselist=True,
+    )
+    notifications = relationship(
+        "Notifications", back_populates="receiver", cascade="all, delete", uselist=True
     )
 
 
@@ -106,7 +111,7 @@ class Posts(Base):
     @hybrid_method
     def increment_scrap_count(self):
         self.scrap_count += 1
-    
+
     @hybrid_method
     def increment_like_count(self):
         self.like_count += 1
@@ -124,7 +129,10 @@ class Posts(Base):
         if self.images:
             return self.images[0]
         else:
-            return {"image_id": "/images/default/deault_thumbnail.png", "filename": "default_thumbnail.png"}
+            return {
+                "image_id": "/images/default/deault_thumbnail.png",
+                "filename": "default_thumbnail.png",
+            }
 
 
 class Comments(Base):
@@ -226,3 +234,16 @@ class UserExternalMapping(Base):
     user_id = Column(String, ForeignKey("users.user_id"), nullable=False)
 
     user = relationship("Users", back_populates="user_external_map")
+
+
+class Notifications(Base):
+    __tablename__ = "notifications"
+
+    notification_id = Column(Integer, Sequence("notification_id_seq"), primary_key=True)
+    receiver_id = Column(String, ForeignKey("users.user_id"), nullable=False)
+    reference_id = Column(Integer, ForeignKey("posts.post_id"), nullable=True)
+
+    content = Column(String, nullable=False)
+    checked = Column(Boolean, default=False, nullable=False)
+
+    receiver = relationship("Users", back_populates="notifications")
