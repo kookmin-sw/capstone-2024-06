@@ -63,24 +63,20 @@ Beyond recommending suitable designs based on users' desks, "What_desk" seeks to
     <img src="https://img.shields.io/badge/Next.JS-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js">
     <img src="https://img.shields.io/badge/Tailwindcss-06B6D4?style=for-the-badge&logo=Tailwindcss&logoColor=white" alt="Tailwind CSS">
     <img src="https://img.shields.io/badge/typescript-3178c6?style=for-the-badge&logo=TypeScript&logoColor=white" alt="TypeScript"><br>
-
     <img src="https://img.shields.io/badge/fastapi-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI">
     <img src="https://img.shields.io/badge/postgresql-4169e1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
     <img src="https://img.shields.io/badge/plotly-3f4f75?style=for-the-badge&logo=plotly&logoColor=white" alt="Plotly">
     <img src="https://img.shields.io/badge/dbeaver-382923?style=for-the-badge&logo=dbeaver&logoColor=white" alt="DBeaver">
     <img src="https://img.shields.io/badge/sqlalchemy-d71f00?style=for-the-badge&logo=sqlalchemy&logoColor=white" alt="sqla"><br>
-
     <img src="https://img.shields.io/badge/opencv-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white" alt="opencv">
     <img src="https://img.shields.io/badge/tensorflow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white" alt="TensorFlow">
     <img src="https://img.shields.io/badge/pytorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" alt="PyTorch"><br>
-
     <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white" alt="Git">
     <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=GitHub&logoColor=white" alt="GitHub">
     <img src="https://img.shields.io/badge/Figma-f24e1e?style=for-the-badge&logo=Figma&logoColor=white" alt="Figma">
     <img src="https://img.shields.io/badge/Discord-5865f2?style=for-the-badge&logo=Discord&logoColor=white" alt="discord">
     <img src="https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white" alt="slcak">
     <img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=Notion&logoColor=white" alt="notion"><br>
-
     <img src="https://img.shields.io/badge/AWS_RDS-527FFF?style=for-the-badge&logo=amazonRDS&logoColor=white" alt="ec2">
     <img src="https://img.shields.io/badge/AWS_S3-569A31?style=for-the-badge&logo=amazons3&logoColor=white" alt="s3">
     <img src="https://img.shields.io/badge/AWS_EC2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white" alt="rds">
