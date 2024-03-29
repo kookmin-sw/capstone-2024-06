@@ -1,6 +1,8 @@
 [![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&pause=1000&color=A16D07&random=false&width=435&lines=%EC%9D%B4+%EC%B1%85%EC%83%81+%EC%96%B4%EB%96%A4%EB%8D%B0%3F+++%EC%96%B4%EB%96%A4%EB%8D%B0%EC%8A%A4%ED%81%AC(what_desk))](https://git.io/typing-svg)
 
-<img width="150" alt="로고 그림자" src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/4a6de910-b715-477c-8997-2e1ad5712a6f">
+<div style="text-align: center;">
+  <img width="500" alt="로고 그림자" src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/4a6de910-b715-477c-8997-2e1ad5712a6f">
+</div>
 
 > 2024 KMU SW 캡스톤 디자인 06조
 > https://kookmin-sw.github.io/capstone-2024-06/
@@ -57,45 +59,40 @@ Beyond recommending suitable designs based on users' desks, "What_desk" seeks to
 
 ### 3. 기술 스택
 
-<table>
-    <tr>
-        <td>
-            <h3>FE</h3>
-            <img src="https://img.shields.io/badge/Next.JS-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js">
-            <img src="https://img.shields.io/badge/Tailwindcss-06B6D4?style=for-the-badge&logo=Tailwindcss&logoColor=white" alt="Tailwind CSS"><br>
-            <img src="https://img.shields.io/badge/typescript-3178c6?style=for-the-badge&logo=TypeScript&logoColor=white" alt="TypeScript">
-        </td>
-        <td>
-            <h3>BE</h3>
-            <img src="https://img.shields.io/badge/fastapi-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI">
-            <img src="https://img.shields.io/badge/postgresql-4169e1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL"><br>
-            <img src="https://img.shields.io/badge/plotly-3f4f75?style=for-the-badge&logo=plotly&logoColor=white" alt="Plotly">
-            <img src="https://img.shields.io/badge/dbeaver-382923?style=for-the-badge&logo=dbeaver&logoColor=white" alt="DBeaver"><br>
-            <img src="https://img.shields.io/badge/sqlalchemy-d71f00?style=for-the-badge&logo=sqlalchemy&logoColor=white" alt="sqla">
-        </td>
-        <td>
-            <h3>AI</h3>
-            <img src="https://img.shields.io/badge/opencv-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white" alt="opencv">
-            <img src="https://img.shields.io/badge/tensorflow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white" alt="TensorFlow"><br>
-            <img src="https://img.shields.io/badge/pytorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" alt="PyTorch">
-        </td>
-        <td>
-            <h3>Tools</h3>
-            <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white" alt="Git">
-            <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=GitHub&logoColor=white" alt="GitHub"><br>
-            <img src="https://img.shields.io/badge/Figma-f24e1e?style=for-the-badge&logo=Figma&logoColor=white" alt="Figma">
-            <img src="https://img.shields.io/badge/Discord-5865f2?style=for-the-badge&logo=Discord&logoColor=white" alt="discord"><br>
-            <img src="https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white" alt="slcak">
-            <img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=Notion&logoColor=white" alt="notion"><br>
-        </td>
-    </tr>
-</table>
+<div style="text-align: center;">
+    <img src="https://img.shields.io/badge/Next.JS-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js">
+    <img src="https://img.shields.io/badge/Tailwindcss-06B6D4?style=for-the-badge&logo=Tailwindcss&logoColor=white" alt="Tailwind CSS">
+    <img src="https://img.shields.io/badge/typescript-3178c6?style=for-the-badge&logo=TypeScript&logoColor=white" alt="TypeScript"><br>
+
+    <img src="https://img.shields.io/badge/fastapi-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI">
+    <img src="https://img.shields.io/badge/postgresql-4169e1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
+    <img src="https://img.shields.io/badge/plotly-3f4f75?style=for-the-badge&logo=plotly&logoColor=white" alt="Plotly">
+    <img src="https://img.shields.io/badge/dbeaver-382923?style=for-the-badge&logo=dbeaver&logoColor=white" alt="DBeaver">
+    <img src="https://img.shields.io/badge/sqlalchemy-d71f00?style=for-the-badge&logo=sqlalchemy&logoColor=white" alt="sqla"><br>
+
+    <img src="https://img.shields.io/badge/opencv-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white" alt="opencv">
+    <img src="https://img.shields.io/badge/tensorflow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white" alt="TensorFlow">
+    <img src="https://img.shields.io/badge/pytorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" alt="PyTorch"><br>
+
+    <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white" alt="Git">
+    <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=GitHub&logoColor=white" alt="GitHub">
+    <img src="https://img.shields.io/badge/Figma-f24e1e?style=for-the-badge&logo=Figma&logoColor=white" alt="Figma">
+    <img src="https://img.shields.io/badge/Discord-5865f2?style=for-the-badge&logo=Discord&logoColor=white" alt="discord">
+    <img src="https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white" alt="slcak">
+    <img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=Notion&logoColor=white" alt="notion"><br>
+
+    <img src="https://img.shields.io/badge/AWS_RDS-527FFF?style=for-the-badge&logo=amazonRDS&logoColor=white" alt="ec2">
+    <img src="https://img.shields.io/badge/AWS_S3-569A31?style=for-the-badge&logo=amazons3&logoColor=white" alt="s3">
+    <img src="https://img.shields.io/badge/AWS_EC2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white" alt="rds">
+    <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=Docker&logoColor=white" alt="docker">
+</div>
+
 
 ---
 
 ### 4. 팀 소개
 
-<table>
+<table style="margin: 0 auto;">
   <tr>
     <th>이름</th>
     <th>사진</th>
@@ -108,42 +105,38 @@ Beyond recommending suitable designs based on users' desks, "What_desk" seeks to
     <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/f5d1c8ee-4724-4440-850f-66681411244a" alt="박승현" width="100" height="100"></td>
     <td>xxxx1595</td>
     <td>Team Leader, BackEnd, AI</td>
-    <td><a href="https://github.com/gustmdqkr321"><img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
-</a></td>
+    <td><a href="https://github.com/gustmdqkr321"><img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white"></a></td>
   </tr>
   <tr>
     <td>마준영</td>
     <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/2a6df6a6-a64e-4cab-89ac-20dee850b000" alt="마준영" width="100" height="100"></td>
     <td>xxxx1588</td>
     <td>BackEnd, AI</td>
-    <td><a href="https://github.com/joonyoung1"><img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
-</a></td>
+    <td><a href="https://github.com/joonyoung1"><img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white"></a></td>
   </tr>
   <tr>
     <td>박근우</td>
     <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/3d87db83-46b0-4db3-a9f2-9687ffbee33e" alt="박근우" width="100" height="100"></td>
     <td>xxxx1591</td>
     <td>FrontEnd, Design</td>
-    <td><a href="https://github.com/YouSungBlade"><img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
-</a></td>
+    <td><a href="https://github.com/YouSungBlade"><img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white"></a></td>
   </tr>
   <tr>
     <td>윤유진</td>
     <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/75f50039-8ec4-4dd8-852c-5d28ab497e4f" alt="윤유진" width="100" height="100"></td>
     <td>xxxx0682</td>
     <td>FrontEnd, Design</td>
-    <td><a href="https://github.com/yujin8731"><img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
-</a></td>
+    <td><a href="https://github.com/yujin8731"><img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white"></a></td>
   </tr>
   <tr>
     <td>조한울</td>
     <td><img src="조한울_이미지_URL" alt="조한울" width="100" height="100"></td>
     <td>xxxx0038</td>
     <td>FrontEnd, Design</td>
-    <td><a href="https://github.com/3809271"><img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
-</a></td>
+    <td><a href="https://github.com/3809271"><img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white"></a></td>
   </tr>
 </table>
+
 
 ---
 
