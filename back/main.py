@@ -10,7 +10,7 @@ from datetime import datetime, timedelta, timezone
 from jose import jwt
 from passlib.context import CryptContext
 
-from fastapi import FastAPI, UploadFile, HTTPException, Depends, status
+from fastapi import FastAPI, UploadFile, HTTPException, Depends, status, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.staticfiles import StaticFiles
@@ -119,6 +119,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
 
 def get_current_user_if_signed_in(token: str | None = Depends(optional_oauth2_scheme)):
+    print(token)
     try:
         if not token or token == "undefined":
             return None
@@ -561,6 +562,34 @@ async def delete_notification(
 ):
     await crud.delete_notification(db, notification_id)
     return {"message": "Notification deleted successfully"}
+
+
+connections = dict()
+
+@app.websocket("/chat/{opponent_id}")
+async def chatting_websocket(opponent_id: str, websocket: WebSocket):
+    await websocket.accept()
+    token = await websocket.receive_text()
+    user_id = get_current_user(token)
+
+    if user_id in connections:
+        del connections[user_id]
+    connections[user_id] = websocket
+
+    try:
+        while True:
+            data = await websocket.receive_text()
+            print(connections)
+            print(data)
+            if opponent_id in connections:
+                print(f"{data} to {opponent_id}")
+                await connections[opponent_id].send_text(data)
+                
+    
+    except WebSocketDisconnect as e:
+        print(f"WebSocket error: {e}")
+    finally:
+        del connections[user_id]
 
 
 # webhook check
