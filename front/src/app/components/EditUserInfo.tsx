@@ -22,14 +22,17 @@ const EditUserInfo = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/user', {
+      const response = await fetch(`${process.env.Localhost}/user/modification`, {
         method: 'PUT',
         headers: {
+          Authorization: `Bearer ${(session as any)?.access_token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(userInfo),
       });
       if (response.ok) {
+        session.user = await response.json();
+        console.log("testtest", session.user)
         setMessage('User information updated successfully.');
       } else {
         const data = await response.json();

@@ -16,7 +16,7 @@ const MyPost = () => {
     const fetchUserPosts = async () => {
       try {
         if (status === 'authenticated') { // 인증된 경우에만 게시물 가져오기
-          const response = await fetch(`/api/posts/${session?.user?.user_id}`, {
+          const response = await fetch(`${process.env.Localhost}/post/search?author_id=${session?.user?.user_id}`, {
             method: 'GET',
             headers: {
               Authorization: `Bearer ${(session as any)?.access_token}`,

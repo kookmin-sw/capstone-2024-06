@@ -22,10 +22,10 @@ const EditUserProfileImg = () => {
     formData.append('image', image);
 
     try {
-      const response = await fetch('/api/user/image', {
+      const response = await fetch(`${process.env.Localhost}/user/modification`, {
         method: 'PUT',
         headers: {
-          Authorization: `Bearer ${session.accessToken}`,
+          Authorization: `Bearer ${(session as any)?.access_token}`,
         },
         body: formData,
       });

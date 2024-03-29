@@ -10,6 +10,8 @@ const MyPageProfile = () => {
 
 
 
+
+
   const [MyPageProfileIcons, SetMyPageProfileIcons] = useState([
     "/Write.png",
     "/Scrap.png",
