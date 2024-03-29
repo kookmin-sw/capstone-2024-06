@@ -1,9 +1,9 @@
 "use client";
 import { useState } from 'react';
 import Link from 'next/link';
-import handleSubmit from '../api/user/sing-up/route';
+import handleSubmit from '../../../api/user/sing-up/route';
 import style from './signupStyle.module.css';
-import Nav from '../components/Nav';
+import Nav from '../../../components/Nav';
 
 const RegisterForm = () => {
 
@@ -77,7 +77,7 @@ const RegisterForm = () => {
           회원가입하기</button>
         <div className={style.loginbutton}>로그인</div>
         <div>
-          <Link href="/sign-in">
+          <Link href="/login/sign-in">
             <span className={style.loginbutton}>로그인</span>
           </Link>
         </div>

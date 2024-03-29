@@ -3,7 +3,7 @@ import { signIn } from "next-auth/react";
 import { ChangeEvent, FormEvent, useState } from "react";
 import style from "./signinStyle.module.css";
 import Link from "next/link";
-import Nav from "../components/Nav";
+import Nav from "../../../components/Nav";
 
 
 type LoginInput = {
@@ -114,7 +114,7 @@ export default function LoginPage({ searchParams }: PageProps) {
             </div>
             <div className="flex mt-2">
               <div className="mr-auto">
-                <Link href="/sign-up">
+                <Link href="/login/sign-up">
                   <span className="text-gray-500 text-sm hover:underline">회원가입</span>
                 </Link>
               </div>

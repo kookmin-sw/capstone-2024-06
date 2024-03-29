@@ -23,7 +23,7 @@ const Nav = () => {
   };
 
   const LoginClick = () => {
-    router.push("/api/auth/signin");
+    router.push("/login/sign-in");
   };
 
   const CommunityClick = () => {
@@ -35,11 +35,11 @@ const Nav = () => {
   };
 
   const MyPageClick = () => {
-    router.push("/MyPage");
+    router.push("/Mypage");
   };
 
   const SignupClick = () => {
-    router.push("/sign-up");
+    router.push("/login/sign-up");
   };
 
   const EnterKey = async (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -98,13 +98,13 @@ const Nav = () => {
         {!session && (
           <div className="flex justify-center w-1/3">
             <div
-              className="text-sm text-[#808080] mx-1 cursor-pointer"
+              className="text-sm text-[#808080] mx-1 cursor-pointer hover:text-[#F4A460]"
               onClick={LoginClick}
             >
               로그인
             </div>
             <div
-              className="text-sm text-[#808080] mx-1 cursor-pointer"
+              className="text-sm text-[#808080] mx-1 cursor-pointer hover:text-[#F4A460]"
               onClick={SignupClick}
             >
               회원가입
@@ -117,17 +117,14 @@ const Nav = () => {
               {session.user?.name}
             </div>
             <div
-              className="text-sm text-[#808080] mx-1 cursor-pointer"
+              className="text-sm text-[#808080] mx-1 cursor-pointer hover:text-[#F4A460]"
               onClick={MyPageClick}
             >
               마이페이지
             </div>
             <button
-              className="text-sm text-[#808080] mx-1 cursor-pointer"
-              onClick={() => signOut()}
-            >
-              로그아웃
-            </button>
+              className="text-sm text-[#808080] mx-1 cursor-pointer hover:text-[#F4A460]"
+              onClick={() => signOut()}>로그아웃</button>
           </div>
         )}
       </div>
