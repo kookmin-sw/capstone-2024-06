@@ -26,6 +26,7 @@ const Posts = ({ PostCateGory }: { PostCateGory: string}) => {
           }
         );
         const data = await response.json();
+        console.log(data)
         SetPosts(data);
       } catch (error) {
         console.error("Error", error);

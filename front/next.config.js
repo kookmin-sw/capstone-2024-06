@@ -2,10 +2,10 @@
 const nextConfig = {
   reactStrictMode: false,
   env: {
-    Localhost: "http://175.194.198.155:8080",
+    Localhost: "http://192.168.127.253:8080",
   },
   images: {
-    domains: ['t1.kakaocdn.net', '175.194.198.155', 'k.kakaocdn.net'], 
+    domains: ['t1.kakaocdn.net', '192.168.127.253', 'k.kakaocdn.net'], 
     remotePatterns: [
       {
         protocol: "https",
