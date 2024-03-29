@@ -1,6 +1,6 @@
-import Nav from "../components/Nav";
-import MyPageProfile from "../components/MyPageProfile";
-import MyPagePosts from "../components/MyPagePosts";
+import Nav from "../../components/Nav";
+import MyPageProfile from "../../components/MyPageProfile";
+import MyPagePosts from "../../components/MyPagePosts";
 
 export default function MyPage() {
   return (

@@ -3,6 +3,8 @@ import { useState, ChangeEvent, DragEvent } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import RecommendImgSlider from "./RecommendImgSlider";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 interface ImagePreview {
   url: string;
@@ -13,7 +15,11 @@ const AnalysisImageUpLoader = () => {
   const { data: session } = useSession();
 
   const [images, setImages] = useState<string[]>([]);
+  const [plotlyHTML, setPlotlyHTML] = useState('');
   const [imagePreview, setImagePreview] = useState<ImagePreview | null>(null);
+
+  // 버퍼링
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   // 분석하기 버튼을 눌렀을 때
   const [AnalyBtClick, SetAnalyBtClick] = useState(true);
@@ -51,10 +57,11 @@ const AnalysisImageUpLoader = () => {
   const ImageAnalysisBt = async () => {
     try {
       if (imagePreview) {
+        setIsAnalyzing(true);
         const formData = new FormData();
         formData.append("file", imagePreview.file);
         const ImagePost = await fetch(
-          `${process.env.Localhost}/process_image`,
+          `${process.env.Localhost}/prototype_process`,
           {
             method: "POST",
             headers: {
@@ -64,16 +71,20 @@ const AnalysisImageUpLoader = () => {
           }
         );
         const ImageDatas = await ImagePost.json();
+        console.log(ImageDatas);
         setImages(ImageDatas.file_name);
+        setPlotlyHTML(ImageDatas.plot);
+        setIsAnalyzing(false);
         AnalyBtClicks();
       }
     } catch (error) {
       console.error("Error", error);
+      setIsAnalyzing(false);
     }
   };
 
   return (
-    <main>
+    <main className="my-10">
       {AnalyBtClick && (
         <div className="flex flex-col items-center justify-center mt-4">
           <div
@@ -110,50 +121,36 @@ const AnalysisImageUpLoader = () => {
             </div>
           ) : (
             <div className="flex">
-              <div
-                className="cursor-pointer bg-blue-500 text-white flex items-center justify-center w-[100px] h-[45px] rounded hover:scale-105"
-                onClick={ImageDeleteBt}
-              >
-                사진제거
-              </div>
-              <div
-                className="ml-1 cursor-pointer bg-blue-500 text-white flex items-center justify-center w-[100px] h-[45px] rounded hover:scale-105"
-                onClick={ImageAnalysisBt}
-              >
-                분석하기
-              </div>
+              {isAnalyzing ? (
+                <button
+                  type="button"
+                  className="ml-1 cursor-pointer bg-blue-500 text-white flex items-center justify-center w-[100px] h-[45px] rounded"
+                  disabled
+                >
+                  <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
+                </button>
+              ) : (
+                <div className="flex">
+                  <div
+                    className="cursor-pointer bg-blue-500 text-white flex items-center justify-center w-[100px] h-[45px] rounded hover:scale-105"
+                    onClick={ImageDeleteBt}
+                  >
+                    사진제거
+                  </div>
+                  <div
+                    className="ml-1 cursor-pointer bg-blue-500 text-white flex items-center justify-center w-[100px] h-[45px] rounded hover:scale-105"
+                    onClick={ImageAnalysisBt}
+                  >
+                    분석하기
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
       )}
       {!AnalyBtClick && <RecommendImgSlider Images={images} />}
-      <div className="w-full">
-        <div className="font semi text-xl m-2">당신의 책상 분석결과 입니다</div>
-        <div className="w-[300px]">
-          <img
-            src="/desk4.jpg"
-            alt="Image preview"
-            className="cursor-pointer"
-          />
-        </div>
-      </div>
-      <div className="w-full">
-        <div className="font-semi text-2xl m-2">이런 책상은 어떠세요 ?</div>
-        <RecommendImgSlider
-          Images={[
-            "/desk4.jpg",
-            "/desk4.jpg",
-            "/desk4.jpg",
-            "/desk4.jpg",
-            "/desk4.jpg",
-            "/desk4.jpg",
-            "/desk4.jpg",
-            "/desk4.jpg",
-            "/desk4.jpg",
-            "/desk4.jpg",
-          ]}
-        />
-      </div>
+      <iframe className="plot" srcDoc={plotlyHTML} width="1000" height="800"></iframe>
     </main>
   );
 };

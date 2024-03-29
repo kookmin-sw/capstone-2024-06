@@ -4,8 +4,7 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 
-const Comment = ({ comment_count }: { comment_count: number}) => {
-
+const Comment = ({ comment_count }: { comment_count: number }) => {
   const { data: session } = useSession();
 
   const Postid = useParams();
@@ -15,12 +14,32 @@ const Comment = ({ comment_count }: { comment_count: number}) => {
     {
       post_id: 0,
       parent_comment_id: 0,
-      content: "string",
+      content: "",
       comment_id: 0,
-      author_id: "string",
-      created_at: "2024-03-09T05:18:36.965Z",
-      child_comments: ["string"],
       like_count: 0,
+      created_at: "",
+      child_comments: [
+        {
+          post_id: 0,
+          parent_comment_id: 0,
+          content: "",
+          comment_id: 0,
+          like_count: 0,
+          created_at: "",
+          author: {
+            user_id: "",
+            name: "",
+            email: "",
+            image: "",
+          },
+        },
+      ],
+      author: {
+        user_id: "",
+        name: "",
+        email: "",
+        image: "",
+      },
     },
   ]);
 
@@ -71,7 +90,7 @@ const Comment = ({ comment_count }: { comment_count: number}) => {
         toggleReplyTextarea(index);
       } else {
         await AddComment();
-        SetComment("")
+        SetComment("");
       }
     }
   };
@@ -111,7 +130,6 @@ const Comment = ({ comment_count }: { comment_count: number}) => {
         }
       );
       const data = await response.json();
-      
     } catch (error) {
       console.log("Error", error);
     }
@@ -200,7 +218,7 @@ const Comment = ({ comment_count }: { comment_count: number}) => {
             />
           </div>
           <div className="flex-col  w-full">
-            <div className="text-base font-bold mb-1">User name</div>
+            <div className="text-base font-bold mb-1">{comment.author.name}</div>
             <div className="text-sm font-light h-auto mb-2">
               {comment.content}
             </div>
@@ -253,7 +271,7 @@ const Comment = ({ comment_count }: { comment_count: number}) => {
                     />
                   </div>
                   <div className="flex-col  w-full">
-                    <div className="text-base font-bold mb-1">User name</div>
+                    <div className="text-base font-bold mb-1">{replys.author.name}</div>
                     <div className="text-sm font-light h-auto mb-2">
                       {replys.content}
                     </div>
