@@ -50,26 +50,33 @@ class Comment(CommentForm):
     author: UserInfo | None = None
 
 
-class BasePost(BaseModel):
+class PostForm(BaseModel):
     title: str
     category: str
-
-
-class PostForm(BasePost):
     content: str
 
 
-class PostPreview(BasePost):
+class BasePost(BaseModel): 
     post_id: int
+    title: str
+    category: str
+    scrap_count: int
     like_count: int
     view_count: int
     comment_count: int
     created_at: datetime
     author: UserInfo
+    scrapped: bool
     liked: bool
 
 
-class Post(PostPreview):
+class PostPreview(BasePost):
+    thumbnail: Image | None = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class Post(BasePost):
     images: list[Image] | None = None
     content: str
 

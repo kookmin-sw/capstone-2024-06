@@ -12,15 +12,29 @@ const Posting = () => {
   const Postid = useParams();
 
   const [Posting, SetPosting] = useState({
-    author_id: 1,
+    post_id: 0,
     title: "",
-    view_count: 0,
+    category: "",
+    scrap_count: 0,
     like_count: 0,
+    view_count: 0,
     comment_count: 0,
-    content: "",
     created_at: "",
-    comment: "",
-    author_image: "",
+    author: {
+      user_id: "",
+      name: "",
+      email: "",
+      image: ""
+    },
+    scrapped: true,
+    liked: true,
+    images: [
+      {
+        image_id: "",
+        filename: ""
+      }
+    ],
+    content: "string"
   });
 
   useEffect(() => {
@@ -66,39 +80,17 @@ const Posting = () => {
     router.push("/Community");
   };
 
-  // const HeartBtClick = async () => {
-  //   try {
-  //     const response = await fetch(
-  //       `${process.env.Localhost}/like/post/${Postid.FreePostId}`,
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
-  //     const data = await response.json();
-  //   } catch (error) {
-  //     console.error("Error", error);
-  //   }
-  //   router.push(
-  //     `http://localhost:3000/Community/FreePost/${Postid.FreePostId}`
-  //   );
-  // };
-
-  console.log(Posting)
-  
   return (
     <main className="flex">
       <div className="flex-col w-[900px] h-auto mr-2">
         <div className="w-full flex mb-1">
           <div className="text-xl font-bold pl-3 w-full ">{Posting.title}</div>
-          <div className="mr-2">{Posting.created_at.slice(0, 10)}</div>
+          <div className="mr-2 w-[120px]">{Posting.created_at.slice(0, 10)}</div>
           <div className="">{Posting.created_at.slice(11, 16)}</div>
         </div>
         <div className="w-full border-b flex items-center pb-1">
-          <Image src={Posting.author_image} width={40} height={30} alt={""} />
-          <div className="ml-2 w-full">{Posting.author_id}</div>
+          <Image src={Posting.author.image} width={40} height={30} alt={""} className="rounded-full"/>
+          <div className="ml-2 w-full">{Posting.author.name}</div>
           <div className="flex w-[78px] h-full mr-1 text-xs">
             <div className="mr-1">조회수</div>
             <div>{Posting.view_count}</div>
