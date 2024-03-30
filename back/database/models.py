@@ -59,6 +59,12 @@ class Users(Base):
     notifications = relationship(
         "Notifications", back_populates="receiver", cascade="all, delete", uselist=True
     )
+    sended_chat = relationship(
+        "ChatHistories", foreign_keys="ChatHistories.sender_id", back_populates="sender", cascade="all, delete", uselist=True
+    )
+    received_chat = relationship(
+        "ChatHistories", foreign_keys="ChatHistories.receiver_id", back_populates="receiver", cascade="all, delete", uselist=True
+    )
 
 
 class Posts(Base):
@@ -247,3 +253,19 @@ class Notifications(Base):
     checked = Column(Boolean, default=False, nullable=False)
 
     receiver = relationship("Users", back_populates="notifications")
+
+
+class ChatHistories(Base):
+    __tablename__ = "chat_histories"
+
+    chat_history_id = Column(
+        Integer, Sequence("chat_histories_id_seq"), primary_key=True
+    )
+    sender_id = Column(String, ForeignKey("users.user_id"), nullable=False)
+    receiver_id = Column(String, ForeignKey("users.user_id"), nullable=False)
+
+    message = Column(String, nullable=False)
+    created_at = Column(DateTime, nullable=False)
+
+    sender = relationship("Users", foreign_keys=[sender_id], back_populates="sended_chat")
+    receiver = relationship("Users", foreign_keys=[receiver_id], back_populates="received_chat")

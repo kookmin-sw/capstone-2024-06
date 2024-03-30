@@ -1,5 +1,5 @@
 from __future__ import annotations
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from datetime import datetime
 
 
@@ -102,3 +102,17 @@ class Notification(BaseModel):
     reference_id: int
     content: str
     checked: bool
+
+
+class ChatHistory(BaseModel):
+    sender_id: str
+    receiver_id: str
+    message: str
+    created_at: datetime = Field(default_factory=datetime.now)
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ChatRoom(BaseModel):
+    opponent: UserInfo
+    last_chat: ChatHistory
