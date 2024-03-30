@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
+import Chat from "./Chat";
 
 const SingleClient = ({ userId }: { userId: number }) => {
 
@@ -52,6 +53,7 @@ const Message = () => {
   return (
     <div>
       <SingleClient userId={1} />
+      <Chat />
     </div>
   );
 };

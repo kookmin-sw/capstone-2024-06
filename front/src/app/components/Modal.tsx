@@ -15,7 +15,7 @@ const Modal = ({
     setModalOpen(false);
     setTimeout(() => {
       onClose();
-    }, 300); // 애니메이션이 끝난 후에 모달을 닫습니다.
+    }, 300);
   };
 
   return (
