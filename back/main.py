@@ -10,7 +10,15 @@ from datetime import datetime, timedelta, timezone
 from jose import jwt
 from passlib.context import CryptContext
 
-from fastapi import FastAPI, UploadFile, HTTPException, Depends, status, WebSocket, WebSocketDisconnect
+from fastapi import (
+    FastAPI,
+    UploadFile,
+    HTTPException,
+    Depends,
+    status,
+    WebSocket,
+    WebSocketDisconnect,
+)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.staticfiles import StaticFiles
@@ -186,10 +194,7 @@ async def prototype_process(file: UploadFile):
     fig.update_traces(quartilemethod="inclusive")
     plot_html = fig.to_html(include_plotlyjs="cdn", full_html=False)
 
-    return {
-        "file_name": result,
-        "plot": plot_html
-    }
+    return {"file_name": result, "plot": plot_html}
 
 
 @app.post("/user")
@@ -566,8 +571,11 @@ async def delete_notification(
 
 connections = dict()
 
+
 @app.websocket("/chat/{opponent_id}")
-async def chatting_websocket(opponent_id: str, websocket: WebSocket):
+async def chatting_websocket(
+    opponent_id: str, websocket: WebSocket, db: Session = Depends(get_db)
+):
     await websocket.accept()
     token = await websocket.receive_text()
     user_id = get_current_user(token)
@@ -578,18 +586,40 @@ async def chatting_websocket(opponent_id: str, websocket: WebSocket):
 
     try:
         while True:
-            data = await websocket.receive_text()
-            print(connections)
-            print(data)
+            message = await websocket.receive_text()
+            chat_history = ChatHistory(
+                message=message, sender_id=user_id, receiver_id=opponent_id
+            )
+            await crud.create_chat_history(db, chat_history)
             if opponent_id in connections:
-                print(f"{data} to {opponent_id}")
-                await connections[opponent_id].send_text(data)
-                
-    
-    except WebSocketDisconnect as e:
-        print(f"WebSocket error: {e}")
+                print(f"{chat_history.message} to {opponent_id}")
+                await connections[opponent_id].send_json(chat_history.model_dump_json())
+
+    except WebSocketDisconnect:
+        ...
     finally:
-        del connections[user_id]
+        if user_id in connections:
+            del connections[user_id]
+        connections[user_id] = websocket
+
+
+@app.get("/chat/{opponent_id}", response_model=list[ChatHistory])
+async def get_chat_histories(
+    opponent_id: str,
+    last_chat_history_id: int = 0,
+    user_id: str = get_current_user,
+    db: Session = Depends(get_db),
+):
+    chat_histories = await crud.read_chat_histories(
+        db, user_id, opponent_id, last_chat_history_id
+    )
+    return chat_histories
+
+
+@app.get("/chat_rooms", response_model=list[ChatRoom])
+async def get_chatting_rooms(user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    opponents = await crud.read_chatting_rooms(db, user_id)
+    return opponents
 
 
 # webhook check

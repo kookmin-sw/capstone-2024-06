@@ -6,7 +6,7 @@ from sqlalchemy.orm import (
     subqueryload,
     with_expression,
 )
-from sqlalchemy.sql import alias, select, column
+from sqlalchemy.sql import alias, select, column, func
 from database.models import *
 from database.schemas import *
 
@@ -427,3 +427,68 @@ async def delete_notification(db: Session, notification_id: int):
     )
     db.delete(notification)
     db.commit()
+
+
+async def create_chat_history(db: Session, chat_history: ChatHistory):
+    chat_history = ChatHistories(**chat_history.model_dump())
+    db.add(chat_history)
+    db.commit()
+    return chat_history
+
+
+async def read_chat_histories(
+    db: Session, sender_id: str, receiver_id: str, last_chat_history_id: int
+):
+    query = db.query(ChatHistories).filter(
+        or_(
+            (ChatHistories.sender_id == sender_id)
+            & (ChatHistories.receiver_id == receiver_id),
+            (ChatHistories.sender_id == receiver_id)
+            & (ChatHistories.receiver_id == sender_id),
+        )
+    )
+
+    query = query.filter(ChatHistories.chat_history_id < last_chat_history_id)
+
+    query = query.order_by(ChatHistories.created_at.desc())
+    query = query.limit(100)
+
+    return query.all()
+
+
+async def read_chatting_rooms(db: Session, user_id: str):
+    subquery = (
+        db.query(func.max(ChatHistories.created_at))
+        .filter(
+            or_(
+                (ChatHistories.sender_id == user_id) & (ChatHistories.receiver_id == Users.user_id),
+                (ChatHistories.receiver_id == user_id) & (ChatHistories.sender_id == Users.user_id),
+            )
+        )
+        .correlate(Users)
+        .scalar_subquery()
+    )
+
+    query = (
+        db.query(Users, ChatHistories)
+        .join(
+            ChatHistories,
+            or_(
+                (ChatHistories.sender_id == user_id) & (ChatHistories.receiver_id == Users.user_id),
+                (ChatHistories.receiver_id == user_id) & (ChatHistories.sender_id == Users.user_id),
+            )
+        )
+        .filter(
+            ChatHistories.created_at == subquery
+        )
+    )
+
+    chatrooms = []
+    for user, chat_history in query.all():
+        user = UserInfo.model_validate(user)
+        chat_history = ChatHistory.model_validate(chat_history)
+
+        chatroom = ChatRoom(opponent=user, last_chat=chat_history)
+        chatrooms.append(chatroom)
+    
+    return chatrooms
