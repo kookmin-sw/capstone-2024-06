@@ -453,7 +453,7 @@ async def read_chat_histories(
     query = query.order_by(ChatHistories.created_at.desc())
     query = query.limit(100)
 
-    return query.all()
+    return query.all()[::-1]
 
 
 async def read_chatting_rooms(db: Session, user_id: str):

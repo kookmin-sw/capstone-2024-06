@@ -104,13 +104,17 @@ class Notification(BaseModel):
     checked: bool
 
 
-class ChatHistory(BaseModel):
+class BaseChatHistory(BaseModel):
     sender_id: str
     receiver_id: str
     message: str
     created_at: datetime = Field(default_factory=datetime.now)
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True)\
+
+
+class ChatHistory(BaseChatHistory):
+    chat_history_id: int | None = None
 
 
 class ChatRoom(BaseModel):

@@ -127,7 +127,6 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
 
 def get_current_user_if_signed_in(token: str | None = Depends(optional_oauth2_scheme)):
-    print(token)
     try:
         if not token or token == "undefined":
             return None
@@ -587,13 +586,13 @@ async def chatting_websocket(
     try:
         while True:
             message = await websocket.receive_text()
-            chat_history = ChatHistory(
+            chat_history = BaseChatHistory(
                 message=message, sender_id=user_id, receiver_id=opponent_id
             )
             await crud.create_chat_history(db, chat_history)
             if opponent_id in connections:
                 print(f"{chat_history.message} to {opponent_id}")
-                await connections[opponent_id].send_json(chat_history.model_dump_json())
+                await connections[opponent_id].send_text(chat_history.model_dump_json())
 
     except WebSocketDisconnect:
         ...
@@ -606,8 +605,8 @@ async def chatting_websocket(
 @app.get("/chat/{opponent_id}", response_model=list[ChatHistory])
 async def get_chat_histories(
     opponent_id: str,
-    last_chat_history_id: int = 0,
-    user_id: str = get_current_user,
+    last_chat_history_id: int,
+    user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     chat_histories = await crud.read_chat_histories(
