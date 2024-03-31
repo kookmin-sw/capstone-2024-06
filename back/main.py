@@ -540,6 +540,26 @@ async def modify_user_profile(
     return user
 
 
+@app.put("/user/modification/profile_image", response_model=UserInfo)
+async def modify_user_profile_image(
+    file: UploadFile,
+    user_id: str = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    upload_path = config["PATH"]["upload"]
+    filename = file.filename
+    file_extension = os.path.splitext(filename)[1]
+    file_path = os.path.join(upload_path, str(uuid.uuid4()) + file_extension)
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    
+    image_id = config["URL"]["api_url"] + "/" + file_path
+    user_profile = UserProfile(image=image_id)
+    user = await crud.modify_user(db, user_id, user_profile)
+    return user
+
+
 @app.get("/notification", response_model=list[Notification])
 async def get_notifications(
     user_id: str = Depends(get_current_user), db: Session = Depends(get_db)

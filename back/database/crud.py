@@ -390,7 +390,7 @@ async def delete_follow(db: Session, follow: Follows):
 
 async def modify_user(db: Session, user_id: str, user_profile: UserProfile):
     user = db.query(Users).filter(Users.user_id == user_id).first()
-
+    
     if user_profile.name:
         user.name = user_profile.name
 
