@@ -11,7 +11,7 @@ const ChatModal = ({
   const ChatScrollRef = useRef<HTMLDivElement>(null);
   const ScrollToBottom = () => {
     if (ChatScrollRef.current) {
-      ChatScrollRef.current.scrollIntoView({ behavior: "smooth" });
+      ChatScrollRef.current.scrollIntoView({ block: "end" });
     }
   };
 
@@ -55,7 +55,9 @@ const ChatModal = ({
 
   const [Client, SetClient] = useState<WebSocket | null>(null);
   const OpenWebSoket = (UserId: string) => {
-    const newClient = new WebSocket(`ws://${process.env.OnlyiP}/chat/${UserId}`);
+    const newClient = new WebSocket(
+      `ws://${process.env.OnlyiP}/chat/${UserId}`
+    );
     newClient.onopen = () => {
       newClient.send((session as any)?.access_token);
     };
@@ -137,15 +139,7 @@ const ChatModal = ({
     SetOpenChat(!OpenChat);
   };
   useEffect(() => {
-    const NowScroll = ChatScrollRef.current;
-    if (
-      NowScroll &&
-      Math.abs(
-        NowScroll.scrollHeight - NowScroll.scrollTop - NowScroll.clientHeight
-      ) < 5
-    ) {
       ScrollToBottom();
-    }
   }, [ChatingData]);
 
   useEffect(() => {
