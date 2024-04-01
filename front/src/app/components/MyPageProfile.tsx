@@ -102,9 +102,9 @@ const MyPageProfile = () => {
           </div>
         </div>
         <div className="flex justify-center h-[60px]">
-          <div className="mr-1">팔로잉</div>
+          <div className="mr-1 hover:text-[#F4A460]">팔로잉</div>
           <div className="mr-1">0</div>
-          <div className="mr-1">팔로워</div>
+          <div className="mr-1 hover:text-[#F4A460]">팔로워</div>
           <div>0</div>
         </div>
         <div className="flex w-full h-[100px] justify-center items-center space-x-5">

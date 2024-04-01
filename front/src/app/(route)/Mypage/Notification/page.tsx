@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Nav from "../../../components/Nav";
 import MyPageProfile from "../../../components/MyPageProfile";
+import MyPagePosts from "../../../components/MyPagePosts";
 
 const Notification = () => {
   const { data: session } = useSession();
@@ -24,20 +25,27 @@ const Notification = () => {
 
   return (
     <>
-      <Nav />
-      <MyPageProfile />
-      <div className="absolute left-[647px] top-[149px] container mx-auto p-4">
-        <ul>
-          {notifications.map((notification) => (
-            <li key={notification.id} className="border-b py-2 w-[450px]">
-              <p className="text-lg">{notification.message}</p>
-              <p className="max-w-[400px] text-sm text-gray-500">
-                {notification.date.toLocaleString()}
-              </p>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <main className="flex-col justify-center w-full h-full">
+        <Nav />
+        <div className="flex justify-center w-full h-auto">
+          <div className="flex items-center min-w-[700px] max-w-[1000px] w-11/12 h-auto">
+            <MyPageProfile />
+            <MyPagePosts />
+          </div>
+        </div>
+        <div className="absolute left-[647px] top-[149px] container mx-auto p-4">
+          <ul>
+            {notifications.map((notification) => (
+              <li key={notification.id} className="border-b py-2 w-[450px]">
+                <p className="text-lg">{notification.message}</p>
+                <p className="max-w-[400px] text-sm text-gray-500">
+                  {notification.date.toLocaleString()}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </main>
     </>
   );
 };
