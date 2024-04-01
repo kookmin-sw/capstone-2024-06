@@ -26,6 +26,12 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
           comment_id: 0,
           like_count: 0,
           created_at: "",
+          author: {
+            user_id: "",
+            name: "",
+            email: "",
+            image: "",
+          },
         },
       ],
       author: {
@@ -212,7 +218,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
             />
           </div>
           <div className="flex-col  w-full">
-            <div className="text-base font-bold mb-1">User name</div>
+            <div className="text-base font-bold mb-1">{comment.author.name}</div>
             <div className="text-sm font-light h-auto mb-2">
               {comment.content}
             </div>
@@ -265,7 +271,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
                     />
                   </div>
                   <div className="flex-col  w-full">
-                    <div className="text-base font-bold mb-1">User name</div>
+                    <div className="text-base font-bold mb-1">{replys.author.name}</div>
                     <div className="text-sm font-light h-auto mb-2">
                       {replys.content}
                     </div>

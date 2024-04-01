@@ -8,7 +8,6 @@ import KakaoProvider from "next-auth/providers/kakao";
 import NaverProvider from "next-auth/providers/naver";
 
 //자체 로그인
-
 const credentialsProvider = CredentialsProvider({
   // The name to display on the sign in form (e.g. "Sign in with...")
   name: 'credentials',
@@ -33,7 +32,7 @@ const credentialsProvider = CredentialsProvider({
     try {
       console.log(process.env.Localhost)
       console.log(process.env.api_url)
-      const res = await fetch(`${process.env.api_url}/token`, {
+      const res = await fetch(`${process.env.Localhost}/token`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -85,6 +84,7 @@ kakaoCustomProvider.style = {
 };
 
 // 네이버 로그인 버튼
+
 const naverCustomProvider = NaverProvider({
   clientId: process.env.NAVER_CLIENT_ID || '',
   clientSecret: process.env.NAVER_CLIENT_SECRET || '',
@@ -168,7 +168,7 @@ const authOptions: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: "/sign-in",
+    signIn: "/login/sign-in",
   },
 };
 
