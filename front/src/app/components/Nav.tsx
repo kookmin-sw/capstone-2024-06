@@ -58,8 +58,8 @@ const Nav = () => {
           <Image
             src="/logo.png"
             alt="name"
-            width={100}
-            height={27}
+            width={50}
+            height={100}
             onClick={LogoImgClick}
             className="cursor-pointer"
           />
