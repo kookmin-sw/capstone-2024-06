@@ -1,8 +1,7 @@
 [![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&pause=1000&color=A16D07&random=false&width=435&lines=%EC%9D%B4+%EC%B1%85%EC%83%81+%EC%96%B4%EB%96%A4%EB%8D%B0%3F+++%EC%96%B4%EB%96%A4%EB%8D%B0%EC%8A%A4%ED%81%AC(what_desk))](https://git.io/typing-svg)
 
-<div style="text-align: center;">
-  <img width="400" alt="로고 그림자" src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/5d9db040-71a2-4217-9d2b-1f0091fa2cc1
-">
+<div align="center">
+  <img width="400" alt="로고 그림자" src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/42de40d2-e789-435c-89be-c47b501eb097">
 </div>
 
 > 2024 KMU SW 캡스톤 디자인 06조
@@ -52,12 +51,12 @@ Furthermore, "What_desk" provides a platform for community interaction, enabling
 
   1. **책상 분석 및 디자인 추천**
       - 내 책상은 어떤 책상인지 분석하고 사용자에게 어울리는 책상 디자인을 추천 해드립니다
-  2. **커뮤니티 제공**
+  2. **커뮤니티**
       - 게시글을 작성해 개성을 표현하거나 다른 사용자로부터 아이디어를 얻을 수 있습니다.
   3. **통계 제공**
       - 데스크테리어와 관련된 여러가지 재미있고 도움이 될만한 통계를 제공합니다.
-  4. **쪽지**
-      - 쪽지를 교환해 중고 물품을 거래하거나 의견을 교환할 수 있습니다.
+  4. **실시간 채팅**
+      - 채팅을 통해 중고 물품을 거래하거나 의견을 교환할 수 있습니다.
 
 ----
 
@@ -143,22 +142,23 @@ Furthermore, "What_desk" provides a platform for community interaction, enabling
 
 <table align="center">
     <tr>
-        <th>구조도</th>
+        <th>Architecture</th>
         <th>Use Case</th>
         <th>ERD</th>
     </tr>
     <tr>
-        <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/64b293b5-5d79-407b-b64a-611d552f523c" alt="구조도" width="300" height="200"></td>
-        <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/8fa9cce0-fea7-45b1-8583-d65f9b9b109f" alt="Use Case" width="300" height="200"></td>
-        <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/3cf9be4e-ff38-45be-b847-9ea32a2041f9" alt="ERD" width="300" height="200"></td>
+        <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/f76c6b8a-09a3-40ae-90dc-dafba99d68d7" alt="구조도" width="500" height="200"></td>
+        <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/8fa9cce0-fea7-45b1-8583-d65f9b9b109f" alt="Use Case" width="500" height="200"></td>
+        <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/3cf9be4e-ff38-45be-b847-9ea32a2041f9" alt="ERD" width="500" height="200"></td>
     </tr>
 </table>
 
 
 ---
 
-### 6. 문서
+### 6. 보고서 및 활동 기록
 
+<a href="https://www.notion.so/e67d1212bdbc420fb42695f2800feaf3?pvs=4">팀 노션</a><br>
 <a href="https://drive.google.com/drive/folders/1zog5XhqHQVDgI3lmMYcss9qFbO88FDZJ?usp=drive_link">중간보고</a>
 
 ---
