@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 
 const EditUserInfo = () => {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const [userInfo, setUserInfo] = useState({
     name: session?.user?.name || '',
     email: session?.user?.email || '',
@@ -32,7 +32,7 @@ const EditUserInfo = () => {
       });
       if (response.ok) {
         session.user = await response.json();
-        console.log("testtest", session.user)
+        update(session);
         setMessage('User information updated successfully.');
       } else {
         const data = await response.json();

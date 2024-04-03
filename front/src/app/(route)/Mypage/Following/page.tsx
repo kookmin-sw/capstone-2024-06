@@ -1,15 +1,10 @@
-"use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
-import Nav from "../../../components/Nav";
+import React from 'react';
+import Nav from '../../../components/Nav';
 import MyPageProfile from "../../../components/MyPageProfile";
 import MyPagePosts from "../../../components/MyPagePosts";
+import Following from '../../../components/Following';
 
-const Notification = () => {
-  const { data: session } = useSession();
-  const router = useRouter();
-
+const MyPost = () => {
   return (
     <>
       <main className="flex-col justify-center w-full h-full">
@@ -25,4 +20,4 @@ const Notification = () => {
   );
 };
 
-export default Notification;
+export default MyPost;

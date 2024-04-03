@@ -12,13 +12,15 @@ const MyPosting = () => {
     const fetchUserPosts = async () => {
       try {
         if (status === 'authenticated') {
-          const response = await fetch(`/api/posts/${session?.user?.user_id}`, {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${(session as any)?.access_token}`,
-              'Content-Type': 'application/json',
-            },
-          });
+          const response = await fetch(
+            `${process.env.Localhost}/post/search?author_id=${session?.user?.user_id}`,
+            {
+              method: 'GET',
+              headers: {
+                Authorization: `Bearer ${(session as any)?.access_token}`,
+                'Content-Type': 'application/json',
+              },
+            });
           if (response.ok) {
             const data = await response.json();
             setUserPosts(data);
