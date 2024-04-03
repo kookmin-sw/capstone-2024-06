@@ -130,31 +130,35 @@ const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    async jwt({ token, account, user }) {
-      if (account) {
-        if (account.provider == 'credentials') {
-          token.user = user.user;
-          token.access_token = user.access_token;
-        } else {
-          user = {
-            ...user,
-            user_id: user.id,
-            id: undefined
-          };
-          const res = await fetch(`${process.env.api_url}/token/${account.access_token}?provider=${account.provider}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(user)
-          });
-          if (res.ok) {
-            const body = await res.json();
-            token.user = body.user;
-            token.access_token = body.access_token;
+    async jwt({ token, account, user, trigger, session }) {
+      if (trigger === "update") {
+        token.user = session.user;
+      } else {
+        if (account) {
+          if (account.provider == 'credentials') {
+            token.user = user.user;
+            token.access_token = user.access_token;
           } else {
-            console.log(res.status, await res.text());
-            throw Error("Custom Error");
+            user = {
+              ...user,
+              user_id: user.id,
+              id: undefined
+            };
+            const res = await fetch(`${process.env.api_url}/token/${account.access_token}?provider=${account.provider}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(user)
+            });
+            if (res.ok) {
+              const body = await res.json();
+              token.user = body.user;
+              token.access_token = body.access_token;
+            } else {
+              console.log(res.status, await res.text());
+              throw Error("Custom Error");
+            }
           }
         }
       }

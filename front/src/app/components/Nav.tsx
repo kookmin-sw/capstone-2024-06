@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { SetStateAction, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
+import Chat from "./Chat";
 
 const Nav = () => {
   const { data: session } = useSession();
@@ -57,13 +58,13 @@ const Nav = () => {
           <Image
             src="/logo.png"
             alt="name"
-            width={100}
-            height={27}
+            width={50}
+            height={100}
             onClick={LogoImgClick}
             className="cursor-pointer"
           />
         </div>
-        <div className="font-mono w-1/4 text-semibold font-[600] flex space-x-4">
+        <div className="font-mono  w-[280px] text-semibold font-[600] flex space-x-4">
           <div
             className={`cursor-pointer hover:text-[#F4A460] ${
               pathname.startsWith("/Community")
@@ -112,7 +113,7 @@ const Nav = () => {
           </div>
         )}
         {session && (
-          <div className="flex justify-center w-1/3">
+          <div className="flex justify-center items-center w-fit">
             <div className="text-sm text-[#808080] mx-1 cursor-pointer">
               {session.user?.name}
             </div>
@@ -123,8 +124,12 @@ const Nav = () => {
               마이페이지
             </div>
             <button
-              className="text-sm text-[#808080] mx-1 cursor-pointer hover:text-[#F4A460]"
-              onClick={() => signOut()}>로그아웃</button>
+              className="text-sm text-[#808080] mx-1 cursor-pointer"
+              onClick={() => signOut()}
+            >
+              로그아웃
+            </button>
+            <Chat />
           </div>
         )}
       </div>

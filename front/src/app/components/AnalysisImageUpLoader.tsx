@@ -126,8 +126,8 @@ const AnalysisImageUpLoader = () => {
                   type="button"
                   className="ml-1 cursor-pointer bg-blue-500 text-white flex items-center justify-center w-[100px] h-[45px] rounded"
                   disabled
-                >
-                  <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
+                >분석중
+                  <FontAwesomeIcon icon={faSpinner} className="animate-spin ml-1" />
                 </button>
               ) : (
                 <div className="flex">
