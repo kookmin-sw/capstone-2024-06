@@ -56,6 +56,10 @@ const MyPageProfile = () => {
     router.push("/Mypage/EditProfile")
   }
 
+  const FollowingClick = () => {
+    router.push("/Mypage/Following")
+  }
+
 
 
   return (
@@ -102,7 +106,8 @@ const MyPageProfile = () => {
           </div>
         </div>
         <div className="flex justify-center h-[60px]">
-          <div className="mr-1 hover:text-[#F4A460]">팔로잉</div>
+          <div className="mr-1 hover:text-[#F4A460]"
+            onClick={FollowingClick}>팔로잉</div>
           <div className="mr-1">0</div>
           <div className="mr-1 hover:text-[#F4A460]">팔로워</div>
           <div>0</div>
