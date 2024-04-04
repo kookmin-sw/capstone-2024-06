@@ -66,6 +66,8 @@ class Users(Base):
         "ChatHistories", foreign_keys="ChatHistories.receiver_id", back_populates="receiver", cascade="all, delete", uselist=True
     )
 
+    followed: Mapped[Optional[bool]] = query_expression()
+
 
 class Posts(Base):
     __tablename__ = "posts"
@@ -251,6 +253,7 @@ class Notifications(Base):
 
     content = Column(String, nullable=False)
     checked = Column(Boolean, default=False, nullable=False)
+    created_at = Column(DateTime, default=datetime.now, nullable=False)
 
     receiver = relationship("Users", back_populates="notifications")
 

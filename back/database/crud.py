@@ -61,6 +61,13 @@ async def create_comment(db: Session, comment: CommentForm, user_id: str):
     if comment.parent_comment:
         comment.parent_comment.increment_child_comment_count()
 
+        notification = Notifications(
+            receiver_id=comment.parent_comment.author_id,
+            reference_id=comment.post.post_id,
+            content="대댓글달림"
+        )
+        db.add(notification)
+
     notification = Notifications(
         receiver_id=comment.post.author_id,
         reference_id=comment.post.post_id,
@@ -136,8 +143,25 @@ async def create_follow(db: Session, follower_user_id: str, followee_user_id: st
     return follow
 
 
-async def read_user_by_id(db: Session, user_id: str):
-    return db.query(Users).filter(Users.user_id == user_id).first()
+async def read_user_by_id(db: Session, user_id: str, signed_in_user_id: str = None):
+    query = db.query(Users)
+    if signed_in_user_id:
+        query = query.outerjoin(
+            Follows,
+            and_(Follows.follower_user_id == signed_in_user_id, Follows.followee_user_id == user_id),
+        )
+        query = query.options(
+            with_expression(
+                Users.followed,
+                case((Follows.follower_user_id.isnot(None), True), else_=False).label("followed"),
+            )
+        )
+    else:
+        query = query.options(
+            with_expression(Users.followed, literal(False).label("followed")),
+        )
+
+    return query.filter(Users.user_id == user_id).first()
 
 
 async def read_user_by_email(db: Session, email: str):
