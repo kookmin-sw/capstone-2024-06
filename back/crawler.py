@@ -44,6 +44,9 @@ class BaseCrawler:
         producer_thread.join()
         for consumer_thread in consumer_threads:
             consumer_thread.join()
+        
+        if self.verbose:
+            print(f"total {self.num_progressed} images downloaded")
     
     def producer(self):
         ...
@@ -158,10 +161,9 @@ class OhouseCrawler(BaseCrawler):
     
 
 class PinterestCrawler(BaseCrawler):
-    def __init__(self, query, num_images, num_workers=8, verbose=False):
+    def __init__(self, query, num_workers=8, verbose=False):
         super().__init__("pinterest", num_workers, verbose)
         self.query = query
-        self.num_images = num_images
 
         self.api_url = "https://pinterest.com/resource/BaseSearchResource/get/?"
         self.source_url = f"/search/pins/?q={query}"
@@ -169,15 +171,13 @@ class PinterestCrawler(BaseCrawler):
 
     def producer(self):
         num_fetched = 0
-        while num_fetched < self.num_images:
+        while not self.finished:
             desks = self.fetch_desks()
             num_fetched += len(desks)
             with self.lock:
                 for desk in desks:
                     self.queue.put(desk)
         
-        self.finished = True
-
     def fetch_desks(self):
         if self.bookmark == "":
             data = f'{{"options":{{"isPrefetch":false,"query":"{self.query}","scope":"pins","no_fetch_context_on_resource":false}},"context":{{}}}}'
@@ -189,7 +189,10 @@ class PinterestCrawler(BaseCrawler):
             raise Exception("Failed to fetch data")
         
         resource_response = response.json()["resource_response"]
-        self.bookmark = resource_response["bookmark"]
+        try:
+            self.bookmark = resource_response["bookmark"]
+        except KeyError:
+            self.finished = True
 
         desks = []
         for fetched_desk in resource_response["data"]["results"]:
@@ -208,5 +211,5 @@ if __name__ == "__main__":
     train_path = config["PATH"]["train"]
 
     # desk_crawler = OhouseCrawler(query="데스크셋업", num_pages=8, num_workers=8, verbose=True)
-    desk_crawler = PinterestCrawler(query="deskterior", num_images=100, verbose=True)
+    desk_crawler = PinterestCrawler(query="asdf", verbose=True)
     desk_crawler.crawling()
