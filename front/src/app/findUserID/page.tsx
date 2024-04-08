@@ -42,7 +42,7 @@ const FindUserIDpage = () => {
           <button className={style.findID} onClick={handlePasswordButtonClick}>비밀번호 찾기</button>
         </div>
         <div>
-          <button className={style.findPW} onClick={handleEmailButtonClick}>이메일 찾기</button>
+          <button className={style.findPW} onClick={handleEmailButtonClick}>아이디 찾기</button>
         </div>
         <div className={style.logo}>어떤대스크</div>
         <div className={style.line13}></div>
