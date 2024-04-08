@@ -44,9 +44,9 @@ const MyNotification = () => {
           {notifications.map((notification) => (
             <li key={notification.notification_id} className="border-b py-2 w-[450px]">
               <p className="text-lg">{notification.content}</p>
-              {/* <p className="max-w-[400px] text-sm text-gray-500">
+              <p className="max-w-[400px] text-sm text-gray-500">
                 {notification.date.toLocaleString()}
-              </p> */}
+              </p>
             </li>
           ))}
         </ul>

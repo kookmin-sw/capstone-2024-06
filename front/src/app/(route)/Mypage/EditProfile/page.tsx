@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Nav from "../../../components/Nav";
-import EditUserInfo from "../../../components/EditUserInfo";
-import EditUserProfileImg from "../../../components/EditUserprofileImg";
+import EditUserInfo from "../../../components/EditMyInfo";
+import EditUserProfileImg from "../../../components/EditMyprofileImg";
 
 
 interface IProps {

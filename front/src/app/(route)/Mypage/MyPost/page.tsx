@@ -1,12 +1,6 @@
 "use client";
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import Image from "next/image";
 import Nav from "../../../components/Nav";
-import MyProfile from "../../../components/MyProfile";
 import MyPosting from "../../../components/MyPosting";
-import MyPageProfile from "../../../components/MyPageProfile";
 
 const MyPost = () => {
 
