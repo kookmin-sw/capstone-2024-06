@@ -17,7 +17,7 @@ const Following = () => {
         // }
 
         // 팔로잉 정보를 가져오는 API 엔드포인트로 요청
-        const res = await fetch(`${process.env.LOCALHOST}/api/followings/${session?.user?.user_id}`, {
+        const res = await fetch(`${process.env.Localhost}/api/followings/${session?.user?.user_id}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

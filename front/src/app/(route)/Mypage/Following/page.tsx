@@ -13,6 +13,7 @@ const MyPost = () => {
           <div className="flex items-center min-w-[700px] max-w-[1000px] w-11/12 h-auto">
             <MyPageProfile />
             <MyPagePosts />
+            <Following />
           </div>
         </div>
       </main>

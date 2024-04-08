@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
@@ -5,13 +6,12 @@ import { useSession } from 'next-auth/react';
 const MyNotification = () => {
   const { data: session, status } = useSession();
   const [notifications, setNotifications] = useState([]);
-  const router = useRouter();
 
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
         if (status === 'authenticated') {
-          const response = await fetch(`${process.env.Localhost}/user/modification`, {
+          const response = await fetch(`${process.env.Localhost}/notification`, {
             method: 'GET',
             headers: {
               Authorization: `Bearer ${(session as any)?.access_token}`,
@@ -33,20 +33,20 @@ const MyNotification = () => {
     fetchNotifications();
   }, [session, status]);
 
-  const handleNotificationClick = (notificationId) => {
-    router.push(`/notifications/${notificationId}`);
-  };
+  // const handleNotificationClick = (notificationId) => {
+  //   router.push(`/notifications/${notificationId}`);
+  // };
 
   return (
     <>
       <div className="absolute left-[647px] top-[149px] container mx-auto p-4">
         <ul>
           {notifications.map((notification) => (
-            <li key={notification.id} className="border-b py-2 w-[450px]" onClick={() => handleNotificationClick(notification.id)}>
-              <p className="text-lg">{notification.message}</p>
-              <p className="max-w-[400px] text-sm text-gray-500">
+            <li key={notification.notification_id} className="border-b py-2 w-[450px]">
+              <p className="text-lg">{notification.content}</p>
+              {/* <p className="max-w-[400px] text-sm text-gray-500">
                 {notification.date.toLocaleString()}
-              </p>
+              </p> */}
             </li>
           ))}
         </ul>

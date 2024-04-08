@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
+
 const MyPageProfile = () => {
   const { data: session } = useSession();
   const router = useRouter();
@@ -14,23 +15,23 @@ const MyPageProfile = () => {
 
   const [MyPageProfileIcons, SetMyPageProfileIcons] = useState([
     "/Write.png",
-    "/Scrap.png",
     "/NotFollow.png",
+    "/Scrap.png",
     "/Chat.png",
   ]);
 
-  const MyPageProfileName = ["글쓰기", "스크랩", "팔로우", "채팅"]
+  const MyPageProfileName = ["내 글", "분석", "스크랩", "채팅"]
 
   const handleClick = async (index) => {
     switch (index) {
       case 0:
-        router.push("/Community/PostCreate");
+        router.push("/Mypage/MyPost");
         break;
       case 1:
-        router.push("/Mypage/Scrap");
+        router.push("/Mypage/MyAnalysis");
         break;
       case 2:
-        router.push("/Following");
+        router.push("/Mypage/Scrap");
         break;
       case 3:
         router.push("/Chat");
@@ -68,7 +69,7 @@ const MyPageProfile = () => {
         onClick={NotificationClick}>
         알림
       </div>
-      <div className="absolute w-[173px] h-[83px] left-[787px] top-[99px] font-semibold text-base leading-9 text-black hover:text-[#F4A460]">
+      {/* <div className="absolute w-[173px] h-[83px] left-[787px] top-[99px] font-semibold text-base leading-9 text-black hover:text-[#F4A460]">
         내 활동
       </div>
       <div className="absolute w-[173px] h-[83px] left-[897px] top-[99px] font-semibold text-base leading-9 text-black hover:text-[#F4A460]"
@@ -78,7 +79,7 @@ const MyPageProfile = () => {
       <div className="absolute w-[173px] h-[83px] left-[1017px] top-[99px] font-semibold text-base leading-9 text-black hover:text-[#F4A460]"
         onClick={MyAnalysisClick}>
         분석
-      </div>
+      </div> */}
       <div className="absolute w-[500px] h-[0px] left-[644px] top-[151px] border border-gray-300 transform rotate-0.05"></div>
       <div className="flex-col">
         <div className="flex w-full h-[150px]">
