@@ -2,8 +2,7 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import Nav from "../../components/Nav";
-import UserProfile from "../../components/UserProfile";
-import UserPosts from "../../components/UserPost";
+import User from "../../components/UserPage";
 
 const Notification = () => {
 
@@ -13,8 +12,7 @@ const Notification = () => {
         <Nav />
         <div className="flex justify-center w-full h-auto">
           <div className="flex items-center min-w-[700px] max-w-[1000px] w-11/12 h-auto">
-            <UserProfile />
-            <UserPosts />
+            <User />
           </div>
         </div>
       </main>

@@ -17,10 +17,9 @@ const MyPageProfile = () => {
     "/Write.png",
     "/NotFollow.png",
     "/Scrap.png",
-    "/Chat.png",
   ]);
 
-  const MyPageProfileName = ["내 글", "분석", "스크랩", "채팅"]
+  const MyPageProfileName = ["내 글", "분석", "스크랩"]
 
   const handleClick = async (index) => {
     switch (index) {
@@ -32,9 +31,6 @@ const MyPageProfile = () => {
         break;
       case 2:
         router.push("/Mypage/Scrap");
-        break;
-      case 3:
-        router.push("/Chat");
         break;
       default:
         break;
