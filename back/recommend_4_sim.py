@@ -2,11 +2,10 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from scipy.spatial.distance import cosine
 from PIL import Image
+from sklearn.neighbors import NearestNeighbors
 from surprise import Dataset, Reader
 
-## 유사도 활용 
 class ImageRecommender:
     def __init__(self, image_folder, vector_folder):
         self.image_folder = image_folder
@@ -86,18 +85,38 @@ class ImageRecommender:
         return user_vectors
 
     def recommend_images(self, selected_images, user_vectors):
-        recommendations = []
-        for image_file, user_vector in zip(selected_images, user_vectors):
-            # Calculate cosine similarity between user vector and other image vectors
-            similar_images = []
-            for other_file, other_vector in zip(self.image_files, user_vectors):
-                if other_file != image_file:
-                    similarity = 1 - cosine(user_vector, other_vector)
-                    similar_images.append((other_file, similarity))
-            # Sort images by similarity and select top 3 recommendations
-            similar_images.sort(key=lambda x: x[1], reverse=True)
-            recommendations.extend(similar_images[:3])
-        return recommendations
+        # Calculate the average user vector
+        user_vector = np.mean(user_vectors, axis=0)
+
+        # Load all image vectors
+        all_image_vectors = []
+        for image_file in self.image_files:
+            vector_file = os.path.join(self.vector_folder, f"{os.path.splitext(image_file)[0]}.npy")
+            image_vector = np.load(vector_file)
+            all_image_vectors.append(image_vector)
+        all_image_vectors = np.array(all_image_vectors)
+
+        # Calculate distances between the user's average vector and all image vectors
+        distances = np.linalg.norm(all_image_vectors - user_vector, axis=1)
+
+        # Calculate the mean distance
+        mean_distance = np.mean(distances)
+
+        # Initialize nearest neighbors model
+        nn_model = NearestNeighbors(n_neighbors=4, algorithm='auto', metric='euclidean')
+        nn_model.fit(all_image_vectors)
+
+        # Search for similar images
+        distances, indices = nn_model.kneighbors([user_vector])
+
+        # Exclude selected images from recommendations and calculate similarity based on distance from the mean
+        recommended_images = []
+        for index, distance in zip(indices[0], distances[0]):
+            image_file = self.image_files[index]
+            if image_file not in selected_images:
+                similarity = 1 / (1 + abs(mean_distance - distance) / mean_distance)
+                recommended_images.append((image_file, similarity))
+        return recommended_images
 
     def show_recommendations(self, recommendations):
         num_recommendations = min(len(recommendations), 3)
@@ -114,14 +133,27 @@ class ImageRecommender:
         plt.tight_layout()
         plt.show()
 
-
     def run(self):
         select_method = self.choose_selection_method()
         selected_images, ratings = select_method()
         user_vectors = self.load_user_vector(selected_images)
         recommendations = self.recommend_images(selected_images, user_vectors)
         self.show_recommendations(recommendations)
-
+        
+        # Visualize selected images and their average vector
+        avg_user_vector = np.mean(user_vectors, axis=0)
+        all_image_vectors = np.array([np.load(os.path.join(self.vector_folder, f"{os.path.splitext(image_file)[0]}.npy")) for image_file in self.image_files])
+        
+        plt.figure(figsize=(8, 6))
+        for image_vector, image_file in zip(all_image_vectors, self.image_files):
+            plt.scatter(image_vector[0], image_vector[1], color='black')
+        plt.scatter(avg_user_vector[0], avg_user_vector[1], color='red', label='Average User Vector')
+        plt.xlabel('Feature 1')
+        plt.ylabel('Feature 2')
+        plt.title('Feature Space')
+        plt.legend()
+        plt.grid(True)
+        plt.show()
 # 이미지 추천기 객체 생성
 image_recommender = ImageRecommender("./images/train", "./vectors/train")
 # 이미지 추천 실행
