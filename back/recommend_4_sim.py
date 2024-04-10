@@ -1,3 +1,4 @@
+from sklearn.decomposition import PCA
 import os
 import numpy as np
 import pandas as pd
@@ -34,7 +35,7 @@ class ImageRecommender:
         selected_images = []
         ratings = []
 
-        for _ in range(3):
+        for _ in range(5):
             print("\n이미지를 선택하세요:")
             selected_files = np.random.choice(self.image_files, size=3, replace=False)
             fig, axes = plt.subplots(1, 3)
@@ -61,7 +62,7 @@ class ImageRecommender:
     def select_image_multiple_times(self):
         selected_images = []
         ratings = []
-        for _ in range(3):
+        for _ in range(5):
             print("\n이미지를 선택하세요:")
             selected_file = np.random.choice(self.image_files)
             image_path = os.path.join(self.image_folder, selected_file)
@@ -140,20 +141,38 @@ class ImageRecommender:
         recommendations = self.recommend_images(selected_images, user_vectors)
         self.show_recommendations(recommendations)
         
-        # Visualize selected images and their average vector
-        avg_user_vector = np.mean(user_vectors, axis=0)
+        # Apply PCA to image vectors
         all_image_vectors = np.array([np.load(os.path.join(self.vector_folder, f"{os.path.splitext(image_file)[0]}.npy")) for image_file in self.image_files])
+        pca = PCA(n_components=2)
+        transformed_image_vectors = pca.fit_transform(all_image_vectors)
         
-        plt.figure(figsize=(8, 6))
-        for image_vector, image_file in zip(all_image_vectors, self.image_files):
-            plt.scatter(image_vector[0], image_vector[1], color='black')
-        plt.scatter(avg_user_vector[0], avg_user_vector[1], color='red', label='Average User Vector')
-        plt.xlabel('Feature 1')
-        plt.ylabel('Feature 2')
-        plt.title('Feature Space')
+        # Apply PCA to user vectors
+        pca_user_vectors = pca.transform(user_vectors)
+        
+        # Apply PCA to average user vector
+        avg_user_vector = np.mean(user_vectors, axis=0)
+        pca_avg_user_vector = pca.transform(avg_user_vector.reshape(1, -1))
+
+        # Get indices of selected images
+        selected_indices = [self.image_files.index(image_file) for image_file in selected_images]
+        
+        # Visualize selected images and PCA-transformed vectors
+        plt.figure(figsize=(12, 8))
+        plt.scatter(transformed_image_vectors[:, 0], transformed_image_vectors[:, 1], color='gray', label='Image Vectors (PCA)')
+        plt.scatter(pca_user_vectors[:, 0], pca_user_vectors[:, 1], color='green', label='User Vectors (PCA)')
+        plt.scatter(pca_avg_user_vector[:, 0], pca_avg_user_vector[:, 1], color='red', label='Average User Vector (PCA)')
+        
+        # Highlight selected images
+        for idx in selected_indices:
+            plt.scatter(transformed_image_vectors[idx, 0], transformed_image_vectors[idx, 1], color='blue', label='Selected Image (PCA)')
+        
+        plt.xlabel('Principal Component 1')
+        plt.ylabel('Principal Component 2')
+        plt.title('Feature Space after PCA')
         plt.legend()
         plt.grid(True)
         plt.show()
+
 # 이미지 추천기 객체 생성
 image_recommender = ImageRecommender("./images/train", "./vectors/train")
 # 이미지 추천 실행
