@@ -1,10 +1,10 @@
-from sklearn.decomposition import PCA
 import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from PIL import Image
 from sklearn.neighbors import NearestNeighbors
+from sklearn.decomposition import PCA
 from surprise import Dataset, Reader
 
 class ImageRecommender:
@@ -35,7 +35,7 @@ class ImageRecommender:
         selected_images = []
         ratings = []
 
-        for _ in range(5):
+        for _ in range(2):
             print("\n이미지를 선택하세요:")
             selected_files = np.random.choice(self.image_files, size=3, replace=False)
             fig, axes = plt.subplots(1, 3)
@@ -52,7 +52,7 @@ class ImageRecommender:
                 rating = 1 if i == selected_index else 0
                 ratings.append(rating)
 
-            selected_images.extend(selected_files)
+            selected_images.append(selected_files[selected_index])
 
         for image_file, rating in zip(selected_images, ratings):
             self.df.loc[self.df['item'] == image_file, 'rating'] = rating
@@ -77,22 +77,30 @@ class ImageRecommender:
 
         return selected_images, ratings
 
-    def load_user_vector(self, selected_images):
-        user_vectors = []
-        for image_file in selected_images:
-            vector_file = os.path.join(self.vector_folder, f"{os.path.splitext(image_file)[0]}.npy")
-            user_vector = np.load(vector_file)
-            user_vectors.append(user_vector)
-        return user_vectors
+    def save_user_vector(self, user_id, user_vector):
+        # 사용자 벡터를 vectors/user 폴더에 저장
+        vector_file = os.path.join(self.vector_folder, "user", f"{user_id}.npy")
+        np.save(vector_file, user_vector)
+
+    def load_user_vector(self, user_id):
+        # 저장된 사용자 벡터를 불러옵니다. 없으면 None을 반환합니다.
+        vector_file = os.path.join(self.vector_folder, "user", f"{user_id}.npy")
+        if os.path.exists(vector_file):
+            return np.load(vector_file)
+        else:
+            return None
 
     def recommend_images(self, selected_images, user_vectors):
         # Calculate the average user vector
         user_vector = np.mean(user_vectors, axis=0)
 
+        # Load selected image vectors
+        selected_image_vectors = [np.load(os.path.join(self.vector_folder, "train", f"{os.path.splitext(image_file)[0]}.npy")) for image_file in selected_images]
+
         # Load all image vectors
         all_image_vectors = []
         for image_file in self.image_files:
-            vector_file = os.path.join(self.vector_folder, f"{os.path.splitext(image_file)[0]}.npy")
+            vector_file = os.path.join(self.vector_folder, "train", f"{os.path.splitext(image_file)[0]}.npy")
             image_vector = np.load(vector_file)
             all_image_vectors.append(image_vector)
         all_image_vectors = np.array(all_image_vectors)
@@ -137,30 +145,42 @@ class ImageRecommender:
     def run(self):
         select_method = self.choose_selection_method()
         selected_images, ratings = select_method()
-        user_vectors = self.load_user_vector(selected_images)
-        recommendations = self.recommend_images(selected_images, user_vectors)
-        self.show_recommendations(recommendations)
-        
+
+        user_id = 'user3'  # 사용자 ID
+
+        user_vector = self.load_user_vector(user_id)
+        if user_vector is None:
+            user_vector = np.zeros(1000)  # 처음 사용자 벡터를 생성할 때 0으로 초기화
+        # 이미지 선택에 따라 사용자 벡터 갱신
+        for image_file, rating in zip(selected_images, ratings):
+            image_vector = np.load(os.path.join(self.vector_folder, "train", f"{os.path.splitext(image_file)[0]}.npy"))
+            user_vector += rating * image_vector
+        user_vector /= np.sum(ratings)  # 사용자 벡터를 선택한 이미지에 대한 가중평균으로 업데이트
+
+        # 갱신된 사용자 벡터를 저장
+        self.save_user_vector(user_id, user_vector)
+
+        # 이미지 추천
+        recommended_images = self.recommend_images(selected_images, [user_vector])
+        # 이미지 추천 시각화
+        self.show_recommendations(recommended_images)
+
+        # 이미지와 사용자 벡터의 PCA를 이용한 시각화
         # Apply PCA to image vectors
-        all_image_vectors = np.array([np.load(os.path.join(self.vector_folder, f"{os.path.splitext(image_file)[0]}.npy")) for image_file in self.image_files])
+        all_image_vectors = np.array([np.load(os.path.join(self.vector_folder, "train", f"{os.path.splitext(image_file)[0]}.npy")) for image_file in self.image_files])
         pca = PCA(n_components=2)
         transformed_image_vectors = pca.fit_transform(all_image_vectors)
         
         # Apply PCA to user vectors
-        pca_user_vectors = pca.transform(user_vectors)
+        pca_user_vectors = pca.transform(user_vector.reshape(1, -1))
         
-        # Apply PCA to average user vector
-        avg_user_vector = np.mean(user_vectors, axis=0)
-        pca_avg_user_vector = pca.transform(avg_user_vector.reshape(1, -1))
-
         # Get indices of selected images
         selected_indices = [self.image_files.index(image_file) for image_file in selected_images]
         
         # Visualize selected images and PCA-transformed vectors
         plt.figure(figsize=(12, 8))
         plt.scatter(transformed_image_vectors[:, 0], transformed_image_vectors[:, 1], color='gray', label='Image Vectors (PCA)')
-        plt.scatter(pca_user_vectors[:, 0], pca_user_vectors[:, 1], color='green', label='User Vectors (PCA)')
-        plt.scatter(pca_avg_user_vector[:, 0], pca_avg_user_vector[:, 1], color='red', label='Average User Vector (PCA)')
+        plt.scatter(pca_user_vectors[:, 0], pca_user_vectors[:, 1], color='red', label='User Vector (PCA)')
         
         # Highlight selected images
         for idx in selected_indices:
@@ -174,6 +194,6 @@ class ImageRecommender:
         plt.show()
 
 # 이미지 추천기 객체 생성
-image_recommender = ImageRecommender("./images/train", "./vectors/train")
+image_recommender = ImageRecommender("./images/train", "./vectors")
 # 이미지 추천 실행
 image_recommender.run()
