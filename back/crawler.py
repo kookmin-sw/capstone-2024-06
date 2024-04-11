@@ -13,7 +13,7 @@ from config_loader import config
 
 
 class BaseCrawler:
-    def __init__(self, prefix, num_workers, verbose):
+    def __init__(self, path, prefix, num_workers, verbose):
         register_heif_opener()
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
@@ -26,8 +26,8 @@ class BaseCrawler:
         self.prefix = prefix
         self.num_workers = num_workers
         self.verbose = verbose
-        self.download_path = config["PATH"]["train"]
-        os.makedirs(self.download_path, exist_ok=True)
+        self.path = path
+        os.makedirs(self.path, exist_ok=True)
 
     def crawling(self):
         self.num_progressed = 0
@@ -89,7 +89,7 @@ class BaseCrawler:
             file_extension = ".jpg"
             filename = self.prefix + "_" + filename + file_extension
 
-            with open(os.path.join(self.download_path, filename), "wb") as f:
+            with open(os.path.join(self.path, filename), "wb") as f:
                 f.write(image_data)
     
     def sanitize_filename(self, filename):
@@ -121,20 +121,20 @@ class BaseCrawler:
 
 
 class OhouseCrawler(BaseCrawler):
-    def __init__(self, query, num_pages, num_workers=8, verbose=False):
-        super().__init__("ohouse", num_workers, verbose)
+    def __init__(self, path, query, style=None, num_workers=8, verbose=False):
+        super().__init__(path, "ohouse", num_workers, verbose)
         self.query = query
-        self.num_pages = num_pages
+        self.style = style
         self.api_url = "https://ohou.se/cards/feed.json"
 
     def producer(self):
-        for page in range(1, self.num_pages + 1):
+        page = 1
+        while not self.finished:
             desks = self.fetch_desks(page)
             with self.lock:
                 for desk in desks:
                     self.queue.put(desk)
-        
-        self.finished = True
+            page += 1
 
     def fetch_desks(self, page):
         params = {
@@ -144,25 +144,32 @@ class OhouseCrawler(BaseCrawler):
             "page": page,
             "per": 48,
         }
+        if self.style:
+            params["style"] = self.style
 
         response = requests.get(self.api_url, params=params, headers=self.headers)
         if response.status_code != 200:
             raise Exception("Failed to fetch data")
 
         desks = []
-        fetched_desks = response.json()["cards"]
+        response_data = response.json()
+        fetched_desks = response_data["cards"]
         for fetched_desk in fetched_desks:
             desk = {
                 "url": fetched_desk["image"]["url"],
                 "name": str(fetched_desk["id"])
             }
             desks.append(desk)
+
+        if not response_data["next"]:
+            self.finished = True
+
         return desks
     
 
 class PinterestCrawler(BaseCrawler):
-    def __init__(self, query, num_workers=8, verbose=False):
-        super().__init__("pinterest", num_workers, verbose)
+    def __init__(self, path, query, num_workers=8, verbose=False):
+        super().__init__(path, "pinterest", num_workers, verbose)
         self.query = query
 
         self.api_url = "https://pinterest.com/resource/BaseSearchResource/get/?"
@@ -170,10 +177,8 @@ class PinterestCrawler(BaseCrawler):
         self.bookmark = ""
 
     def producer(self):
-        num_fetched = 0
         while not self.finished:
             desks = self.fetch_desks()
-            num_fetched += len(desks)
             with self.lock:
                 for desk in desks:
                     self.queue.put(desk)
@@ -210,6 +215,10 @@ if __name__ == "__main__":
 
     train_path = config["PATH"]["train"]
 
-    # desk_crawler = OhouseCrawler(query="데스크셋업", num_pages=8, num_workers=8, verbose=True)
-    desk_crawler = PinterestCrawler(query="asdf", verbose=True)
-    desk_crawler.crawling()
+    styles = ["모던", "북유럽", "빈티지", "내추럴", "프로방스&로맨틱", "클래식&앤틱", "한국&아시아", "유니크"]
+    for i, style in enumerate(styles):
+        path = os.path.join(train_path, style)
+        desk_crawler = OhouseCrawler(path, "데스크테리어", style=i, verbose=True)
+        desk_crawler.crawling()
+
+    # desk_crawler = PinterestCrawler(train_path, "desk interior", verbose=True)
