@@ -14,7 +14,7 @@ const MyPost = () => {
             어떤데스크
           </div>
           <div className="absolute w-[173px] h-[83px] left-[200px] top-[144px] font-semibold text-base leading-9 text-black">
-            작성 완료
+            내가 쓴 글
           </div>
           <div className="absolute w-[1049px] h-0 left-[179px] top-[184px] border border-gray-300 transform rotate-0.05">
           </div>

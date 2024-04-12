@@ -35,7 +35,7 @@ const MyNotification = () => {
 
   const router = useRouter();
 
-  const handleNotificationClick = async (notificationId, postId, category) => {
+  const handleNotificationClick = async (notificationId: number, PostId: number, Category: string) => {
     try {
       // 클릭한 알림의 상태를 변경하여 서버에 요청
       const response = await fetch(`${process.env.Localhost}/notification/${notificationId}`, {
@@ -49,13 +49,28 @@ const MyNotification = () => {
 
       if (response.ok) {
         // 알림 상태가 성공적으로 변경되면 해당 알림과 관련된 글로 이동
-        await router.push(`/Community/${category}/${postId}`);
+        await router.push(`/Community/${SwitchCategory(Category)}/${PostId}`);
       } else {
         console.error('Failed to update notification status');
       }
 
     } catch (error) {
       console.error('Error handling notification click:', error);
+    }
+  };
+
+  const SwitchCategory = (category: any) => {
+    switch (category) {
+      case "자유":
+        return "FreePost";
+      case "인기":
+        return "PopularityPost";
+      case "삽니다":
+        return "BuyPost";
+      case "팝니다":
+        return "SellPost";
+      default:
+        return "";
     }
   };
 

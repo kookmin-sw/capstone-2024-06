@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useSession } from "next-auth/react";
 import MyProfile from "./MyProfile";
 
-const User = () => {
+const User = ({ userId }) => {
   const { data: session } = useSession();
 
   const [userProfile, setUserProfile] = useState(null);
@@ -81,8 +81,8 @@ const User = () => {
 
   const router = useRouter();
 
-  const PostClick = (postId, category) => {
-    router.push(`/Community/${SwitchCategory(category)}/${postId}`);
+  const PostClick = (PostId: number, Category: string) => {
+    router.push(`/Community/${SwitchCategory(Category)}/${PostId}`);
   };
 
   const chunkArray = (array, size) => {
@@ -96,8 +96,8 @@ const User = () => {
 
   const chunkedPosts = chunkArray(userPosts, 3);
 
-  const SwitchCategory = (category) => {
-    switch (category) {
+  const SwitchCategory = (Category) => {
+    switch (Category) {
       case "자유":
         return "FreePost";
       case "인기":
@@ -110,6 +110,7 @@ const User = () => {
         return "";
     }
   };
+
 
 
   return (
