@@ -20,6 +20,7 @@ const MyNotification = () => {
           });
           if (response.ok) {
             const data = await response.json();
+            console.log(data);
             setNotifications(data);
           } else {
             console.error('Failed to fetch notifications');
@@ -35,11 +36,11 @@ const MyNotification = () => {
 
   const router = useRouter();
 
-  const handleNotificationClick = async (notificationId: number, PostId: number, Category: string) => {
+  const handleNotificationClick = async (notification_id: number, reference_id: number, Category: string) => {
     try {
       // 클릭한 알림의 상태를 변경하여 서버에 요청
-      const response = await fetch(`${process.env.Localhost}/notification/${notificationId}`, {
-        method: 'PUT',
+      const response = await fetch(`${process.env.Localhost}/notification/${notification_id}`, {
+        method: 'POST',
         headers: {
           Authorization: `Bearer ${(session as any)?.access_token}`,
           'Content-Type': 'application/json',
@@ -49,7 +50,7 @@ const MyNotification = () => {
 
       if (response.ok) {
         // 알림 상태가 성공적으로 변경되면 해당 알림과 관련된 글로 이동
-        await router.push(`/Community/${SwitchCategory(Category)}/${PostId}`);
+        await router.push(`/Community/${SwitchCategory(Category)}/${reference_id}`);
       } else {
         console.error('Failed to update notification status');
       }
@@ -59,8 +60,30 @@ const MyNotification = () => {
     }
   };
 
-  const SwitchCategory = (category: any) => {
-    switch (category) {
+  const DeleteNotification = async () => {
+    try {
+      const response = await fetch(`${process.env.Localhost}/notification`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${(session as any)?.access_token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        // 알림 삭제 성공 시 알림 목록 다시 불러오기
+        fetchNotifications();
+      } else {
+        console.error('Failed to delete notification');
+      }
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+    }
+  }
+
+  const SwitchCategory = (Category: any) => {
+    console.log(Category);
+    switch (Category) {
       case "자유":
         return "FreePost";
       case "인기":
@@ -74,23 +97,38 @@ const MyNotification = () => {
     }
   };
 
+  const NotificationClick = () => {
+    router.push("/Mypage/Notification")
+  }
+
   return (
     <>
+      <div className="absolute w-[173px] h-[83px] left-[697px] top-[99px] font-semibold text-base leading-9 text-black hover:text-[#F4A460]"
+        onClick={NotificationClick}>
+        알림
+      </div>
       <div className="absolute left-[647px] top-[149px] container mx-auto p-4">
         <ul>
           {notifications.map((notification) => (
             <li
               key={notification.notification_id}
               className={`border-b py-2 w-[450px] ${notification.checked ? 'bg-gray-200' : ''}`}
-              onClick={() => handleNotificationClick(notification.notification_id, notification.post_id, notification.category)} // 알림 클릭 이벤트 추가
+              onClick={() => handleNotificationClick(notification.notification_id, notification.reference_id, notification.category)} // 알림 클릭 이벤트 추가
             >
               <p className="text-lg">{notification.content}</p>
               <p className="max-w-[400px] text-sm text-gray-500">
-                {notification.date.toLocaleString()}
+                {/* {notification.date.toLocaleString()} */}
               </p>
             </li>
           ))}
         </ul>
+      </div>
+      <div className="absolute w-[173px] h-[83px] left-[1030px] top-[115px] text-sm text-black hover:text-[#F4A460]">
+        <button
+          onClick={() => DeleteNotification()}
+        >
+          알림 모두 삭제
+        </button>
       </div>
     </>
   );

@@ -28,7 +28,7 @@ const User = ({ userId }) => {
           setFollowerCount(userData.followerCount);
           setFollowingCount(userData.followingCount);
           setIsFollowing(userData.isFollowing);
-          fetchUserPosts(userData.id);
+          setUserPosts(userData.userPosts);
         } else {
           console.error('Failed to fetch user data');
         }
@@ -40,34 +40,16 @@ const User = ({ userId }) => {
     fetchUserData();
   }, []);
 
-  const fetchUserPosts = async (userId) => {
-    try {
-      const response = await fetch(`${process.env.Localhost}/user/posts/${userId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      if (response.ok) {
-        const posts = await response.json();
-        setUserPosts(posts);
-      } else {
-        console.error('Failed to fetch user posts');
-      }
-    } catch (error) {
-      console.error('Error fetching user posts:', error);
-    }
-  };
 
-  // 팔로우 또는 언팔로우 요청을 보내는 함수
+  //팔로우 또는 언팔로우 요청을 보내는 함수
   const handleFollowToggle = async () => {
     try {
-      const response = await fetch(`${process.env.Localhost}/user/follow`, {
+      const response = await fetch(`${process.env.Localhost}/followees`, {
         method: isFollowing ? 'DELETE' : 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ userId: userProfile.id }), // 사용자 ID를 전송
+        body: JSON.stringify({ followee_user_id: userProfile.id }), // 사용자 ID를 전송
       });
       if (response.ok) {
         setIsFollowing(!isFollowing); // 팔로우 상태 업데이트
@@ -130,7 +112,7 @@ const User = ({ userId }) => {
                 )}
                 <div className="flex flex-col ml-4">
                   <div className="flex items-center">
-                    <h1 className="text-2xl font-bold">{userProfile ? userProfile.name : "User Name"}</h1>
+                    <h1 className="text-2xl font-bold">{userProfile?.userProfile?.name}</h1>
                     {/* 팔로우 버튼 또는 언팔로우 버튼 표시 */}
                     <button
                       className={`ml-4 bg-[#FFD600] text-black rounded-md px-2 py-1 ${isFollowing ? 'bg-red-500' : ''}`}

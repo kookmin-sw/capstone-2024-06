@@ -82,7 +82,7 @@ const Posting = () => {
   };
 
   const handleAuthorImageClick = () => {
-    router.push("/Users/${PostId}");
+    router.push("/Users/${userId}");
     // User 함수를 호출하여 userId 전달
     return <User userId={Posting.author.user_id} />;
   };
