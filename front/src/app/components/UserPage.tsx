@@ -1,10 +1,10 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from "next-auth/react";
 import MyProfile from "./MyProfile";
 
-const User = ({ userId }) => {
+const User = ({ }) => {
   const { data: session } = useSession();
 
   const [userProfile, setUserProfile] = useState(null);
@@ -13,10 +13,13 @@ const User = ({ userId }) => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [userPosts, setUserPosts] = useState([]);
 
+  const params = useSearchParams();
+  const user_id = params.get('user_id');
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`${process.env.Localhost}/user/${userId}`, {
+        const response = await fetch(`${process.env.Localhost}/user/${user_id}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

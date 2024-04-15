@@ -81,10 +81,9 @@ const Posting = () => {
     router.push("/Community");
   };
 
-  const handleAuthorImageClick = () => {
-    router.push("/Users/${userId}");
+  const handleAuthorImageClick = (user_id: string) => {
+    router.push(`/Users?user_id=${user_id}`);
     // User 함수를 호출하여 userId 전달
-    return <User userId={Posting.author.user_id} />;
   };
 
   return (
@@ -97,7 +96,7 @@ const Posting = () => {
         </div>
         <div className="w-full border-b flex items-center pb-1">
           <Image src={Posting.author.image} width={40} height={30} alt={""} className="rounded-full"
-            onClick={handleAuthorImageClick}
+            onClick={() => handleAuthorImageClick(Posting.author.user_id)}
           />
           <div className="ml-2 w-full">{Posting.author.name}</div>
           <div className="flex w-[78px] h-full mr-1 text-xs">
