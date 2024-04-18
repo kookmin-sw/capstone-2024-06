@@ -14,7 +14,7 @@ from config_loader import config
 
 class Img2Vec:
     def get_vector(self, image_path):
-        return self.get_vectors([image_path])
+        return self.get_vectors([image_path])[0]
 
     def get_vectors(self, image_paths): ...
 
@@ -23,7 +23,7 @@ class Feat2Vec(Img2Vec):
     def __init__(self, batch_size=32, verbose=False):
         self.batch_size = batch_size
         self.verbose = verbose
-        self.device = torch.device("cude" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         self.model = models.vgg16(weights=models.VGG16_Weights.DEFAULT)
         self.model.classifier = self.model.classifier[:-1]
@@ -60,7 +60,7 @@ class Feat2Vec(Img2Vec):
                 batch_vectors = self.model(batch_images)
             vectors.extend(batch_vectors)
 
-        vectors = np.array(vectors)
+        vectors = np.array(vectors.cpu())
         vectors /= np.linalg.norm(vectors, axis=1)[:, np.newaxis]
         return vectors
 
@@ -77,11 +77,14 @@ class Obj2Vec(Img2Vec):
         iterator = image_paths
         if self.verbose:
             iterator = tqdm(iterator)
-        
+
         vectors = []
         for image_path in iterator:
             result = self.model(
-                image_path, conf=self.conf_threshold, classes=self.classes, verbose=False
+                image_path,
+                conf=self.conf_threshold,
+                classes=self.classes,
+                verbose=False,
             )
             counter = [0] * len(self.classes)
 
@@ -89,36 +92,72 @@ class Obj2Vec(Img2Vec):
                 counter[self.cls_to_idx[box.cls.item()]] += 1
             vectors.append(counter)
 
-        vectors = np.array(vectors, dtype=np.float32)
+        vectors = np.array(vectors.cpu(), dtype=np.float32)
+        return vectors
+
+
+class Color2Vec(Img2Vec):
+    def __init__(self, verbose=False):
+        super().__init__()
+        self.verbose = verbose
+
+    def get_vectors(self, image_paths):
+        iterator = image_paths
+        if self.verbose:
+            iterator = tqdm(iterator)
+
+        vectors = []
+        for image_path in iterator:
+            image = Image.open(image_path)
+            image = image.resize((256, 256))
+            image_arr = np.array(image)
+            pixels = image_arr.reshape(-1, 3)
+
+            hist_r, _ = np.histogram(pixels[:, 0], bins=256, range=(0, 255))
+            hist_g, _ = np.histogram(pixels[:, 1], bins=256, range=(0, 255))
+            hist_b, _ = np.histogram(pixels[:, 2], bins=256, range=(0, 255))
+
+            num_pixels = int(image.width * image.height)
+            hist_r = hist_r / num_pixels
+            hist_g = hist_g / num_pixels
+            hist_b = hist_b / num_pixels
+            vectors.append(np.concatenate((hist_r, hist_g, hist_b)))
+
         return vectors
 
 
 if __name__ == "__main__":
 
-    def save_vectors(vectors, file_path):
-        d = vectors.shape[1]
-        index = faiss.IndexFlatL2(d)
-        index.add(vectors)
-        faiss.write_index(index, file_path)
+    # def save_vectors(vectors, file_path):
+    #     d = vectors.shape[1]
+    #     index = faiss.IndexFlatL2(d)
+    #     index.add(vectors)
+    #     faiss.write_index(index, file_path)
 
-    
-    # how to use Feature to Vector
-    feature_extractor = Feat2Vec(verbose=True)
+    # # how to use Feature to Vector
+    # feature_extractor = Feat2Vec(verbose=True)
 
-    image_dir = config["PATH"]["train"]
+    # image_dir = config["PATH"]["train"]
+    # image_paths = [
+    #     os.path.join(image_dir, file_name) for file_name in os.listdir(image_dir)
+    # ]
+    # vectors = feature_extractor.get_vectors(image_paths)
+    # save_vectors(vectors, "vectors/vgg_features.index")
+
+    # # how to use Object to Vector
+    # object_counter = Obj2Vec(verbose=True)
+
+    # image_dir = config["PATH"]["train"]
+    # image_paths = [
+    #     os.path.join(image_dir, file_name) for file_name in os.listdir(image_dir)
+    # ]
+    # vectors = object_counter.get_vectors(image_paths)
+    # save_vectors(vectors, "vectors/object_counts.index")
+
+    dir_path = "images/train/28070000"
     image_paths = [
-        os.path.join(image_dir, file_name) for file_name in os.listdir(image_dir)
+        os.path.join(dir_path, image_name) for image_name in os.listdir(dir_path)
     ]
-    vectors = feature_extractor.get_vectors(image_paths)
-    save_vectors(vectors, "vectors/vgg_features.index")
 
-
-    # how to use Object to Vector
-    object_counter = Obj2Vec(verbose=True)
-
-    image_dir = config["PATH"]["train"]
-    image_paths = [
-        os.path.join(image_dir, file_name) for file_name in os.listdir(image_dir)
-    ]
-    vectors = object_counter.get_vectors(image_paths)
-    save_vectors(vectors, "vectors/object_counts.index")
+    color2vec = Color2Vec()
+    vectors = color2vec.get_vectors(image_paths)

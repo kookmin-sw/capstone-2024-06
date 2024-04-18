@@ -73,6 +73,13 @@ class BasePost(BaseModel):
     liked: bool
 
 
+class Image(BaseModel):
+    image_id: str
+    filename: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class PostPreview(BasePost):
     thumbnail: Image | None = None
 
@@ -90,17 +97,11 @@ class TempPost(BaseModel):
     temp_post_id: int
 
 
-class Image(BaseModel):
-    image_id: str
-    filename: str
-
-    model_config = ConfigDict(from_attributes=True)
-
-
 class Notification(BaseModel):
     notification_id: int
     reference_id: int
     content: str
+    category: str
     checked: bool
 
 

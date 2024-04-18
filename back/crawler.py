@@ -9,11 +9,15 @@ from mimetypes import guess_extension
 from PIL import Image
 from pillow_heif import register_heif_opener
 
-from config_loader import config
+from sqlalchemy.orm import scoped_session
+from database.database import SessionLocal, engine
+from database.models import Base, DesignImages, ItemImages
 
+
+Base.metadata.create_all(bind=engine)
 
 class BaseCrawler:
-    def __init__(self, path, prefix, num_workers, verbose):
+    def __init__(self, path, prefix, num_workers, resize, verbose):
         register_heif_opener()
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
@@ -27,7 +31,10 @@ class BaseCrawler:
         self.num_workers = num_workers
         self.verbose = verbose
         self.path = path
+        self.resize = resize
         os.makedirs(self.path, exist_ok=True)
+        
+        self.get_session = scoped_session(SessionLocal)
 
     def crawling(self):
         self.num_progressed = 0
@@ -57,9 +64,9 @@ class BaseCrawler:
             if not self.queue.empty():
                 image = self.queue.get()
                 self.lock.release()
-                self.download_image(image)
+                ret = self.download_image(image)
 
-                if self.verbose:
+                if self.verbose and ret:
                     with self.lock:
                         self.num_progressed += 1
                         print(f"Progressed {self.num_progressed} images", end="\r")
@@ -70,59 +77,63 @@ class BaseCrawler:
                     break
 
     def download_image(self, image):
-        url = image["url"]
-        filename = self.sanitize_filename(image["name"])
+        url = image["src_url"]
+        filename = self.sanitize_filename(image["filename"])
 
         response = requests.get(url)
 
-        if response.status_code == 200:
-            file_extension = guess_extension(response.headers.get("content-type"))
-            image_data = response.content
+        if response.status_code != 200:
+            return False
 
-            if file_extension is None:
-                return
+        file_extension = guess_extension(response.headers.get("content-type"))
+        image_data = response.content
 
-            image_data = self.validate_image_data(image_data)
-            if not image_data:
-                return
+        if file_extension is None:
+            return False
 
-            file_extension = ".jpg"
-            filename = self.prefix + "_" + filename + file_extension
+        image_data = self.validate_image_data(image_data)
+        if not image_data:
+            return False
 
-            with open(os.path.join(self.path, filename), "wb") as f:
-                f.write(image_data)
+        file_extension = ".jpg"
+        image["filename"] = self.prefix + "_" + filename + file_extension
+        image_data.save(os.path.join(self.path, image["filename"]))
+
+        ret = self.to_db(image)
+        return ret
     
     def sanitize_filename(self, filename):
         sanitized_filename = re.sub(r"[\/\\\:\*\?\"\<\>\|\s]", "_", filename)
         sanitized_filename = "".join(c for c in sanitized_filename if c.isprintable())
         return sanitized_filename
-
-    def convert_heif_to_jpg(self, image_data):
-        image = Image.open(BytesIO(image_data))
-        image = image.convert("RGB")
-
-        with BytesIO() as buffer:
-            image.save(buffer, format="JPEG")
-            return buffer.getvalue()
     
     def validate_image_data(self, image_data):
         try:
             image = Image.open(BytesIO(image_data))
             pixels = image.load()
             image = image.convert("RGB")
-
-            with BytesIO() as buffer:
-                image.save(buffer, format="JPEG")
-                image_data = buffer.getvalue()
+            if self.resize:
+                image = image.resize(self.resize)
             
-            return image_data
+            return image
         except:
             return None
-
+    
+    def to_db(self, image):
+        try:
+            design_image = DesignImages(**image)
+            session = self.get_session()
+            session.add(design_image)
+            session.commit()
+            return True
+        except Exception as e:
+            session.rollback()
+            return False
+        
 
 class OhouseCrawler(BaseCrawler):
-    def __init__(self, path, query, style=None, num_workers=8, verbose=False):
-        super().__init__(path, "ohouse", num_workers, verbose)
+    def __init__(self, path, query, style=None, num_workers=8, resize=None, verbose=False):
+        super().__init__(path, "ohouse", num_workers, resize, verbose)
         self.query = query
         self.style = style
         self.api_url = "https://ohou.se/cards/feed.json"
@@ -155,9 +166,11 @@ class OhouseCrawler(BaseCrawler):
         response_data = response.json()
         fetched_desks = response_data["cards"]
         for fetched_desk in fetched_desks:
+            url = fetched_desk["image"]["url"]
             desk = {
-                "url": fetched_desk["image"]["url"],
-                "name": str(fetched_desk["id"])
+                "filename": re.search(r'/([^/]*)\.([^.]*)$', url).group(1),
+                "src_url": url,
+                "landing": fetched_desk["link"]["landingUrl"]
             }
             desks.append(desk)
 
@@ -168,8 +181,8 @@ class OhouseCrawler(BaseCrawler):
     
 
 class PinterestCrawler(BaseCrawler):
-    def __init__(self, path, query, num_workers=8, verbose=False):
-        super().__init__(path, "pinterest", num_workers, verbose)
+    def __init__(self, path, query, num_workers=8, resize=None, verbose=False):
+        super().__init__(path, "pinterest", num_workers, resize, verbose)
         self.query = query
 
         self.api_url = "https://pinterest.com/resource/BaseSearchResource/get/?"
@@ -209,16 +222,80 @@ class PinterestCrawler(BaseCrawler):
         return desks
 
 
+class OhouseItemCrawler(BaseCrawler):
+    def __init__(self, path, category_id, num_workers=8, resize=None, verbose=False):
+        super().__init__(path, "ohouse", num_workers, resize, verbose)
+        self.category_id = category_id
+
+        self.api_url = "https://ohou.se/store/category.json"
+        self.landing_url = "https://ohou.se/productions/{}/selling?affect_id&affect_type=ProductCategoryIndex"
+    
+    def producer(self):
+        page = 1
+        while not self.finished:
+            desks = self.fetch_desks(page)
+            with self.lock:
+                for desk in desks:
+                    self.queue.put(desk)
+            page += 1
+    
+    def fetch_desks(self, page):
+        params = {
+            "v": 2,
+            "category_id": self.category_id,
+            "page": page,
+            "per": 24,
+        }
+        response = requests.get(self.api_url, params=params, headers=self.headers)
+        if response.status_code != 200:
+            raise Exception("Failed to fetch data")
+
+        items = []
+        response_data = response.json()
+        fetched_items = response_data["productions"]
+        for fetched_item in fetched_items:
+            url = fetched_item["original_image_url"]
+            item = {
+                "filename": re.search(r'/([^/]*)\.([^.]*)$', url).group(1),
+                "src_url": url,
+                "landing": self.landing_url.format(fetched_item["id"])
+            }
+            items.append(item)
+
+        if not fetched_items:
+            self.finished = True
+
+        return items
+
+    def to_db(self, image):
+        try:
+            item_image = ItemImages(**image)
+            session = self.get_session()
+            session.add(item_image)
+            session.commit()
+            return True
+        except Exception as e:
+            session.rollback()
+            return False
+
+
 if __name__ == "__main__":
 
     from config_loader import config
 
     train_path = config["PATH"]["train"]
 
-    styles = ["모던", "북유럽", "빈티지", "내추럴", "프로방스&로맨틱", "클래식&앤틱", "한국&아시아", "유니크"]
-    for i, style in enumerate(styles):
-        path = os.path.join(train_path, style)
-        desk_crawler = OhouseCrawler(path, "데스크테리어", style=i, verbose=True)
-        desk_crawler.crawling()
+    # styles = ["모던", "북유럽", "빈티지", "내추럴", "프로방스&로맨틱", "클래식&앤틱", "한국&아시아", "유니크"]
+    # for i, style in enumerate(styles):
+    #     path = os.path.join(train_path, style)
+    #     print(path)
+    #     desk_crawler = OhouseCrawler(path, "데스크테리어", style=i, verbose=True)
+    #     desk_crawler.crawling()
 
     # desk_crawler = PinterestCrawler(train_path, "desk interior", verbose=True)
+
+    categories = ["28070000"]
+    for category_id in categories:
+        path = os.path.join(train_path, category_id)
+        item_crawler = OhouseItemCrawler(path, category_id, resize=(256, 256), verbose=True)
+        item_crawler.crawling()

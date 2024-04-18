@@ -73,6 +73,11 @@ app.mount(
     StaticFiles(directory=config["PATH"]["train"]),
     name="train_images",
 )
+app.mount(
+    "/images/default",
+    StaticFiles(directory=config["PATH"]["default"]),
+    name="default_images",
+)
 
 
 def get_db():
@@ -294,7 +299,7 @@ async def current_user(
 async def get_user_profile(user_id: str, db: Session = Depends(get_db)):
     user = await crud.read_user_by_id(db, user_id)
     if not user:
-        raise HTTPException(status_code=404, detali="User not found")
+        raise HTTPException(status_code=404, detail="User not found")
 
     return user
 
@@ -550,7 +555,6 @@ async def modify_user_profile_image(
     filename = file.filename
     file_extension = os.path.splitext(filename)[1]
     file_path = os.path.join(upload_path, str(uuid.uuid4()) + file_extension)
-
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
     
@@ -578,13 +582,12 @@ async def check_notification(
     return notification
 
 
-@app.delete("/notification/{notification_id}")
+@app.delete("/notification")
 async def delete_notification(
-    notification_id: int,
     user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    await crud.delete_notification(db, notification_id)
+    await crud.delete_notifications(db, user_id)
     return {"message": "Notification deleted successfully"}
 
 
