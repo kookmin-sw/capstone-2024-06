@@ -253,8 +253,9 @@ class Notifications(Base):
 
     content = Column(String, nullable=False)
     checked = Column(Boolean, default=False, nullable=False)
+    category = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.now, nullable=False)
-
+    
     receiver = relationship("Users", back_populates="notifications")
 
 
@@ -272,3 +273,23 @@ class ChatHistories(Base):
 
     sender = relationship("Users", foreign_keys=[sender_id], back_populates="sended_chat")
     receiver = relationship("Users", foreign_keys=[receiver_id], back_populates="received_chat")
+
+
+class DesignImages(Base):
+    __tablename__ = "design_images"
+
+    filename = Column(String, primary_key=True)
+
+    index = Column(Integer, nullable=True)
+    src_url = Column(String, unique=True)
+    landing = Column(String, nullable=False)
+
+
+class ItemImages(Base):
+    __tablename__ = "item_images"
+
+    filename = Column(String, primary_key=True)
+
+    index = Column(Integer, nullable=True)
+    src_url = Column(String, unique=True)
+    landing = Column(String, nullable=False)

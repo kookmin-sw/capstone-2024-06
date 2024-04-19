@@ -71,6 +71,7 @@ async def create_comment(db: Session, comment: CommentForm, user_id: str):
     notification = Notifications(
         receiver_id=comment.post.author_id,
         reference_id=comment.post.post_id,
+        category=comment.post.category,
         content="댓글달림",
     )
     db.add(notification)
@@ -88,6 +89,7 @@ async def create_post_scrap(db: Session, user_id: str, post_id: int):
     notification = Notifications(
         receiver_id=post.author_id,
         reference_id=post.post_id,
+        category=post.category,
         content="스크랩됨",
     )
     db.add(notification)
@@ -104,6 +106,7 @@ async def create_post_like(db: Session, user_id: str, post_id: int):
     notification = Notifications(
         receiver_id=post.author_id,
         reference_id=post.post_id,
+        category=post.category,
         content="좋아요눌림",
     )
     db.add(notification)
@@ -120,6 +123,7 @@ async def create_comment_like(db: Session, user_id: str, comment_id: int):
     notification = Notifications(
         receiver_id=comment.author_id,
         reference_id=comment.post.post_id,
+        category=comment.post.category,
         content="댓글 좋아요 눌림",
     )
     db.add(notification)
@@ -443,13 +447,14 @@ async def check_notification(db: Session, notification_id: int):
     return notification
 
 
-async def delete_notification(db: Session, notification_id: int):
-    notification = (
+async def delete_notifications(db: Session, user_id: str):
+    notifications = (
         db.query(Notifications)
-        .filter(Notifications.notification_id == notification_id)
-        .first()
+        .filter(Notifications.receiver_id == user_id)
+        .all()
     )
-    db.delete(notification)
+    for notification in notifications:
+        db.delete(notification)
     db.commit()
 
 
