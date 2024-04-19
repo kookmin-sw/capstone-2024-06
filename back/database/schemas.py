@@ -16,6 +16,7 @@ class UserProfile(BaseModel):
 
 class UserInfo(UserProfile):
     user_id: str
+    followed: bool
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -111,7 +112,7 @@ class BaseChatHistory(BaseModel):
     message: str
     created_at: datetime = Field(default_factory=datetime.now)
 
-    model_config = ConfigDict(from_attributes=True)\
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ChatHistory(BaseChatHistory):
