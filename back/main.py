@@ -5,11 +5,12 @@ import base64
 import json
 import requests
 import re
-
+from typing import List
+from fastapi import FastAPI, Request
 from datetime import datetime, timedelta, timezone
 from jose import jwt
 from passlib.context import CryptContext
-
+from back.recommend_system import recommend_by_uservector
 from fastapi import (
     FastAPI,
     UploadFile,
@@ -167,6 +168,13 @@ app.add_middleware(
 async def process_image(file: UploadFile):
     return process(file)
 
+# 사용자 선택 기반 이미지 추천
+@app.post("/recommend_image")
+async def recommend_image(request: Request):
+    data = await request.json()
+    user_id = data["user_id"]
+    selected_images = data["selected_images"]
+    return recommend_by_uservector(user_id, selected_images)
 
 @app.post("/prototype_process")
 async def prototype_process(file: UploadFile):
