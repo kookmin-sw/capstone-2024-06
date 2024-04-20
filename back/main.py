@@ -169,12 +169,11 @@ async def process_image(file: UploadFile):
     return process(file)
 
 # 사용자 선택 기반 이미지 추천
-@app.post("/recommend_image")
-async def recommend_image(request: Request):
-    data = await request.json()
-    user_id = data["user_id"]
-    selected_images = data["selected_images"]
-    return recommend_by_uservector(user_id, selected_images)
+@app.post("/recommend")
+async def recommend_image(rated_images, user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    user = await crud.read_user_by_id(db, user_id)
+    user_vector = user.embedding
+    return recommend_by_uservector()
 
 @app.post("/prototype_process")
 async def prototype_process(file: UploadFile):
