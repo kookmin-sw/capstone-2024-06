@@ -1,4 +1,4 @@
-from sqlalchemy import and_, or_, desc, exists, case, literal
+from sqlalchemy import and_, or_, desc, exists, case, literal, func
 from sqlalchemy.orm import (
     Session,
     joinedload,
@@ -521,3 +521,11 @@ async def read_chatting_rooms(db: Session, user_id: str):
         chatrooms.append(chatroom)
     
     return chatrooms
+
+
+async def read_random_design_images(db: Session, n: int):
+    return db.query(DesignImages).order_by(func.random()).limit(n).all()
+
+
+async def read_design_images(db: Session, i: int):
+    return db.query(DesignImages).filter(DesignImages.index == i).first()

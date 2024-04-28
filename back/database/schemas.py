@@ -122,3 +122,14 @@ class ChatHistory(BaseChatHistory):
 class ChatRoom(BaseModel):
     opponent: UserInfo
     last_chat: ChatHistory
+
+
+class DesignImage(BaseModel):
+    index: int
+    src_url: str
+    landing: str
+
+
+class RatedImage(BaseModel):
+    index: int
+    rating: int

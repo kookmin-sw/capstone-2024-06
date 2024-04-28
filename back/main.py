@@ -1,16 +1,12 @@
 import os
 import shutil
 import uuid
-import base64
-import json
 import requests
 import re
 from typing import List
-from fastapi import FastAPI, Request
 from datetime import datetime, timedelta, timezone
 from jose import jwt
-from passlib.context import CryptContext
-from back.recommend_system import recommend_by_uservector
+# from back.recommend_system import recommend_by_uservector
 from fastapi import (
     FastAPI,
     UploadFile,
@@ -21,8 +17,10 @@ from fastapi import (
     WebSocketDisconnect,
 )
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordBearer
 from fastapi.staticfiles import StaticFiles
+
+from routers.recommend import recommend_router
+from dependencies import *
 
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
@@ -42,18 +40,8 @@ import plotly.express as px
 
 
 Base.metadata.create_all(bind=engine)
-
-SECRET_KEY = "secret"  # temp
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 1440
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
-optional_oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
-
-
-Base.metadata.create_all(bind=engine)
 app = FastAPI()
+app.include_router(recommend_router)
 
 os.makedirs(config["PATH"]["upload"], exist_ok=True)
 os.makedirs(config["PATH"]["result"], exist_ok=True)
@@ -81,14 +69,6 @@ app.mount(
 )
 
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
 def verify_password(password: str, hashed_password: str):
     return pwd_context.verify(password, hashed_password)
 
@@ -112,36 +92,6 @@ def create_access_token(data: dict, expires_delta: timedelta):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
-
-
-def decode_jwt_payload(token):
-    header, payload, signature = token.split(".")
-
-    decoded_payload = base64.urlsafe_b64decode(payload + "==").decode("utf-8")
-    parsed_payload = json.loads(decoded_payload)
-
-    return parsed_payload
-
-
-def get_current_user(token: str = Depends(oauth2_scheme)):
-    try:
-        payload = decode_jwt_payload(token)
-        jwt.decode(token, SECRET_KEY, ALGORITHM)
-        return payload["sub"]
-    except:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-
-def get_current_user_if_signed_in(token: str | None = Depends(optional_oauth2_scheme)):
-    try:
-        if not token or token == "undefined":
-            return None
-
-        payload = decode_jwt_payload(token)
-        jwt.decode(token, SECRET_KEY, ALGORITHM)
-        return payload["sub"]
-    except:
-        raise HTTPException(status_code=401, detail="Invalid token")
 
 
 # 메인
@@ -168,12 +118,6 @@ app.add_middleware(
 async def process_image(file: UploadFile):
     return process(file)
 
-# 사용자 선택 기반 이미지 추천
-@app.post("/recommend")
-async def recommend_image(rated_images, user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
-    user = await crud.read_user_by_id(db, user_id)
-    user_vector = user.embedding
-    return recommend_by_uservector()
 
 @app.post("/prototype_process")
 async def prototype_process(file: UploadFile):
