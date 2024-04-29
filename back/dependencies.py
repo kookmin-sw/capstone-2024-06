@@ -7,15 +7,12 @@ from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 
 from database.database import SessionLocal
+from config_loader import config
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
 optional_oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
-
-SECRET_KEY = "secret"  # temp
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 1440
 
 
 def get_db():
@@ -36,23 +33,21 @@ def decode_jwt_payload(token):
 
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
-    # try:
-    #     payload = decode_jwt_payload(token)
-    #     jwt.decode(token, SECRET_KEY, ALGORITHM)
-    #     return payload["sub"]
-    # except:
-    #     raise HTTPException(status_code=401, detail="Invalid token")
-    return "admin"
+    try:
+        payload = decode_jwt_payload(token)
+        jwt.decode(token, config["TOKEN"]["secret_key"], config["TOKEN"]["algorithm"])
+        return payload["sub"]
+    except:
+        raise HTTPException(status_code=401, detail="Invalid token")
 
 
 def get_current_user_if_signed_in(token: str | None = Depends(optional_oauth2_scheme)):
-    # try:
-    #     if not token or token == "undefined":
-    #         return None
+    try:
+        if not token or token == "undefined":
+            return None
 
-    #     payload = decode_jwt_payload(token)
-    #     jwt.decode(token, SECRET_KEY, ALGORITHM)
-    #     return payload["sub"]
-    # except:
-    #     raise HTTPException(status_code=401, detail="Invalid token")
-    return "admin"
+        payload = decode_jwt_payload(token)
+        jwt.decode(token, config["TOKEN"]["secret_key"], config["TOKEN"]["algorithm"])
+        return payload["sub"]
+    except:
+        raise HTTPException(status_code=401, detail="Invalid token")

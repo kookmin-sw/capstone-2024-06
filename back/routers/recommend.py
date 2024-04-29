@@ -11,18 +11,13 @@ from database.schemas import *
 from dependencies import *
 
 
-recommend_router = APIRouter(
+router = APIRouter(
     prefix="/recommend",
     tags=["recommend"]
 )
 
 
-@recommend_router.get("/sample_images", response_model=list[DesignImage])
-async def get_images_to_rate(n: int = 5, db: Session = Depends(get_db)):
-    return await crud.read_random_design_images(db, n)
-
-
-@recommend_router.post("/", response_model=list[DesignImage])
+@router.post("/", response_model=list[DesignImage])
 async def recommend_image(rated_images: list[RatedImage], user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
     feat_idx = faiss.read_index("vectors/features.index")
 
@@ -49,3 +44,8 @@ async def recommend_image(rated_images: list[RatedImage], user_id: str = Depends
         design_images.append(design_image)
 
     return design_images
+
+
+@router.get("/sample_image", response_model=list[DesignImage])
+async def get_images_to_rate(n: int = 5, db: Session = Depends(get_db)):
+    return await crud.read_random_design_images(db, n)
