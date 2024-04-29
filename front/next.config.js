@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ["three"],
   reactStrictMode: false,
   env: {
     Localhost: "http://192.168.127.253:8080",
