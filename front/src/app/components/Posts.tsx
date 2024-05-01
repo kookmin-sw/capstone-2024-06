@@ -4,7 +4,7 @@ import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-const Posts = ({ PostCateGory }: { PostCateGory: string}) => {
+const Posts = ({ PostCateGory }: { PostCateGory: string }) => {
   const [Posts, SetPosts] = useState([]);
   const params = useSearchParams();
   const keyword = params.get('keyword');
@@ -17,7 +17,7 @@ const Posts = ({ PostCateGory }: { PostCateGory: string}) => {
           tempkeyword = ""
         }
         const response = await fetch(
-          `${process.env.Localhost}/post/search?category=${PostCateGory}&keyword=${tempkeyword}`,
+          `${process.env.Localhost}/community/post/search?category=${PostCateGory}&keyword=${tempkeyword}`,
           {
             method: "GET",
             headers: {

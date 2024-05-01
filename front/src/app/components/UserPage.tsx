@@ -8,30 +8,28 @@ const User = ({ }) => {
   const { data: session } = useSession();
 
   const [userProfile, setUserProfile] = useState(null);
-  const [followerCount, setFollowerCount] = useState(0);
-  const [followingCount, setFollowingCount] = useState(0);
-  const [isFollowing, setIsFollowing] = useState(false);
   const [userPosts, setUserPosts] = useState([]);
 
   const params = useSearchParams();
   const user_id = params.get('user_id');
 
   useEffect(() => {
+    // if (!session) {
+    //   return;
+    // }
     const fetchUserData = async () => {
       try {
         const response = await fetch(`${process.env.Localhost}/user/${user_id}`, {
           method: 'GET',
           headers: {
-            'Content-Type': 'application/json',
+            Authorization: `Bearer ${(session as any)?.access_token}`,
+            "Content-Type": "application/json",
           },
         });
         if (response.ok) {
           const userData = await response.json();
+          console.log(userData);
           setUserProfile(userData);
-          setFollowerCount(userData.followerCount);
-          setFollowingCount(userData.followingCount);
-          setIsFollowing(userData.isFollowing);
-          setUserPosts(userData.userPosts);
         } else {
           console.error('Failed to fetch user data');
         }
@@ -41,21 +39,45 @@ const User = ({ }) => {
     };
 
     fetchUserData();
+  }, [session]);
+
+  useEffect(() => {
+    const fetchUserPosts = async () => {
+      try {
+        const response = await fetch(`${process.env.Localhost}/community/post/search?author_id=${user_id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setUserPosts(data);
+        } else {
+          console.error('Failed to fetch user posts');
+        }
+      } catch (error) {
+        console.error('Error fetching user posts:', error);
+      }
+    };
+
+    fetchUserPosts();
   }, []);
 
 
   //팔로우 또는 언팔로우 요청을 보내는 함수
   const handleFollowToggle = async () => {
     try {
-      const response = await fetch(`${process.env.Localhost}/followees`, {
-        method: isFollowing ? 'DELETE' : 'POST',
+      const response = await fetch(`${process.env.Localhost}/community/follow/${user_id}`, {
+        method: userProfile.followed ? 'DELETE' : 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${(session as any)?.access_token}`,
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ followee_user_id: userProfile.id }), // 사용자 ID를 전송
+        body: JSON.stringify({ followee_user_id: userProfile.user_id }), // 사용자 ID를 전송
       });
       if (response.ok) {
-        setIsFollowing(!isFollowing); // 팔로우 상태 업데이트
+        setIsFollowing(!userProfile.followed); // 팔로우 상태 업데이트
       } else {
         console.error('Failed to toggle follow status');
       }
@@ -70,7 +92,7 @@ const User = ({ }) => {
     router.push(`/Community/${SwitchCategory(Category)}/${PostId}`);
   };
 
-  const chunkArray = (array, size) => {
+  const chunkArray = (array: any[], size: number) => {
     return array.reduce((acc, _, index) => {
       if (index % size === 0) {
         acc.push(array.slice(index, index + size));
@@ -81,8 +103,8 @@ const User = ({ }) => {
 
   const chunkedPosts = chunkArray(userPosts, 3);
 
-  const SwitchCategory = (Category) => {
-    switch (Category) {
+  const SwitchCategory = (category: any) => {
+    switch (category) {
       case "자유":
         return "FreePost";
       case "인기":
@@ -103,32 +125,34 @@ const User = ({ }) => {
       <div className="flex flex-col items-center w-full">
         <div className="flex flex-col items-center w-full">
           <div className="flex flex-col items-center w-11/12">
-            <div className="flex justify-between w-full mt-6">
+            <div className="flex justify-between w-full mt-6 border border-brown-500">
               <div className="flex items-center">
                 {userProfile && (
                   <Image
-                    src={userProfile.image}
-                    alt={userProfile.name}
+                    src={userProfile?.image}
+                    alt="name"
                     width={80}
                     height={80}
                   />
                 )}
                 <div className="flex flex-col ml-4">
                   <div className="flex items-center">
-                    <h1 className="text-2xl font-bold">{userProfile?.userProfile?.name}</h1>
+                    <h1 className="text-2xl font-bold">{userProfile?.name}</h1>
                     {/* 팔로우 버튼 또는 언팔로우 버튼 표시 */}
-                    <button
-                      className={`ml-4 bg-[#FFD600] text-black rounded-md px-2 py-1 ${isFollowing ? 'bg-red-500' : ''}`}
-                      onClick={handleFollowToggle}
-                    >
-                      {isFollowing ? '언팔로우' : '팔로우'}
-                    </button>
+                    {userProfile && (
+                      <button
+                        className={`ml-4 bg-[#FFD600] text-black rounded-md px-2 py-1 ${userProfile.followed ? 'bg-red-500' : ''}`}
+                        onClick={handleFollowToggle}
+                      >
+                        {userProfile.followed ? '언팔로우' : '팔로우'}
+                      </button>
+                    )}
                   </div>
                   <div className="flex items-center mt-2">
-                    <h1 className="text-sm hover:text-[#F4A460]">팔로워 {followerCount}</h1>
+                    <h1 className="text-sm hover:text-[#F4A460]">팔로워 </h1>
                   </div>
                   <div className="flex items-center mt-2">
-                    <h1 className="text-sm hover:text-[#F4A460]">팔로잉 {followingCount}</h1>
+                    <h1 className="text-sm hover:text-[#F4A460]">팔로잉 </h1>
                   </div>
                 </div>
               </div>
@@ -136,7 +160,8 @@ const User = ({ }) => {
           </div>
         </div>
       </div>
-      {chunkedPosts.map((row, rowIndex) => (
+      <div className="border-t border-gray-500 w-full mt-4"></div>
+      {chunkedPosts.map((row: any[], rowIndex: number) => (
         <div key={rowIndex} className="flex justify-start space-x-20 mb-5">
           {row.map((post) => (
             <div

@@ -12,7 +12,7 @@ const MyScrappedPosts = () => {
     const fetchScrappedPosts = async () => {
       try {
         if (status === 'authenticated') {
-          const response = await fetch(`${process.env.Localhost}/scrapped_posts`, {
+          const response = await fetch(`${process.env.Localhost}/community/post/scrap/{post_id} `, {
             method: 'POST',
             headers: {
               Authorization: `Bearer ${(session as any)?.access_token}`,

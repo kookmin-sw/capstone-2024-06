@@ -43,7 +43,7 @@ const Posting = () => {
       try {
         const postIdKey = Object.keys(Postid)[0];
         const response = await fetch(
-          `${process.env.Localhost}/post/${Postid[postIdKey]}`,
+          `${process.env.Localhost}/community/post/${Postid[postIdKey]}`,
           {
             method: "GET",
             headers: {
@@ -83,7 +83,7 @@ const Posting = () => {
 
   const handleAuthorImageClick = (user_id: string) => {
     router.push(`/Users?user_id=${user_id}`);
-    // User 함수를 호출하여 userId 전달
+    // Users 페이지로 이동
   };
 
   return (

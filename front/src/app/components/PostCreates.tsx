@@ -64,7 +64,7 @@ const PostCreates = () => {
         content: PostCreateContent,
       };
       const PostCreate = await fetch(
-        `${process.env.Localhost}/post/${PostCreateTempId.PostCreateId}`,
+        `${process.env.Localhost}/community/post/${PostCreateTempId.PostCreateId}`,
         {
           method: "POST",
           headers: {

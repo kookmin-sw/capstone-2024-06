@@ -47,7 +47,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
     try {
       const postIdKey = Object.keys(Postid)[0];
       const response = await fetch(
-        `${process.env.Localhost}/comment/${Postid[postIdKey]}`,
+        `${process.env.Localhost}/community/comment/${Postid[postIdKey]}`,
         {
           method: "GET",
           headers: {
@@ -102,7 +102,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
         post_id: Postid[postIdKey],
         content: Comment,
       };
-      const response = await fetch(`${process.env.Localhost}/comment`, {
+      const response = await fetch(`${process.env.Localhost}/community/comment`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${(session as any)?.access_token}`,
