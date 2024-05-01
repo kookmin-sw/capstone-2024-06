@@ -19,7 +19,7 @@ const User = ({ }) => {
     // }
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`${process.env.Localhost}/user/${user_id}`, {
+        const response = await fetch(`${process.env.Localhost}/user/profile/${user_id}`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${(session as any)?.access_token}`,
@@ -118,6 +118,13 @@ const User = ({ }) => {
     }
   };
 
+  const FollowerClick = () => {
+    router.push("/Users/follwer")
+  }
+
+  const FollowingClick = () => {
+    router.push("/Users/following")
+  }
 
 
   return (
@@ -149,10 +156,10 @@ const User = ({ }) => {
                     )}
                   </div>
                   <div className="flex items-center mt-2">
-                    <h1 className="text-sm hover:text-[#F4A460]">팔로워 </h1>
+                    <h1 className="text-sm hover:text-[#F4A460]">팔로워 {userProfile?.follower_count}</h1>
                   </div>
                   <div className="flex items-center mt-2">
-                    <h1 className="text-sm hover:text-[#F4A460]">팔로잉 </h1>
+                    <h1 className="text-sm hover:text-[#F4A460]">팔로잉 {userProfile?.followee_count}</h1>
                   </div>
                 </div>
               </div>
@@ -161,6 +168,7 @@ const User = ({ }) => {
         </div>
       </div>
       <div className="border-t border-gray-500 w-full mt-4"></div>
+      <div className="border-t border-transparent w-full mt-4"></div>
       {chunkedPosts.map((row: any[], rowIndex: number) => (
         <div key={rowIndex} className="flex justify-start space-x-20 mb-5">
           {row.map((post) => (

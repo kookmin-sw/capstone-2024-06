@@ -3,9 +3,11 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const Comment = ({ comment_count }: { comment_count: number }) => {
   const { data: session } = useSession();
+  const router = useRouter();
 
   const Postid = useParams();
   const [Reply, SetReply] = useState("");
@@ -190,6 +192,14 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
     }
   };
 
+  const handleAuthorImageClick = (user_id: string) => {
+    if (user_id === session?.user?.user_id) {
+      router.push("/Mypage");
+    }
+    else router.push(`/Users?user_id=${user_id}`);
+    // Users 페이지로 이동
+  };
+
   return (
     <main className="flex-col w-full mt-4">
       <div className="flex items-center mb-3">
@@ -268,6 +278,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
                       height={1}
                       objectFit="cover"
                       className="cursor-pointer mr-1  border-black rounded-full"
+                      onClick={() => handleAuthorImageClick(replys.author.user_id)}
                     />
                   </div>
                   <div className="flex-col  w-full">

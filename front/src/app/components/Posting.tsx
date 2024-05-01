@@ -82,7 +82,10 @@ const Posting = () => {
   };
 
   const handleAuthorImageClick = (user_id: string) => {
-    router.push(`/Users?user_id=${user_id}`);
+    if (user_id === session?.user?.user_id) {
+      router.push("/Mypage");
+    }
+    else router.push(`/Users?user_id=${user_id}`);
     // Users 페이지로 이동
   };
 

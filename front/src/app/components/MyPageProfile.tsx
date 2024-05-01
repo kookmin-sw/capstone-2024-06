@@ -10,6 +10,36 @@ const MyPageProfile = () => {
   const { data: session } = useSession();
   const router = useRouter();
 
+  const [MyPageProfile, setMyPageProfile] = useState([]);
+
+  useEffect(() => {
+    if (!session) {
+      return;
+    }
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch(`${process.env.Localhost}/user/profile/${session?.user?.user_id}`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${(session as any)?.access_token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        if (response.ok) {
+          const userData = await response.json();
+          console.log(userData);
+          setMyPageProfile(userData);
+        } else {
+          console.error('Failed to fetch user data');
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, [session]);
+
 
   const [MyPageProfileIcons, SetMyPageProfileIcons] = useState([
     "/Write.png",
@@ -78,11 +108,9 @@ const MyPageProfile = () => {
         </div>
         <div className="flex justify-center h-[60px]">
           <div className="mr-1 hover:text-[#F4A460]"
-            onClick={FollowingClick}>팔로잉</div>
-          <div className="mr-1">0</div>
+            onClick={FollowingClick}>팔로잉 {MyPageProfile?.followee_count}</div>
           <div className="mr-1 hover:text-[#F4A460]"
-            onClick={FollowerClick}>팔로워</div>
-          <div>0</div>
+            onClick={FollowerClick}>팔로워 {MyPageProfile?.follower_count}</div>
         </div>
         <div className="flex w-full h-[100px] justify-center items-center space-x-5">
           {MyPageProfileIcons.map((icon, index) => (

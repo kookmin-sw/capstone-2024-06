@@ -13,6 +13,8 @@ const Following = () => {
   useEffect(() => {
     const fetchFollowings = async () => {
       try {
+        if (!session) return;
+
         // 팔로잉 정보를 가져오는 API 요청
         const res = await fetch(`${process.env.Localhost}/user/followee/${session?.user?.user_id}`, {
           method: 'POST',
@@ -49,16 +51,25 @@ const Following = () => {
       >
         팔로잉
       </div>
-      {followinglist.map((following) => (
-        <div key={following.user_id}>
-          <h2>{following.name}</h2>
-          <img src={following.image} alt={following.username} />
-          <Image src={following.image} width={40} height={30} alt={""} className="rounded-full"
-            onClick={() => handleAuthorImageClick(following.image)}
-          />
-          <h2>{following.email}</h2>
-        </div>
-      ))}
+      <div className="absolute left-[670px] top-[180px]">
+        {followinglist.map((following) => (
+          <div key={following.user_id} className="flex items-center space-x-2">
+            <Image
+              src={following.image}
+              width={40}
+              height={30}
+              alt={""}
+              className="rounded-full"
+              onClick={() => handleAuthorImageClick(following.user_id)}
+            />
+            <div>
+              <h2>{following.name + " " + following.email}</h2>
+            </div>
+          </div>
+        ))}
+      </div>
+
+
     </div>
   );
 };

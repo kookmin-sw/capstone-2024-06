@@ -12,8 +12,9 @@ const Follower = () => {
   const [followerlist, setFollowerlist] = useState([]);
 
   useEffect(() => {
-    const fetchFollowings = async () => {
+    const fetchFollowers = async () => {
       try {
+        if (!session) return;
 
         // 팔로잉 정보를 가져오는 API 요청
         const res = await fetch(`${process.env.Localhost}/user/follower/${session?.user?.user_id}`, {
@@ -36,7 +37,7 @@ const Follower = () => {
       }
     };
 
-    fetchFollowings();
+    fetchFollowers();
   }, [session]);
 
   const handleAuthorImageClick = (user_id: string) => {
@@ -51,15 +52,23 @@ const Follower = () => {
       >
         팔로워
       </div>
-      {followerlist && followerlist.map((follower) => (
-        <div key={follower.user_id}>
-          <h2>{follower.name}</h2>
-          <Image src={follower.image} width={40} height={30} alt={""} className="rounded-full"
-            onClick={() => handleAuthorImageClick(follower.image)}
-          />
-          <h2>{follower.email}</h2>
-        </div>
-      ))}
+      <div className="absolute left-[670px] top-[180px]">
+        {followerlist.map((follower) => (
+          <div key={follower.user_id} className="flex items-center space-x-2">
+            <Image
+              src={follower.image}
+              width={40}
+              height={30}
+              alt={""}
+              className="rounded-full"
+              onClick={() => handleAuthorImageClick(follower.user_id)}
+            />
+            <div>
+              <h2>{follower.name + " " + follower.email}</h2>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
