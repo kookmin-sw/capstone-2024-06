@@ -115,9 +115,16 @@ const AnalysisImageUpLoader = () => {
     SampleImage[index].score = score;
   };
 
+  const [RecommendImage, SetRecommendImage] = useState([
+    { index: 0, src_url: "", landing: "" },
+  ]);
+
   const SampleImageScoreSend = async () => {
     try {
-      const ScoreData = SampleImage.map((data) => ({ index : data.index , rating: data.score }));
+      const ScoreData = SampleImage.map((data) => ({
+        index: data.index,
+        rating: data.score,
+      }));
       const ImagePost = await fetch(
         `${process.env.Localhost}/recommend/preference`,
         {
@@ -130,7 +137,7 @@ const AnalysisImageUpLoader = () => {
         }
       );
       const SampleImageScoreSendData = await ImagePost.json();
-      console.log(SampleImageScoreSendData);
+      SetRecommendImage(SampleImageScoreSendData);
     } catch (error) {
       console.error("Error", error);
     }
@@ -300,7 +307,25 @@ const AnalysisImageUpLoader = () => {
           </div>
         ))}
       </div>
-      <button onClick={SampleImageScoreSend}>Test</button>
+      <div className="flex mt-10">
+        {RecommendImage.map((sample, index) => (
+          <div key={sample.index} className="flex-col border w-1/5 h-[200px]">
+            <div
+              style={{ width: "100%", height: "100%", position: "relative" }}
+            >
+              <Image
+                src={sample.src_url}
+                alt="Sample Image"
+                layout="fill"
+                objectFit="cover"
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+      <button className="border" onClick={SampleImageScoreSend}>
+        Test
+      </button>
     </main>
   );
 };
