@@ -1,6 +1,7 @@
 from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, Sequence, DateTime
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
-from sqlalchemy.orm import relationship, query_expression, Mapped
+from sqlalchemy.orm import relationship, query_expression, Mapped, mapped_column
+from pgvector.sqlalchemy import Vector
 from database.database import Base
 from datetime import datetime
 from typing import Optional
@@ -22,6 +23,7 @@ class Users(Base):
     email = Column(String, unique=True)
     image = Column(String)
     hashed_password = Column(String)
+    embedding = Column(Vector(8192))
 
     posts = relationship("Posts", back_populates="author", uselist=True)
     comments = relationship("Comments", back_populates="author", uselist=True)
