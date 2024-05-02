@@ -4,7 +4,7 @@ import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-const Posts = ({ PostCateGory }: { PostCateGory: string}) => {
+const Posts = ({ PostCateGory }: { PostCateGory: string }) => {
   const [Posts, SetPosts] = useState([]);
   const params = useSearchParams();
   const keyword = params.get('keyword');

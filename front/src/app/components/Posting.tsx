@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Comment from "./Comment";
 import { useSession } from "next-auth/react";
+import User from "./UserPage"
 
 const Posting = () => {
   const { data: session } = useSession();
@@ -42,7 +43,7 @@ const Posting = () => {
       try {
         const postIdKey = Object.keys(Postid)[0];
         const response = await fetch(
-          `${process.env.Localhost}/post/${Postid[postIdKey]}`,
+          `${process.env.Localhost}/community/post/${Postid[postIdKey]}`,
           {
             method: "GET",
             headers: {
@@ -80,6 +81,14 @@ const Posting = () => {
     router.push("/Community");
   };
 
+  const handleAuthorImageClick = (user_id: string) => {
+    if (user_id === session?.user?.user_id) {
+      router.push("/Mypage");
+    }
+    else router.push(`/Users?user_id=${user_id}`);
+    // Users 페이지로 이동
+  };
+
   return (
     <main className="flex">
       <div className="flex-col w-[900px] h-auto mr-2">
@@ -89,7 +98,9 @@ const Posting = () => {
           <div className="">{Posting.created_at.slice(11, 16)}</div>
         </div>
         <div className="w-full border-b flex items-center pb-1">
-          <Image src={Posting.author.image} width={40} height={30} alt={""} className="rounded-full"/>
+          <Image src={Posting.author.image} width={40} height={30} alt={""} className="rounded-full"
+            onClick={() => handleAuthorImageClick(Posting.author.user_id)}
+          />
           <div className="ml-2 w-full">{Posting.author.name}</div>
           <div className="flex w-[78px] h-full mr-1 text-xs">
             <div className="mr-1">조회수</div>

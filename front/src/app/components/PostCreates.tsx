@@ -45,7 +45,7 @@ const PostCreates = () => {
         const formData = new FormData();
         formData.append("file", imagePreview.file);
         const ImagePost = await fetch(
-          `${process.env.Localhost}/image/${PostCreateTempId.PostCreateId}`,
+          `${process.env.Localhost}/community/image/${PostCreateTempId.PostCreateId}`,
           {
             method: "POST",
             headers: {
@@ -64,7 +64,7 @@ const PostCreates = () => {
         content: PostCreateContent,
       };
       const PostCreate = await fetch(
-        `${process.env.Localhost}/post/${PostCreateTempId.PostCreateId}`,
+        `${process.env.Localhost}/community/post/${PostCreateTempId.PostCreateId}`,
         {
           method: "POST",
           headers: {
