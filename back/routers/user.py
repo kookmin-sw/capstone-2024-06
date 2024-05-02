@@ -8,7 +8,7 @@ from datetime import timedelta, timezone
 from fastapi import APIRouter, Depends, UploadFile, status
 
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError 
 
 from database import crud
 from database.models import *
@@ -35,7 +35,7 @@ def create_access_token(data: dict, expires_delta: timedelta):
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + expires_delta
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, config["TOKEN"]["secret_key"], algorithm=config["TOKEN"]["algorithm"])
+    encoded_jwt = jwt.encode(to_encode, config["TOKEN"]["secret"], algorithm=config["TOKEN"]["algorithm"])
     return encoded_jwt
 
 
@@ -72,7 +72,7 @@ async def generate_token(user: UserSignIn, db: Session = Depends(get_db)):
         )
 
     data = {"sub": user.user_id}
-    access_token_expires = timedelta(minutes=config["TOKEN"]["expire_minutes"])
+    access_token_expires = timedelta(minutes=int(config["TOKEN"]["expire_minutes"]))
     access_token = create_access_token(data=data, expires_delta=access_token_expires)
     return {"user": user, "access_token": access_token}
 
@@ -130,7 +130,7 @@ async def generate_token_from_external_provider(
         await crud.create_user_external_map(db, user_external_map)
 
     data = {"sub": user.user_id}
-    access_token_expires = timedelta(minutes=config["TOKEN"]["expire_minutes"])
+    access_token_expires = timedelta(minutes=int(config["TOKEN"]["expire_minutes"]))
     access_token = create_access_token(data=data, expires_delta=access_token_expires)
     return {"user": user, "access_token": access_token}
 
@@ -139,35 +139,45 @@ async def generate_token_from_external_provider(
 async def current_user(
     user_id: str = Depends(get_current_user), db: Session = Depends(get_db)
 ):
-    return await crud.read_user_by_id(db, user_id)
+    user = await crud.read_user_by_id(db, user_id)
 
+    user_info = UserInfo.model_validate(user)
+    user_info.followee_count = len(user.followees)
+    user_info.follower_count = len(user.followers)
 
-@router.get("/{user_id}", response_model=UserInfo)
-async def get_user_profile(user_id: str, signed_in_user_id: str = Depends(get_current_user_if_signed_in), db: Session = Depends(get_db)):
+    return user_info
+    
+
+@router.get("/profile/{user_id}", response_model=UserInfo)
+async def get_user_profile(user_id: str, signed_in_user_id: str | None = Depends(get_current_user_if_signed_in), db: Session = Depends(get_db)):
     user = await crud.read_user_by_id(db, user_id, signed_in_user_id)
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="User not found!!")
 
-    return user
+    user_info = UserInfo.model_validate(user)
+    user_info.followee_count = len(user.followees)
+    user_info.follower_count = len(user.followers)
+
+    return user_info
 
 
-@router.post("/followers", response_model=list[UserInfo])
+@router.post("/follower/{user_id}", response_model=list[UserInfo])
 async def get_followers(
-    user_id: str = Depends(get_current_user), db: Session = Depends(get_db)
+    user_id: str, db: Session = Depends(get_db)
 ):
     user = await crud.read_user_by_id(db, user_id)
     return user.followers
 
 
-@router.post("/followees", response_model=list[UserInfo])
+@router.post("/followee/{user_id}", response_model=list[UserInfo])
 async def get_followees(
-    user_id: str = Depends(get_current_user), db: Session = Depends(get_db)
+    user_id: str, db: Session = Depends(get_db)
 ):
     user = await crud.read_user_by_id(db, user_id)
     return user.followees
 
 
-@router.post("/scrapped_posts", response_model=list[PostPreview])
+@router.get("/scrapped_post", response_model=list[PostPreview])
 async def get_scrapped_posts(
     user_id: str = Depends(get_current_user), db: Session = Depends(get_db)
 ):

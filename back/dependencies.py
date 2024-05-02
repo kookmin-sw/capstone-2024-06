@@ -35,7 +35,7 @@ def decode_jwt_payload(token):
 def get_current_user(token: str = Depends(oauth2_scheme)):
     try:
         payload = decode_jwt_payload(token)
-        jwt.decode(token, config["TOKEN"]["secret_key"], config["TOKEN"]["algorithm"])
+        jwt.decode(token, config["TOKEN"]["secret"], config["TOKEN"]["algorithm"])
         return payload["sub"]
     except:
         raise HTTPException(status_code=401, detail="Invalid token")
@@ -47,7 +47,7 @@ def get_current_user_if_signed_in(token: str | None = Depends(optional_oauth2_sc
             return None
 
         payload = decode_jwt_payload(token)
-        jwt.decode(token, config["TOKEN"]["secret_key"], config["TOKEN"]["algorithm"])
+        jwt.decode(token, config["TOKEN"]["secret"], config["TOKEN"]["algorithm"])
         return payload["sub"]
     except:
         raise HTTPException(status_code=401, detail="Invalid token")

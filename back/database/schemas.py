@@ -16,7 +16,9 @@ class UserProfile(BaseModel):
 
 class UserInfo(UserProfile):
     user_id: str
-    followed: bool
+    followed: bool | None = None
+    follower_count: int | None = None
+    followee_count: int | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -100,9 +102,9 @@ class TempPost(BaseModel):
 
 class Notification(BaseModel):
     notification_id: int
-    reference_id: int
+    reference_id: int | None = None
     content: str
-    category: str
+    category: str | None = None
     checked: bool
 
 
