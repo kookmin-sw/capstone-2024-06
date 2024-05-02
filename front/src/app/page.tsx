@@ -72,7 +72,7 @@ export default function Home() {
           </div>
           <div className="w-full flex justify-center mt-20">
             <button className="animate-bounce bg-transparent w-[200px] h-[50px] hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
-              <Link href={"/Community"}>시작하기</Link>
+              <Link href={"/Main"}>시작하기</Link>
             </button>
           </div>
         </div>

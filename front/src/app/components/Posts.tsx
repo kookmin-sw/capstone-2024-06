@@ -74,7 +74,7 @@ const Posts = ({ PostCateGory }: { PostCateGory: string }) => {
           {row.map((post) => (
             <div
               key={post.post_id}
-              className="flex flex-col  cursor-pointer w-[400px] h-[300px] border rounded"
+              className="flex flex-col  cursor-pointer w-1/3 h-[300px] border rounded"
             >
               <div className="flex w-full h-[250px]  justify-center items-center">
                 <div className="relative w-full h-full">
