@@ -1,15 +1,16 @@
+"use client"
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from "next-auth/react";
-import MyProfile from "./MyProfile";
 
-const User = ({ }) => {
+const UserFolloweelist = ({ }) => {
   const { data: session } = useSession();
 
   const [userProfile, setUserProfile] = useState(null);
-  const [userPosts, setUserPosts] = useState([]);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [followinglist, setFollowinglist] = useState([]);
+
 
   const params = useSearchParams();
   const user_id = params.get('user_id');
@@ -42,30 +43,6 @@ const User = ({ }) => {
     fetchUserData();
   }, [session]);
 
-  useEffect(() => {
-    const fetchUserPosts = async () => {
-      try {
-        const response = await fetch(`${process.env.Localhost}/community/post/search?author_id=${user_id}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setUserPosts(data);
-        } else {
-          console.error('Failed to fetch user posts');
-        }
-      } catch (error) {
-        console.error('Error fetching user posts:', error);
-      }
-    };
-
-    fetchUserPosts();
-  }, []);
-
-
   //팔로우 또는 언팔로우 요청을 보내는 함수
   const handleFollowToggle = async () => {
     try {
@@ -87,36 +64,39 @@ const User = ({ }) => {
     }
   }
 
-  const router = useRouter();
+  useEffect(() => {
+    const fetchFollowings = async () => {
+      try {
+        if (!session) return;
 
-  const PostClick = (PostId: number, Category: string) => {
-    router.push(`/Community/${SwitchCategory(Category)}/${PostId}`);
-  };
+        // 팔로잉 정보를 가져오는 API 요청
+        const res = await fetch(`${process.env.Localhost}/user/followee/${user_id}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${(session as any)?.access_token}`,
+          },
+        });
 
-  const chunkArray = (array: any[], size: number) => {
-    return array.reduce((acc, _, index) => {
-      if (index % size === 0) {
-        acc.push(array.slice(index, index + size));
+        // 요청 성공 시 데이터 설정
+        if (res.ok) {
+          const data = await res.json();
+          setFollowinglist(data);
+        } else {
+          console.error('Failed to fetch followings');
+        }
+      } catch (error) {
+        console.error(error);
       }
-      return acc;
-    }, []);
-  };
+    };
 
-  const chunkedPosts = chunkArray(userPosts, 3);
+    fetchFollowings();
+  }, [session]);
 
-  const SwitchCategory = (category: any) => {
-    switch (category) {
-      case "자유":
-        return "FreePost";
-      case "인기":
-        return "PopularityPost";
-      case "삽니다":
-        return "BuyPost";
-      case "팝니다":
-        return "SellPost";
-      default:
-        return "";
-    }
+
+  const handleAuthorImageClick = (user_id: string) => {
+    router.push(`/Users?user_id=${user_id}`);
+    // Users 페이지로 이동
   };
 
   const FollowerClick = () => {
@@ -126,6 +106,8 @@ const User = ({ }) => {
   const FollowingClick = () => {
     router.push("/Users/Followee")
   }
+
+  const router = useRouter();
 
 
   return (
@@ -172,73 +154,27 @@ const User = ({ }) => {
       <div className="border-t border-transparent w-full mt-4"></div>
       <div className="absolute w-[173px] h-[83px] left-[200px] top-[200px] font-semibold text-base leading-9 text-black hover:text-[#F4A460]"
       >
-        작성한 글
+        팔로잉
       </div>
-      {chunkedPosts.map((row: any[], rowIndex: number) => (
-        <div key={rowIndex} className="flex justify-start space-x-20 mb-5">
-          {row.map((post) => (
-            <div
-              key={post.post_id}
-              className="flex flex-col cursor-pointer w-[250px] h-[300px] border rounded"
-            >
-              <div className="flex w-full h-[250px] justify-center items-center">
-                <div className="relative w-full h-full">
-                  <Image
-                    src={`${process.env.Localhost}${post.thumbnail.image_id}`}
-                    alt="Post Image"
-                    layout="fill"
-                    objectFit="cover"
-                    onClick={() => PostClick(post.post_id, post.category)}
-                    priority
-                  />
-                </div>
-              </div>
-              <div className="flex ml-1">
-                <div className="flex items-center justify-center font-bold text-sm mr-1">{`[${post.category}]`}</div>
-                <div className="flex items-center justify-center font-bold text-sm">
-                  {post.title}
-                </div>
-              </div>
-              <div className="flex items-center w-full">
-                <MyProfile
-                  UserName={post.author.name}
-                  UserProfile={post.author.image}
-                />
-                <div className="flex w-2/3 justify-end items-center">
-                  <div className="flex items-center">
-                    <div className="w-[20px]">
-                      <Image
-                        src="/Heart.PNG"
-                        alt="Heart Image"
-                        width={100}
-                        height={100}
-                        style={{ width: "auto", height: "auto" }}
-                        priority
-                      />
-                    </div>
-                    <div className="ml-1 text-xs">{post.like_count}</div>
-                  </div>
-                  <div className="flex justify-center items-center ml-1">
-                    <div className="w-[17px] ">
-                      <Image
-                        src="/commenticon.png"
-                        alt="commenticon Image"
-                        width={100}
-                        height={100}
-                        style={{ width: "auto", height: "auto" }}
-                        priority
-                      />
-                    </div>
-                    <div className="mx-1 text-xs">{post.comment_count}</div>
-                  </div>
-                </div>
-              </div>
+      <div className="absolute left-[220px] top-[250px]">
+        {followinglist.map((following) => (
+          <div key={following.user_id} className="flex items-center space-x-2">
+            <Image
+              src={following.image}
+              width={40}
+              height={30}
+              alt={""}
+              className="rounded-full"
+              onClick={() => handleAuthorImageClick(following.user_id)}
+            />
+            <div>
+              <h2>{following.name + " " + following.email}</h2>
             </div>
-          ))}
-        </div>
-      ))}
+          </div>
+        ))}
+      </div>
     </main>
   );
 }
 
-export default User;
+export default UserFolloweelist;

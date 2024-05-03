@@ -42,9 +42,9 @@ const MyPageProfile = () => {
 
 
   const [MyPageProfileIcons, SetMyPageProfileIcons] = useState([
-    "/Write.png",
-    "/NotFollow.png",
-    "/Scrap.png",
+    "/note.png",
+    "/chart.png",
+    "/bookmarks.png",
   ]);
 
   const MyPageProfileName = ["내 글", "분석", "스크랩"]
