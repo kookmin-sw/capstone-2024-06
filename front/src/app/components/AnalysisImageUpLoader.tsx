@@ -1,5 +1,5 @@
 "use client";
-import { useState, ChangeEvent, DragEvent } from "react";
+import { useState, ChangeEvent, DragEvent, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import RecommendImgSlider from "./RecommendImgSlider";
@@ -15,7 +15,7 @@ const AnalysisImageUpLoader = () => {
   const { data: session } = useSession();
 
   const [images, setImages] = useState<string[]>([]);
-  const [plotlyHTML, setPlotlyHTML] = useState('');
+  const [plotlyHTML, setPlotlyHTML] = useState("");
   const [imagePreview, setImagePreview] = useState<ImagePreview | null>(null);
 
   // 버퍼링
@@ -82,7 +82,66 @@ const AnalysisImageUpLoader = () => {
       setIsAnalyzing(false);
     }
   };
+  const [SampleImage, SetSampleImage] = useState([
+    {
+      index: 0,
+      src_url: "",
+      landing: "",
+      score: 0,
+    },
+  ]);
+  useEffect(() => {
+    const SampleImageGet = async () => {
+      try {
+        const ImagePost = await fetch(
+          `${process.env.Localhost}/recommend/sample`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${(session as any)?.access_token}`,
+            },
+          }
+        );
+        const SampleImageDatas = await ImagePost.json();
+        console.log(SampleImageDatas);
+        SetSampleImage(SampleImageDatas);
+      } catch (error) {
+        console.error("Error", error);
+      }
+    };
+    SampleImageGet();
+  }, []);
+  const SampleImageScore = (index: number, score: number) => {
+    SampleImage[index].score = score;
+  };
 
+  const [RecommendImage, SetRecommendImage] = useState([
+    { index: 0, src_url: "", landing: "" },
+  ]);
+
+  const SampleImageScoreSend = async () => {
+    try {
+      const ScoreData = SampleImage.map((data) => ({
+        index: data.index,
+        rating: data.score,
+      }));
+      const ImagePost = await fetch(
+        `${process.env.Localhost}/recommend/preference`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${(session as any)?.access_token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(ScoreData),
+        }
+      );
+      const SampleImageScoreSendData = await ImagePost.json();
+      SetRecommendImage(SampleImageScoreSendData);
+    } catch (error) {
+      console.error("Error", error);
+    }
+  };
   return (
     <main className="my-10">
       {AnalyBtClick && (
@@ -126,8 +185,12 @@ const AnalysisImageUpLoader = () => {
                   type="button"
                   className="ml-1 cursor-pointer bg-blue-500 text-white flex items-center justify-center w-[100px] h-[45px] rounded"
                   disabled
-                >분석중
-                  <FontAwesomeIcon icon={faSpinner} className="animate-spin ml-1" />
+                >
+                  분석중
+                  <FontAwesomeIcon
+                    icon={faSpinner}
+                    className="animate-spin ml-1"
+                  />
                 </button>
               ) : (
                 <div className="flex">
@@ -149,8 +212,120 @@ const AnalysisImageUpLoader = () => {
           )}
         </div>
       )}
-      {!AnalyBtClick && <RecommendImgSlider Images={images} />}
-      <iframe className="plot" srcDoc={plotlyHTML} width="1000" height="800"></iframe>
+      {/* {!AnalyBtClick && <RecommendImgSlider Images={images} />}
+      <iframe
+        className="plot"
+        srcDoc={plotlyHTML}
+        width="1000"
+        height="800"
+      ></iframe> */}
+      <div className="flex mt-10">
+        {SampleImage.map((sample, index) => (
+          <div key={sample.index} className="flex-col border w-1/5 h-[200px]">
+            <div
+              style={{ width: "100%", height: "100%", position: "relative" }}
+            >
+              <Image
+                src={sample.src_url}
+                alt="Sample Image"
+                layout="fill"
+                objectFit="cover"
+              />
+            </div>
+            <div className="mx-5 flex flex-row-reverse justify-center text-2xl">
+              <input
+                type="radio"
+                className="peer hidden"
+                id={`value5_${index}`}
+                value="5"
+                name={`score_${index}`}
+                onChange={() => SampleImageScore(index, 5)}
+              />
+              <label
+                htmlFor={`value5_${index}`}
+                className="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-600"
+              >
+                ★
+              </label>
+              <input
+                type="radio"
+                className="peer hidden"
+                id={`value4_${index}`}
+                value="4"
+                name={`score_${index}`}
+                onChange={() => SampleImageScore(index, 4)}
+              />
+              <label
+                htmlFor={`value4_${index}`}
+                className="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-600"
+              >
+                ★
+              </label>
+              <input
+                type="radio"
+                className="peer hidden"
+                id={`value3_${index}`}
+                value="3"
+                name={`score_${index}`}
+                onChange={() => SampleImageScore(index, 3)}
+              />
+              <label
+                htmlFor={`value3_${index}`}
+                className="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-600"
+              >
+                ★
+              </label>
+              <input
+                type="radio"
+                className="peer hidden"
+                id={`value2_${index}`}
+                value="2"
+                name={`score_${index}`}
+                onChange={() => SampleImageScore(index, 2)}
+              />
+              <label
+                htmlFor={`value2_${index}`}
+                className="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-600"
+              >
+                ★
+              </label>
+              <input
+                type="radio"
+                className="peer hidden"
+                id={`value1_${index}`}
+                value="1"
+                name={`score_${index}`}
+                onChange={() => SampleImageScore(index, 1)}
+              />
+              <label
+                htmlFor={`value1_${index}`}
+                className="cursor-pointer peer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-600"
+              >
+                ★
+              </label>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="flex mt-10">
+        {RecommendImage.map((sample, index) => (
+          <div key={sample.index} className="flex-col border w-1/5 h-[200px]">
+            <div
+              style={{ width: "100%", height: "100%", position: "relative" }}
+            >
+              <Image
+                src={sample.src_url}
+                alt="Sample Image"
+                layout="fill"
+                objectFit="cover"
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+      <button className="border" onClick={SampleImageScoreSend}>
+        Test
+      </button>
     </main>
   );
 };
