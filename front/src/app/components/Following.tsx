@@ -44,12 +44,25 @@ const Following = () => {
     // Users 페이지로 이동
   };
 
+  const HomeImageClick = () => {
+    router.push("/Mypage")
+  }
 
   return (
     <div>
       <div className="absolute w-[173px] h-[83px] left-[697px] top-[99px] font-semibold text-base leading-9 text-black hover:text-[#F4A460]"
       >
         팔로잉
+      </div>
+      <div className="absolute w-[173px] h-[83px] left-[1099px] top-[119px]">
+        <Image
+          src="/house.png"
+          alt="home Image"
+          width={100}
+          height={100}
+          style={{ width: "auto", height: "auto" }}
+          onClick={HomeImageClick}
+        />
       </div>
       <div className="absolute left-[670px] top-[180px]">
         {followinglist.map((following) => (
