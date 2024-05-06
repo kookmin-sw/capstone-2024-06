@@ -5,9 +5,7 @@ from tqdm import tqdm
 
 import torch
 import torchvision.transforms as transforms
-import torchvision.models as models
 
-import faiss
 from ultralytics import YOLO
 from config_loader import config
 
@@ -20,26 +18,23 @@ class Img2Vec:
 
 
 class Feat2Vec(Img2Vec):
-    def __init__(self, batch_size=32, verbose=False):
+    def __init__(self, model, transform=None, batch_size=32, verbose=False):
         self.batch_size = batch_size
         self.verbose = verbose
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        self.model = models.vgg16(weights=models.VGG16_Weights.DEFAULT)
-        self.model.classifier = self.model.classifier[:-1]
+        self.model = model
         self.model.to(self.device)
         self.model.eval()
 
-        self.preprocess = transforms.Compose(
-            [
-                transforms.Resize(256),
-                transforms.CenterCrop(224),
+        if transform:
+            self.preprocess = transform
+        else:
+            self.preprocess = transforms.Compose([
+                transforms.Resize((256, 256)),
                 transforms.ToTensor(),
-                transforms.Normalize(
-                    mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
-                ),
-            ]
-        )
+                transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+            ])
 
     def get_vectors(self, image_paths):
         iterator = range(0, len(image_paths), self.batch_size)
@@ -49,18 +44,17 @@ class Feat2Vec(Img2Vec):
         vectors = []
         for i in iterator:
             batch_image_paths = image_paths[i : i + self.batch_size]
-            batch_images = torch.stack(
-                [
+            batch_images = torch.stack([
                     self.preprocess(Image.open(path).convert("RGB")).to(self.device)
                     for path in batch_image_paths
-                ]
-            )
+            ])
 
             with torch.no_grad():
                 batch_vectors = self.model(batch_images)
-            vectors.extend(batch_vectors)
+                batch_vectors = batch_vectors.flatten(start_dim=1)
+            vectors.extend(batch_vectors.cpu())
 
-        vectors = np.array(vectors.cpu())
+        vectors = np.array(vectors)
         vectors /= np.linalg.norm(vectors, axis=1)[:, np.newaxis]
         return vectors
 
@@ -127,6 +121,7 @@ class Color2Vec(Img2Vec):
 
 
 if __name__ == "__main__":
+    import faiss
 
     # def save_vectors(vectors, file_path):
     #     d = vectors.shape[1]

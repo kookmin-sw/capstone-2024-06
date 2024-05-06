@@ -140,7 +140,7 @@ class Posts(Base):
             return self.images[0]
         else:
             return {
-                "image_id": "/images/default/deault_thumbnail.png",
+                "image_id": "/images/default/default_thumbnail.png",
                 "filename": "default_thumbnail.png",
             }
 
