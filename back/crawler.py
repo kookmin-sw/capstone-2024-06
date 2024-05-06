@@ -1,6 +1,9 @@
 import os
 import re
 import requests
+from requests.packages.urllib3.util.retry import Retry
+from requests.adapters import HTTPAdapter
+
 import queue
 import threading
 from io import BytesIO
@@ -15,6 +18,15 @@ from database.models import Base, DesignImages, ItemImages
 
 
 Base.metadata.create_all(bind=engine)
+
+
+def create_retry_session():
+    session = requests.Session()
+    retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
+    session.mount("http://", HTTPAdapter(max_retries=retries))
+    session.mount("https://", HTTPAdapter(max_retries=retries))
+    return session
+                  
 
 class BaseCrawler:
     def __init__(self, path, prefix, num_workers, resize, verbose):
@@ -80,8 +92,8 @@ class BaseCrawler:
         url = image["src_url"]
         filename = self.sanitize_filename(image["filename"])
 
-        response = requests.get(url)
-
+        session = create_retry_session()
+        response = session.get(url)
         if response.status_code != 200:
             return False
 
@@ -102,6 +114,7 @@ class BaseCrawler:
         ret = self.to_db(image)
         return ret
     
+
     def sanitize_filename(self, filename):
         sanitized_filename = re.sub(r"[\/\\\:\*\?\"\<\>\|\s]", "_", filename)
         sanitized_filename = "".join(c for c in sanitized_filename if c.isprintable())
@@ -158,7 +171,8 @@ class OhouseCrawler(BaseCrawler):
         if self.style:
             params["style"] = self.style
 
-        response = requests.get(self.api_url, params=params, headers=self.headers)
+        session = create_retry_session()
+        response = session.get(self.api_url, params=params, headers=self.headers)
         if response.status_code != 200:
             raise Exception("Failed to fetch data")
 
@@ -167,6 +181,11 @@ class OhouseCrawler(BaseCrawler):
         fetched_desks = response_data["cards"]
         for fetched_desk in fetched_desks:
             url = fetched_desk["image"]["url"]
+            if "amazon" in url:
+                url = re.sub(r"\.s.*?\.com", "", url)
+                url = url.replace("https://", "https://image.ohou.se/i/")
+            url += "?gif=1&webp=1"
+            
             desk = {
                 "filename": re.search(r'/([^/]*)\.([^.]*)$', url).group(1),
                 "src_url": url,
@@ -202,7 +221,8 @@ class PinterestCrawler(BaseCrawler):
         else:
             data = f'{{"options":{{"page_size":25,"query":"{self.query}","scope":"pins","bookmarks":["{self.bookmark}"],"field_set_key":"unauth_react","no_fetch_context_on_resource":false}},"context":{{}}}}'.strip()
 
-        response = requests.get(self.api_url, params={"source_url": self.source_url, "data": data})
+        session = create_retry_session()
+        response = session.get(self.api_url, params={"source_url": self.source_url, "data": data})
         if response.status_code != 200:
             raise Exception("Failed to fetch data")
         
@@ -246,7 +266,9 @@ class OhouseItemCrawler(BaseCrawler):
             "page": page,
             "per": 24,
         }
-        response = requests.get(self.api_url, params=params, headers=self.headers)
+
+        session = create_retry_session()
+        response = session.get(self.api_url, params=params, headers=self.headers)
         if response.status_code != 200:
             raise Exception("Failed to fetch data")
 
@@ -283,19 +305,18 @@ if __name__ == "__main__":
 
     from config_loader import config
 
-    train_path = config["PATH"]["train"]
+    path = config["PATH"]["train"]
+    os.makedirs(path, exist_ok=True)
 
-    # styles = ["모던", "북유럽", "빈티지", "내추럴", "프로방스&로맨틱", "클래식&앤틱", "한국&아시아", "유니크"]
-    # for i, style in enumerate(styles):
-    #     path = os.path.join(train_path, style)
-    #     print(path)
-    #     desk_crawler = OhouseCrawler(path, "데스크테리어", style=i, verbose=True)
-    #     desk_crawler.crawling()
+    styles = ["모던", "북유럽", "빈티지", "내추럴", "프로방스&로맨틱", "클래식&앤틱", "한국&아시아", "유니크"]
+    for i, style in enumerate(styles):
+        desk_crawler = OhouseCrawler(path, "데스크테리어", style=i, verbose=True, resize=(224, 224))
+        desk_crawler.crawling()
 
     # desk_crawler = PinterestCrawler(train_path, "desk interior", verbose=True)
 
-    categories = ["28070000"]
-    for category_id in categories:
-        path = os.path.join(train_path, category_id)
-        item_crawler = OhouseItemCrawler(path, category_id, resize=(256, 256), verbose=True)
-        item_crawler.crawling()
+    # categories = ["28070000"]
+    # for category_id in categories:
+    #     path = os.path.join(train_path, category_id)
+    #     item_crawler = OhouseItemCrawler(path, category_id, resize=(256, 256), verbose=True)
+    #     item_crawler.crawling()
