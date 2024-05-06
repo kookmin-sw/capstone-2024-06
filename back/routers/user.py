@@ -103,7 +103,6 @@ async def generate_token_from_external_provider(
         raise HTTPException(status_code=401, detail="Invalid access token")
 
     user_external_map = await crud.read_user_external_map(db, user.user_id, provider)
-
     if user_external_map:
         user = user_external_map.user
     else:
@@ -135,26 +134,26 @@ async def generate_token_from_external_provider(
     return {"user": user, "access_token": access_token}
 
 
-@router.get("/me", response_model=UserInfo)
+@router.get("/me", response_model=UserInfoView)
 async def current_user(
     user_id: str = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     user = await crud.read_user_by_id(db, user_id)
 
-    user_info = UserInfo.model_validate(user)
+    user_info = UserInfoView.model_validate(user)
     user_info.followee_count = len(user.followees)
     user_info.follower_count = len(user.followers)
 
     return user_info
     
 
-@router.get("/profile/{user_id}", response_model=UserInfo)
+@router.get("/profile/{user_id}", response_model=UserInfoView)
 async def get_user_profile(user_id: str, signed_in_user_id: str | None = Depends(get_current_user_if_signed_in), db: Session = Depends(get_db)):
     user = await crud.read_user_by_id(db, user_id, signed_in_user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found!!")
 
-    user_info = UserInfo.model_validate(user)
+    user_info = UserInfoView.model_validate(user)
     user_info.followee_count = len(user.followees)
     user_info.follower_count = len(user.followers)
 

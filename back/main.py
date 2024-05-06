@@ -1,6 +1,7 @@
 import os
 # from back.recommend_system import recommend_by_uservector
-from fastapi import FastAPI, UploadFile
+from fastapi import FastAPI, UploadFile, Request
+from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 

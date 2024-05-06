@@ -17,6 +17,11 @@ class UserProfile(BaseModel):
 class UserInfo(UserProfile):
     user_id: str
     followed: bool | None = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class UserInfoView(UserInfo):
     follower_count: int | None = None
     followee_count: int | None = None
 
