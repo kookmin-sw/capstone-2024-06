@@ -39,11 +39,11 @@ const RecommendImgSlider = ({ Images }: { Images: string[] }) => {
               <div
                 className="w-[300px] h-[300px] relative"
                 onClick={() =>
-                  handleImageClick(`${process.env.Localhost}${src}`)
+                  handleImageClick(`/${src}`)
                 }
               >
                 <Image
-                  src={`${process.env.Localhost}${src}`}
+                  src={`/${src}`}
                   alt={`Desk ${index + 1}`}
                   layout="fill"
                   objectFit="cover"

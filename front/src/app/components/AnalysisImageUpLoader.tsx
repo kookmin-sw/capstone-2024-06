@@ -15,7 +15,13 @@ const AnalysisImageUpLoader = () => {
   const [UploadImageBt, SetUploadImageBt] = useState(false);
   const [RecommendImageBt, SetRecommendImageBt] = useState(false);
   const { data: session } = useSession();
-
+  const imagedummydata = [
+    "desk4.jpg",
+    "desk4.jpg",
+    "desk4.jpg",
+    "desk4.jpg",
+    "desk4.jpg",
+  ];
   const [images, setImages] = useState<string[]>([]);
   const [plotlyHTML, setPlotlyHTML] = useState("");
   const [imagePreview, setImagePreview] = useState<ImagePreview | null>(null);
@@ -77,7 +83,7 @@ const AnalysisImageUpLoader = () => {
         );
         const ImageDatas = await ImagePost.json();
         console.log(ImageDatas);
-        SetAnalysisImage(ImageDatas)
+        SetAnalysisImage(ImageDatas);
         setImages(ImageDatas.file_name);
         setPlotlyHTML(ImageDatas.plot);
         setIsAnalyzing(false);
@@ -148,23 +154,75 @@ const AnalysisImageUpLoader = () => {
       console.error("Error", error);
     }
   };
+
+  const ScrollDown = () => {
+    const scrollPosition = 2000;
+    window.scrollTo({
+      top: scrollPosition,
+      behavior: "smooth",
+    });
+  };
+
+  const ImageUploadImageClick = () => {
+    SetUploadImageBt(true);
+    SetRecommendImageBt(false);
+    ScrollDown();
+  };
+
+  const RecommendImageClick = () => {
+    SetUploadImageBt(false);
+    SetRecommendImageBt(true);
+    ScrollDown();
+  };
+
   return (
     <main className="my-10">
-      <div className="flex-col border h-[600px]">
+      <div className="flex-col h-[600px]">
         <div className="flex items-center justify-center h-1/3">
-          책상 분석 어떤 것이 더 좋으세요 ?
-        </div>
-        <div className="flex items-center justify-center border w-full h-2/3">
-          <div className="flex items-center justify-center border w-1/4">
-            1.
+          <div className="text-2xl font-semibold">
+            책상 분석 어떤 것이 더 좋으세요 ?
           </div>
-          <div className="flex items-center justify-center border w-1/4">
-            2.
+        </div>
+        <div className="flex items-center justify-center w-full h-2/3">
+          <div className="flex-col items-center justify-center w-1/3 ">
+            <div className="flex items-center justify-center w-full">
+              <div className="w-[120px] mb-4">
+                <Image
+                  src="/imageupload.png"
+                  alt="Post Image"
+                  width={1000}
+                  height={1000}
+                  style={{ width: "100%", height: "auto" }}
+                  className="cursor-pointer hover:scale-105"
+                  onClick={ImageUploadImageClick}
+                />
+              </div>
+            </div>
+            <div className="text-sm flex items-center justify-center text-sm font-semibold">
+              자신의 이미지 업로드 하여 추천 받기
+            </div>
+          </div>
+          <div className="flex-col items-center justify-center w-1/3">
+            <div className="flex items-center justify-center w-full">
+              <div className="w-[300px] mb-4">
+                <Image
+                  src="/star.png"
+                  alt="Post Image"
+                  width={1000}
+                  height={1000}
+                  style={{ width: "100%", height: "auto" }}
+                  className="cursor-pointer hover:scale-105"
+                  onClick={RecommendImageClick}
+                />
+              </div>
+            </div>
+            <div className="text-sm flex items-center justify-center text-sm font-semibold">
+              이미지들을 받아 평가하고 추천받기
+            </div>
           </div>
         </div>
       </div>
-      {//UploadImageBt && 
-      AnalyBtClick && (
+      {UploadImageBt && AnalyBtClick && (
         <div className="flex flex-col items-center justify-center mt-4">
           <div
             className="m-2 relative"
@@ -230,9 +288,7 @@ const AnalysisImageUpLoader = () => {
               )}
             </div>
           )}
-        </div>
-      )}
-      <div className="flex mt-10">
+          <div className="flex mt-10">
             {AnalysisImage.map((sample, index) => (
               <div
                 key={sample.index}
@@ -255,16 +311,11 @@ const AnalysisImageUpLoader = () => {
               </div>
             ))}
           </div>
-      {/* {!AnalyBtClick && <RecommendImgSlider Images={images} />}
-      <iframe
-        className="plot"
-        srcDoc={plotlyHTML}
-        width="1000"
-        height="800"
-      ></iframe> */}
-      {
-        //  RecommendImageBt && 
-        (<div>
+        </div>
+      )}
+
+      {RecommendImageBt && (
+        <div>
           <div className="flex mt-10">
             {SampleImage.map((sample, index) => (
               <div
@@ -386,8 +437,8 @@ const AnalysisImageUpLoader = () => {
           <button className="border" onClick={SampleImageScoreSend}>
             Test
           </button>
-        </div>)
-      }
+        </div>
+      )}
     </main>
   );
 };
