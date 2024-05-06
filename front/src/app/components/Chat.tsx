@@ -113,7 +113,7 @@ const ChatModal = ({
       const ChatingLoad = async () => {
         try {
           const response = await fetch(
-            `${process.env.Localhost}/chat/${Id}?last_chat_history_id=${
+            `${process.env.Localhost}/chat/history/${Id}?last_chat_history_id=${
               chat_history_id + 1
             }`,
             {
@@ -146,7 +146,7 @@ const ChatModal = ({
     if (!session) return;
     const ChatLoad = async () => {
       try {
-        const response = await fetch(`${process.env.Localhost}/chat_rooms`, {
+        const response = await fetch(`${process.env.Localhost}/chat/room`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${(session as any)?.access_token}`,

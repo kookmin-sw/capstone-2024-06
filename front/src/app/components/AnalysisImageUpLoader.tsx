@@ -12,6 +12,8 @@ interface ImagePreview {
 }
 
 const AnalysisImageUpLoader = () => {
+  const [UploadImageBt, SetUploadImageBt] = useState(false);
+  const [RecommendImageBt, SetRecommendImageBt] = useState(false);
   const { data: session } = useSession();
 
   const [images, setImages] = useState<string[]>([]);
@@ -53,6 +55,9 @@ const AnalysisImageUpLoader = () => {
   const ImageDeleteBt = () => {
     setImagePreview(null);
   };
+  const [AnalysisImage, SetAnalysisImage] = useState([
+    { index: 0, src_url: "", landing: "" },
+  ]);
 
   const ImageAnalysisBt = async () => {
     try {
@@ -61,7 +66,7 @@ const AnalysisImageUpLoader = () => {
         const formData = new FormData();
         formData.append("file", imagePreview.file);
         const ImagePost = await fetch(
-          `${process.env.Localhost}/prototype_process`,
+          `${process.env.Localhost}/recommend/image`,
           {
             method: "POST",
             headers: {
@@ -72,6 +77,7 @@ const AnalysisImageUpLoader = () => {
         );
         const ImageDatas = await ImagePost.json();
         console.log(ImageDatas);
+        SetAnalysisImage(ImageDatas)
         setImages(ImageDatas.file_name);
         setPlotlyHTML(ImageDatas.plot);
         setIsAnalyzing(false);
@@ -144,7 +150,21 @@ const AnalysisImageUpLoader = () => {
   };
   return (
     <main className="my-10">
-      {AnalyBtClick && (
+      <div className="flex-col border h-[600px]">
+        <div className="flex items-center justify-center h-1/3">
+          책상 분석 어떤 것이 더 좋으세요 ?
+        </div>
+        <div className="flex items-center justify-center border w-full h-2/3">
+          <div className="flex items-center justify-center border w-1/4">
+            1.
+          </div>
+          <div className="flex items-center justify-center border w-1/4">
+            2.
+          </div>
+        </div>
+      </div>
+      {//UploadImageBt && 
+      AnalyBtClick && (
         <div className="flex flex-col items-center justify-center mt-4">
           <div
             className="m-2 relative"
@@ -212,6 +232,29 @@ const AnalysisImageUpLoader = () => {
           )}
         </div>
       )}
+      <div className="flex mt-10">
+            {AnalysisImage.map((sample, index) => (
+              <div
+                key={sample.index}
+                className="flex-col border w-1/5 h-[200px]"
+              >
+                <div
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    position: "relative",
+                  }}
+                >
+                  <Image
+                    src={sample.src_url}
+                    alt="Sample Image"
+                    layout="fill"
+                    objectFit="cover"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
       {/* {!AnalyBtClick && <RecommendImgSlider Images={images} />}
       <iframe
         className="plot"
@@ -219,113 +262,132 @@ const AnalysisImageUpLoader = () => {
         width="1000"
         height="800"
       ></iframe> */}
-      <div className="flex mt-10">
-        {SampleImage.map((sample, index) => (
-          <div key={sample.index} className="flex-col border w-1/5 h-[200px]">
-            <div
-              style={{ width: "100%", height: "100%", position: "relative" }}
-            >
-              <Image
-                src={sample.src_url}
-                alt="Sample Image"
-                layout="fill"
-                objectFit="cover"
-              />
-            </div>
-            <div className="mx-5 flex flex-row-reverse justify-center text-2xl">
-              <input
-                type="radio"
-                className="peer hidden"
-                id={`value5_${index}`}
-                value="5"
-                name={`score_${index}`}
-                onChange={() => SampleImageScore(index, 5)}
-              />
-              <label
-                htmlFor={`value5_${index}`}
-                className="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-600"
+      {
+        //  RecommendImageBt && 
+        (<div>
+          <div className="flex mt-10">
+            {SampleImage.map((sample, index) => (
+              <div
+                key={sample.index}
+                className="flex-col border w-1/5 h-[200px]"
               >
-                ★
-              </label>
-              <input
-                type="radio"
-                className="peer hidden"
-                id={`value4_${index}`}
-                value="4"
-                name={`score_${index}`}
-                onChange={() => SampleImageScore(index, 4)}
-              />
-              <label
-                htmlFor={`value4_${index}`}
-                className="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-600"
-              >
-                ★
-              </label>
-              <input
-                type="radio"
-                className="peer hidden"
-                id={`value3_${index}`}
-                value="3"
-                name={`score_${index}`}
-                onChange={() => SampleImageScore(index, 3)}
-              />
-              <label
-                htmlFor={`value3_${index}`}
-                className="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-600"
-              >
-                ★
-              </label>
-              <input
-                type="radio"
-                className="peer hidden"
-                id={`value2_${index}`}
-                value="2"
-                name={`score_${index}`}
-                onChange={() => SampleImageScore(index, 2)}
-              />
-              <label
-                htmlFor={`value2_${index}`}
-                className="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-600"
-              >
-                ★
-              </label>
-              <input
-                type="radio"
-                className="peer hidden"
-                id={`value1_${index}`}
-                value="1"
-                name={`score_${index}`}
-                onChange={() => SampleImageScore(index, 1)}
-              />
-              <label
-                htmlFor={`value1_${index}`}
-                className="cursor-pointer peer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-600"
-              >
-                ★
-              </label>
-            </div>
+                <div
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    position: "relative",
+                  }}
+                >
+                  <Image
+                    src={sample.src_url}
+                    alt="Sample Image"
+                    layout="fill"
+                    objectFit="cover"
+                  />
+                </div>
+                <div className="mx-5 flex flex-row-reverse justify-center text-2xl">
+                  <input
+                    type="radio"
+                    className="peer hidden"
+                    id={`value5_${index}`}
+                    value="5"
+                    name={`score_${index}`}
+                    onChange={() => SampleImageScore(index, 5)}
+                  />
+                  <label
+                    htmlFor={`value5_${index}`}
+                    className="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-600"
+                  >
+                    ★
+                  </label>
+                  <input
+                    type="radio"
+                    className="peer hidden"
+                    id={`value4_${index}`}
+                    value="4"
+                    name={`score_${index}`}
+                    onChange={() => SampleImageScore(index, 4)}
+                  />
+                  <label
+                    htmlFor={`value4_${index}`}
+                    className="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-600"
+                  >
+                    ★
+                  </label>
+                  <input
+                    type="radio"
+                    className="peer hidden"
+                    id={`value3_${index}`}
+                    value="3"
+                    name={`score_${index}`}
+                    onChange={() => SampleImageScore(index, 3)}
+                  />
+                  <label
+                    htmlFor={`value3_${index}`}
+                    className="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-600"
+                  >
+                    ★
+                  </label>
+                  <input
+                    type="radio"
+                    className="peer hidden"
+                    id={`value2_${index}`}
+                    value="2"
+                    name={`score_${index}`}
+                    onChange={() => SampleImageScore(index, 2)}
+                  />
+                  <label
+                    htmlFor={`value2_${index}`}
+                    className="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-600"
+                  >
+                    ★
+                  </label>
+                  <input
+                    type="radio"
+                    className="peer hidden"
+                    id={`value1_${index}`}
+                    value="1"
+                    name={`score_${index}`}
+                    onChange={() => SampleImageScore(index, 1)}
+                  />
+                  <label
+                    htmlFor={`value1_${index}`}
+                    className="cursor-pointer peer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-600"
+                  >
+                    ★
+                  </label>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      <div className="flex mt-10">
-        {RecommendImage.map((sample, index) => (
-          <div key={sample.index} className="flex-col border w-1/5 h-[200px]">
-            <div
-              style={{ width: "100%", height: "100%", position: "relative" }}
-            >
-              <Image
-                src={sample.src_url}
-                alt="Sample Image"
-                layout="fill"
-                objectFit="cover"
-              />
-            </div>
+          <div className="flex mt-10">
+            {RecommendImage.map((sample, index) => (
+              <div
+                key={sample.index}
+                className="flex-col border w-1/5 h-[200px]"
+              >
+                <div
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    position: "relative",
+                  }}
+                >
+                  <Image
+                    src={sample.src_url}
+                    alt="Sample Image"
+                    layout="fill"
+                    objectFit="cover"
+                  />
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      <button className="border" onClick={SampleImageScoreSend}>
-        Test
-      </button>
+          <button className="border" onClick={SampleImageScoreSend}>
+            Test
+          </button>
+        </div>)
+      }
     </main>
   );
 };
