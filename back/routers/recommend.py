@@ -57,6 +57,23 @@ async def recommend_by_preference(rated_images: list[RatedImage], user_id: str =
     return design_images
 
 
+@router.post("/preference2", response_model=list[DesignImage])
+async def recommend_by_preference2(rated_images: list[RatedImage], user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    feature_mat = np.load("vectors/features.npy")
+    query_mat = feature_mat[np.array([rated_image.index for rated_image in rated_images])]
+    preference_mat = np.array([[rated_image.rating for rated_image in rated_images]])
+
+    similarity_mat = query_mat @ feature_mat.T
+    result_mat = preference_mat @ similarity_mat
+
+    design_images = []
+    for i in result_mat[0].argsort()[-1:-6:-1]:
+        design_image = await crud.read_design_images(db, int(i))
+        design_images.append(design_image)
+    
+    return design_images
+
+
 @router.post("/image", response_model=list[DesignImage])
 async def recommend_by_source_image(file: UploadFile, user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
     file_path = os.path.join(config["PATH"]["upload"], file.filename)
