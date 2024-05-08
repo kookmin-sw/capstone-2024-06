@@ -119,13 +119,15 @@ const User = ({ }) => {
     }
   };
 
-  const FollowerClick = () => {
-    router.push("/Users/Follower")
-  }
+  const handleFolloweeClick = (user_id: string) => {
+    router.push(`/Users/Followee?user_id=${user_id}`);
+    // Users 페이지로 이동
+  };
 
-  const FollowingClick = () => {
-    router.push("/Users/Followee")
-  }
+  const handleFollowerClick = (user_id: string) => {
+    router.push(`/Users/Follower?user_id=${user_id}`);
+    // Users 페이지로 이동
+  };
 
 
   return (
@@ -157,10 +159,10 @@ const User = ({ }) => {
                     )}
                   </div>
                   <div className="flex items-center mt-2">
-                    <h1 className="text-sm hover:text-[#F4A460]" onClick={FollowerClick} >팔로워 {userProfile?.follower_count}</h1>
+                    <h1 className="text-sm hover:text-[#F4A460]" onClick={() => handleFollowerClick(userProfile?.user_id)} >팔로워 {userProfile?.follower_count}</h1>
                   </div>
                   <div className="flex items-center mt-2">
-                    <h1 className="text-sm hover:text-[#F4A460]" onClick={FollowingClick}>팔로잉 {userProfile?.followee_count}</h1>
+                    <h1 className="text-sm hover:text-[#F4A460]" onClick={() => handleFolloweeClick(userProfile?.user_id)}>팔로잉 {userProfile?.followee_count}</h1>
                   </div>
                 </div>
               </div>
@@ -170,12 +172,12 @@ const User = ({ }) => {
       </div>
       <div className="border-t border-gray-500 w-full mt-4"></div>
       <div className="border-t border-transparent w-full mt-4"></div>
-      <div className="absolute w-[173px] h-[83px] left-[200px] top-[200px] font-semibold text-base leading-9 text-black hover:text-[#F4A460]"
+      <div className="absolute w-[173px] h-[83px] left-[200px] top-[230px] font-semibold text-base leading-9 text-black hover:text-[#F4A460]"
       >
         작성한 글
       </div>
       {chunkedPosts.map((row: any[], rowIndex: number) => (
-        <div key={rowIndex} className="flex justify-start space-x-20 mb-5">
+        <div key={rowIndex} className="absolute left-[200px] top-[280px]">
           {row.map((post) => (
             <div
               key={post.post_id}
