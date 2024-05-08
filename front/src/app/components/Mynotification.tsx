@@ -49,8 +49,13 @@ const MyNotification = () => {
       });
 
       if (response.ok) {
-        // 알림 상태가 성공적으로 변경되면 해당 알림과 관련된 글로 이동
-        await router.push(`/Community/${SwitchCategory(Category)}/${reference_id}`);
+        if (reference_id) {
+          //알림 상태가 변경되면 해당 글로 이동
+          await router.push(`/Community/${SwitchCategory(Category)}/${reference_id}`);
+        } else {
+          // reference_id가 없는 경우 다른 경로로 라우팅
+          await router.push(`/Mypage/Follower`);
+        }
       } else {
         console.error('Failed to update notification status');
       }
