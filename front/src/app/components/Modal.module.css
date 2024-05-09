@@ -11,6 +11,7 @@
     opacity: 0;
     transition: opacity 0.3s ease;
     overflow: auto; 
+    padding-top:40px;
   }
   
   .modal {

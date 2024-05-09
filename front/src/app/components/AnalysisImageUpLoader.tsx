@@ -1,8 +1,9 @@
 "use client";
-import { useState, ChangeEvent, DragEvent, useEffect } from "react";
+import { useState, ChangeEvent, DragEvent, useEffect, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import RecommendImgSlider from "./RecommendImgSlider";
+import ImageAnalysisSlider from "./ImageAnalysisSlider";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
@@ -12,21 +13,19 @@ interface ImagePreview {
 }
 
 const AnalysisImageUpLoader = () => {
+  const [UploadImageBt, SetUploadImageBt] = useState(false);
+  const [RecommendImageBt, SetRecommendImageBt] = useState(false);
   const { data: session } = useSession();
 
   const [images, setImages] = useState<string[]>([]);
-  const [plotlyHTML, setPlotlyHTML] = useState("");
   const [imagePreview, setImagePreview] = useState<ImagePreview | null>(null);
 
   // 버퍼링
+
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   // 분석하기 버튼을 눌렀을 때
-  const [AnalyBtClick, SetAnalyBtClick] = useState(true);
-  const AnalyBtClicks = () => {
-    SetAnalyBtClick(!AnalyBtClick);
-    console.log(AnalyBtClick);
-  };
+  const [AnalyBtClick, SetAnalyBtClick] = useState(false);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -54,6 +53,13 @@ const AnalysisImageUpLoader = () => {
     setImagePreview(null);
   };
 
+  const [RecommendImageGet, SetRecommendImageGet] = useState(false);
+  const [AnalysisImageGet, SetAnalysisImageGet] = useState(false);
+
+  const [AnalysisImage, SetAnalysisImage] = useState([
+    { index: 0, src_url: "", landing: "" },
+  ]);
+
   const ImageAnalysisBt = async () => {
     try {
       if (imagePreview) {
@@ -61,7 +67,7 @@ const AnalysisImageUpLoader = () => {
         const formData = new FormData();
         formData.append("file", imagePreview.file);
         const ImagePost = await fetch(
-          `${process.env.Localhost}/prototype_process`,
+          `${process.env.Localhost}/recommend/image`,
           {
             method: "POST",
             headers: {
@@ -71,25 +77,28 @@ const AnalysisImageUpLoader = () => {
           }
         );
         const ImageDatas = await ImagePost.json();
-        console.log(ImageDatas);
+        SetAnalysisImage(ImageDatas);
+        SetAnalysisImageGet(true);
         setImages(ImageDatas.file_name);
-        setPlotlyHTML(ImageDatas.plot);
         setIsAnalyzing(false);
-        AnalyBtClicks();
+        SetAnalyBtClick(true);
+        console.log(AnalyBtClick)
       }
     } catch (error) {
       console.error("Error", error);
       setIsAnalyzing(false);
     }
   };
+
   const [SampleImage, SetSampleImage] = useState([
     {
       index: 0,
       src_url: "",
       landing: "",
-      score: 0,
+      score: 1,
     },
   ]);
+  
   useEffect(() => {
     const SampleImageGet = async () => {
       try {
@@ -103,7 +112,7 @@ const AnalysisImageUpLoader = () => {
           }
         );
         const SampleImageDatas = await ImagePost.json();
-        console.log(SampleImageDatas);
+
         SetSampleImage(SampleImageDatas);
       } catch (error) {
         console.error("Error", error);
@@ -111,9 +120,6 @@ const AnalysisImageUpLoader = () => {
     };
     SampleImageGet();
   }, []);
-  const SampleImageScore = (index: number, score: number) => {
-    SampleImage[index].score = score;
-  };
 
   const [RecommendImage, SetRecommendImage] = useState([
     { index: 0, src_url: "", landing: "" },
@@ -137,14 +143,84 @@ const AnalysisImageUpLoader = () => {
         }
       );
       const SampleImageScoreSendData = await ImagePost.json();
+      console.log("여기가 진짜임");
+      console.log(RecommendImage);
       SetRecommendImage(SampleImageScoreSendData);
+      console.log(RecommendImage);
+      SetRecommendImageGet(true);
     } catch (error) {
       console.error("Error", error);
     }
   };
+
+  const ScrollDown = () => {
+    const scrollPosition = 2000;
+    window.scrollTo({
+      top: scrollPosition,
+      behavior: "smooth",
+    });
+  };
+
+  const ImageUploadImageClick = () => {
+    SetUploadImageBt(true);
+    SetRecommendImageBt(false);
+    ScrollDown();
+  };
+
+  const RecommendImageClick = () => {
+    SetUploadImageBt(false);
+    SetRecommendImageBt(true);
+    ScrollDown();
+  };
+
   return (
     <main className="my-10">
-      {AnalyBtClick && (
+      <div className="flex-col h-[600px]">
+        <div className="flex items-center justify-center h-1/3">
+          <div className="text-2xl font-semibold">
+            책상 분석 어떤 것이 더 좋으세요 ?
+          </div>
+        </div>
+        <div className="flex items-center justify-center w-full h-2/3">
+          <div className="flex-col items-center justify-center w-1/3 ">
+            <div className="flex items-center justify-center w-full">
+              <div className="w-[120px] mb-4">
+                <Image
+                  src="/imageupload.png"
+                  alt="Post Image"
+                  width={1000}
+                  height={1000}
+                  style={{ width: "100%", height: "auto" }}
+                  className="cursor-pointer hover:scale-105"
+                  onClick={ImageUploadImageClick}
+                />
+              </div>
+            </div>
+            <div className="text-sm flex items-center justify-center text-sm font-semibold">
+              자신의 이미지 업로드 하여 추천 받기
+            </div>
+          </div>
+          <div className="flex-col items-center justify-center w-1/3">
+            <div className="flex items-center justify-center w-full">
+              <div className="w-[300px] mb-4">
+                <Image
+                  src="/star.png"
+                  alt="Post Image"
+                  width={1000}
+                  height={1000}
+                  style={{ width: "100%", height: "auto" }}
+                  className="cursor-pointer hover:scale-105"
+                  onClick={RecommendImageClick}
+                />
+              </div>
+            </div>
+            <div className="text-sm flex items-center justify-center text-sm font-semibold">
+              이미지들을 받아 평가하고 추천받기
+            </div>
+          </div>
+        </div>
+      </div>
+      {UploadImageBt && (
         <div className="flex flex-col items-center justify-center mt-4">
           <div
             className="m-2 relative"
@@ -158,7 +234,7 @@ const AnalysisImageUpLoader = () => {
                 className="w-[500px] h-[400px] cursor-pointer"
               />
             ) : (
-              <div className="flex my-4 items-center justify-center border-dashed border-2 text-[#808080] text-sm w-[600px] h-[400px] cursor-pointer">
+              <div className="flex my-4 items-center justify-center border-dashed border-4 text-[#808080] text-sm w-[800px] h-[400px] cursor-pointer">
                 드래그하여 사진 업로드
               </div>
             )}
@@ -189,7 +265,7 @@ const AnalysisImageUpLoader = () => {
                   분석중
                   <FontAwesomeIcon
                     icon={faSpinner}
-                    className="animate-spin ml-1"
+                    className="animate-spin ml-2"
                   />
                 </button>
               ) : (
@@ -210,122 +286,37 @@ const AnalysisImageUpLoader = () => {
               )}
             </div>
           )}
+          {AnalyBtClick && (
+            <div className="flex mt-10">
+              <ImageAnalysisSlider Images={AnalysisImage} />
+            </div>
+          )}
         </div>
       )}
-      {/* {!AnalyBtClick && <RecommendImgSlider Images={images} />}
-      <iframe
-        className="plot"
-        srcDoc={plotlyHTML}
-        width="1000"
-        height="800"
-      ></iframe> */}
-      <div className="flex mt-10">
-        {SampleImage.map((sample, index) => (
-          <div key={sample.index} className="flex-col border w-1/5 h-[200px]">
-            <div
-              style={{ width: "100%", height: "100%", position: "relative" }}
-            >
-              <Image
-                src={sample.src_url}
-                alt="Sample Image"
-                layout="fill"
-                objectFit="cover"
-              />
+      {RecommendImageBt && (
+        <div>
+          {!RecommendImageGet && (
+            <div>
+              <div className="flex mt-10">
+                <RecommendImgSlider Images={SampleImage} />
+              </div>
+              <div className="flex justify-center items-center mt-10 w-full">
+                <button
+                  className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
+                  onClick={SampleImageScoreSend}
+                >
+                  제출하기
+                </button>
+              </div>
             </div>
-            <div className="mx-5 flex flex-row-reverse justify-center text-2xl">
-              <input
-                type="radio"
-                className="peer hidden"
-                id={`value5_${index}`}
-                value="5"
-                name={`score_${index}`}
-                onChange={() => SampleImageScore(index, 5)}
-              />
-              <label
-                htmlFor={`value5_${index}`}
-                className="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-600"
-              >
-                ★
-              </label>
-              <input
-                type="radio"
-                className="peer hidden"
-                id={`value4_${index}`}
-                value="4"
-                name={`score_${index}`}
-                onChange={() => SampleImageScore(index, 4)}
-              />
-              <label
-                htmlFor={`value4_${index}`}
-                className="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-600"
-              >
-                ★
-              </label>
-              <input
-                type="radio"
-                className="peer hidden"
-                id={`value3_${index}`}
-                value="3"
-                name={`score_${index}`}
-                onChange={() => SampleImageScore(index, 3)}
-              />
-              <label
-                htmlFor={`value3_${index}`}
-                className="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-600"
-              >
-                ★
-              </label>
-              <input
-                type="radio"
-                className="peer hidden"
-                id={`value2_${index}`}
-                value="2"
-                name={`score_${index}`}
-                onChange={() => SampleImageScore(index, 2)}
-              />
-              <label
-                htmlFor={`value2_${index}`}
-                className="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-600"
-              >
-                ★
-              </label>
-              <input
-                type="radio"
-                className="peer hidden"
-                id={`value1_${index}`}
-                value="1"
-                name={`score_${index}`}
-                onChange={() => SampleImageScore(index, 1)}
-              />
-              <label
-                htmlFor={`value1_${index}`}
-                className="cursor-pointer peer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-600"
-              >
-                ★
-              </label>
-            </div>
+          )}
+          <div className="flex mt-10">
+            {RecommendImageGet && (
+              <ImageAnalysisSlider Images={RecommendImage} />
+            )}
           </div>
-        ))}
-      </div>
-      <div className="flex mt-10">
-        {RecommendImage.map((sample, index) => (
-          <div key={sample.index} className="flex-col border w-1/5 h-[200px]">
-            <div
-              style={{ width: "100%", height: "100%", position: "relative" }}
-            >
-              <Image
-                src={sample.src_url}
-                alt="Sample Image"
-                layout="fill"
-                objectFit="cover"
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-      <button className="border" onClick={SampleImageScoreSend}>
-        Test
-      </button>
+        </div>
+      )}
     </main>
   );
 };
