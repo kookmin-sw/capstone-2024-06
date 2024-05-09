@@ -1,12 +1,17 @@
 import os
 import re
 import requests
+from requests.packages.urllib3.util.retry import Retry
+from requests.adapters import HTTPAdapter
+
 import queue
 import threading
 from io import BytesIO
 
 from mimetypes import guess_extension
+import numpy as np
 from PIL import Image
+import cv2
 from pillow_heif import register_heif_opener
 
 from sqlalchemy.orm import scoped_session
@@ -15,6 +20,15 @@ from database.models import Base, DesignImages, ItemImages
 
 
 Base.metadata.create_all(bind=engine)
+
+
+def create_retry_session():
+    session = requests.Session()
+    retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
+    session.mount("http://", HTTPAdapter(max_retries=retries))
+    session.mount("https://", HTTPAdapter(max_retries=retries))
+    return session
+                  
 
 class BaseCrawler:
     def __init__(self, path, prefix, num_workers, resize, verbose):
@@ -80,8 +94,8 @@ class BaseCrawler:
         url = image["src_url"]
         filename = self.sanitize_filename(image["filename"])
 
-        response = requests.get(url)
-
+        session = create_retry_session()
+        response = session.get(url)
         if response.status_code != 200:
             return False
 
@@ -102,6 +116,7 @@ class BaseCrawler:
         ret = self.to_db(image)
         return ret
     
+
     def sanitize_filename(self, filename):
         sanitized_filename = re.sub(r"[\/\\\:\*\?\"\<\>\|\s]", "_", filename)
         sanitized_filename = "".join(c for c in sanitized_filename if c.isprintable())
@@ -158,7 +173,8 @@ class OhouseCrawler(BaseCrawler):
         if self.style:
             params["style"] = self.style
 
-        response = requests.get(self.api_url, params=params, headers=self.headers)
+        session = create_retry_session()
+        response = session.get(self.api_url, params=params, headers=self.headers)
         if response.status_code != 200:
             raise Exception("Failed to fetch data")
 
@@ -167,6 +183,11 @@ class OhouseCrawler(BaseCrawler):
         fetched_desks = response_data["cards"]
         for fetched_desk in fetched_desks:
             url = fetched_desk["image"]["url"]
+            if "amazon" in url:
+                url = re.sub(r"\.s.*?\.com", "", url)
+                url = url.replace("https://", "https://image.ohou.se/i/")
+            url += "?gif=1&webp=1"
+            
             desk = {
                 "filename": re.search(r'/([^/]*)\.([^.]*)$', url).group(1),
                 "src_url": url,
@@ -202,7 +223,8 @@ class PinterestCrawler(BaseCrawler):
         else:
             data = f'{{"options":{{"page_size":25,"query":"{self.query}","scope":"pins","bookmarks":["{self.bookmark}"],"field_set_key":"unauth_react","no_fetch_context_on_resource":false}},"context":{{}}}}'.strip()
 
-        response = requests.get(self.api_url, params={"source_url": self.source_url, "data": data})
+        session = create_retry_session()
+        response = session.get(self.api_url, params={"source_url": self.source_url, "data": data})
         if response.status_code != 200:
             raise Exception("Failed to fetch data")
         
@@ -246,7 +268,9 @@ class OhouseItemCrawler(BaseCrawler):
             "page": page,
             "per": 24,
         }
-        response = requests.get(self.api_url, params=params, headers=self.headers)
+
+        session = create_retry_session()
+        response = session.get(self.api_url, params=params, headers=self.headers)
         if response.status_code != 200:
             raise Exception("Failed to fetch data")
 
@@ -256,9 +280,10 @@ class OhouseItemCrawler(BaseCrawler):
         for fetched_item in fetched_items:
             url = fetched_item["original_image_url"]
             item = {
-                "filename": re.search(r'/([^/]*)\.([^.]*)$', url).group(1),
+                "name": fetched_item["name"],
                 "src_url": url,
-                "landing": self.landing_url.format(fetched_item["id"])
+                "landing": self.landing_url.format(fetched_item["id"]),
+                "category_id": self.category_id
             }
             items.append(item)
 
@@ -266,6 +291,51 @@ class OhouseItemCrawler(BaseCrawler):
             self.finished = True
 
         return items
+
+    def download_image(self, image):
+        url = image["src_url"]
+        session = create_retry_session()
+        response = session.get(url)
+        if response.status_code != 200:
+            return False
+
+        file_extension = guess_extension(response.headers.get("content-type"))
+        image_data = response.content
+
+        if file_extension is None:
+            return False
+
+        image_data = self.validate_image_data(image_data)
+        if not image_data:
+            return False
+        
+        color = self.extract_color(image_data)
+        image["color"] = color
+
+        ret = self.to_db(image)
+        return ret
+
+    def extract_color(self, image):
+        image = np.array(image)
+        image = cv2.resize(image, (100, 100))
+        gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+        blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+
+        edges = cv2.Canny(blurred, 50, 100)
+        contours, _ = cv2.findContours(edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours = sorted(contours, key=cv2.contourArea, reverse=True)[:max(1, len(contours)//2)]
+
+        mask = np.zeros_like(gray)
+        for contour in contours:
+            cv2.drawContours(mask, [contour], -1, 255, -1)
+
+        kernel = np.ones((5, 5), np.uint8)
+        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+        image_without_bg = cv2.bitwise_and(image, image, mask=mask)
+
+        colors = image_without_bg[image_without_bg.sum(axis=2) != 0]
+        main_color = np.median(colors, axis=0).astype(np.uint8)
+        return main_color
 
     def to_db(self, image):
         try:
@@ -283,19 +353,50 @@ if __name__ == "__main__":
 
     from config_loader import config
 
-    train_path = config["PATH"]["train"]
+    path = config["PATH"]["train"]
+    os.makedirs(path, exist_ok=True)
 
-    # styles = ["모던", "북유럽", "빈티지", "내추럴", "프로방스&로맨틱", "클래식&앤틱", "한국&아시아", "유니크"]
-    # for i, style in enumerate(styles):
-    #     path = os.path.join(train_path, style)
-    #     print(path)
-    #     desk_crawler = OhouseCrawler(path, "데스크테리어", style=i, verbose=True)
-    #     desk_crawler.crawling()
+    # # styles = ["모던", "북유럽", "빈티지", "내추럴", "프로방스&로맨틱", "클래식&앤틱", "한국&아시아", "유니크"]
+    # # for i, style in enumerate(styles):
+    # #     desk_crawler = OhouseCrawler(path, "데스크테리어", style=i, verbose=True, resize=(224, 224))
+    # #     desk_crawler.crawling()
 
-    # desk_crawler = PinterestCrawler(train_path, "desk interior", verbose=True)
+    # # desk_crawler = PinterestCrawler(train_path, "desk interior", verbose=True)
 
     categories = ["28070000"]
     for category_id in categories:
-        path = os.path.join(train_path, category_id)
-        item_crawler = OhouseItemCrawler(path, category_id, resize=(256, 256), verbose=True)
+        path = os.path.join(path, category_id)
+        item_crawler = OhouseItemCrawler(path, category_id, verbose=True)
         item_crawler.crawling()
+
+    # image_url = "https://bucketplace-v2-development.s3.amazonaws.com/uploads/productions/168076630197287303.jpg"
+    # session = create_retry_session()
+    # response = session.get(image_url)
+
+    # image_data = response.content
+    # image = Image.open(BytesIO(image_data))
+    # pixels = image.load()
+    # image = image.convert("RGB")
+    # image_data = image_data
+
+    # image = np.array(image)
+    # image = cv2.resize(image, (100, 100))
+    # gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    # blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+
+    # edges = cv2.Canny(blurred, 50, 100)
+    # contours, _ = cv2.findContours(edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # print(len(contours))
+    # contours = sorted(contours, key=cv2.contourArea, reverse=True)[:max(1, len(contours)//2)]
+
+    # mask = np.zeros_like(gray)
+    # for contour in contours:
+    #     cv2.drawContours(mask, [contour], -1, 255, -1)
+
+    # kernel = np.ones((5, 5), np.uint8)
+    # mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+    # image_without_bg = cv2.bitwise_and(image, image, mask=mask)
+
+    # colors = image_without_bg[image_without_bg.sum(axis=2) != 0]
+    # main_color = np.median(colors, axis=0).astype(np.uint8)
+    # print(main_color)
