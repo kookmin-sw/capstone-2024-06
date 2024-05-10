@@ -7,6 +7,7 @@ import ImageAnalysisSlider from "./ImageAnalysisSlider";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
+
 interface ImagePreview {
   url: string;
   file: File;
@@ -82,7 +83,7 @@ const AnalysisImageUpLoader = () => {
         setImages(ImageDatas.file_name);
         setIsAnalyzing(false);
         SetAnalyBtClick(true);
-        console.log(AnalyBtClick)
+    
       }
     } catch (error) {
       console.error("Error", error);
@@ -143,10 +144,7 @@ const AnalysisImageUpLoader = () => {
         }
       );
       const SampleImageScoreSendData = await ImagePost.json();
-      console.log("여기가 진짜임");
-      console.log(RecommendImage);
       SetRecommendImage(SampleImageScoreSendData);
-      console.log(RecommendImage);
       SetRecommendImageGet(true);
     } catch (error) {
       console.error("Error", error);
@@ -268,7 +266,7 @@ const AnalysisImageUpLoader = () => {
                     className="animate-spin ml-2"
                   />
                 </button>
-              ) : (
+              ) : !AnalyBtClick && (
                 <div className="flex">
                   <div
                     className="cursor-pointer bg-blue-500 text-white flex items-center justify-center w-[100px] h-[45px] rounded hover:scale-105"
@@ -287,7 +285,8 @@ const AnalysisImageUpLoader = () => {
             </div>
           )}
           {AnalyBtClick && (
-            <div className="flex mt-10">
+            <div className="flex-col mt-10">
+              <div className="w-full flex justify-center mb-5 font-semibold text-xl h-12 border-b-2">사진 분석 결과</div>
               <ImageAnalysisSlider Images={AnalysisImage} />
             </div>
           )}
@@ -295,19 +294,19 @@ const AnalysisImageUpLoader = () => {
       )}
       {RecommendImageBt && (
         <div>
-          {!RecommendImageGet && (
+          {(
             <div>
               <div className="flex mt-10">
                 <RecommendImgSlider Images={SampleImage} />
               </div>
-              <div className="flex justify-center items-center mt-10 w-full">
+              {!RecommendImageGet && (<div className="flex justify-center items-center mt-10 w-full">
                 <button
                   className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
                   onClick={SampleImageScoreSend}
                 >
                   제출하기
                 </button>
-              </div>
+              </div>)}
             </div>
           )}
           <div className="flex mt-10">
@@ -317,6 +316,7 @@ const AnalysisImageUpLoader = () => {
           </div>
         </div>
       )}
+      
     </main>
   );
 };

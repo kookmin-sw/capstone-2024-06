@@ -19,22 +19,23 @@ interface ImageItem {
 
 const RecommendImgSlider = ({ Images }: { Images: ImageItem[] }) => {
 
-  console.log(Images)
-
   const SampleImageScore = (index: number, score: number) => {
     Images[index].score = score;
   };
 
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [ImageLanding, SetImageLanding] = useState("")
 
-  const handleImageClick = (imageUrl: string) => {
+  const handleImageClick = (imageUrl: string, imageLanding : string) => {
     setPreviewImage(imageUrl);
+    SetImageLanding(imageLanding)
   };
 
   const closePreview = () => {
     setPreviewImage(null);
   };
 
+  
   return (
     <main className="flex w-full justify-center ">
       <div className="swiper-container w-[1000px] h-fit flex">
@@ -51,7 +52,7 @@ const RecommendImgSlider = ({ Images }: { Images: ImageItem[] }) => {
               <div
                 className="w-[300px] h-[300px] relative"
                 onClick={() =>
-                  handleImageClick(`${src.src_url}`)
+                  handleImageClick(src.src_url, src.landing)
                 }
               >
                 <Image
@@ -139,7 +140,7 @@ const RecommendImgSlider = ({ Images }: { Images: ImageItem[] }) => {
           ))}
         </Swiper>
       </div>
-      {previewImage && <Modal imageUrl={previewImage} onClose={closePreview} />}
+      {previewImage && <Modal imageUrl={previewImage} onClose={closePreview} imageLanding={ImageLanding} />}
     </main>
   );
 };
