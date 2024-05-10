@@ -4,6 +4,10 @@ import numpy as np
 import cv2
 from fastapi import APIRouter, UploadFile, Depends
 
+import requests
+from requests.packages.urllib3.util.retry import Retry
+from requests.adapters import HTTPAdapter
+
 from sqlalchemy.orm import Session
 
 from database import crud
@@ -115,11 +119,6 @@ async def recommend_by_source_image(file: UploadFile, user_id: str = Depends(get
     #     design_images.append(design_image)
     
     # return design_images
-
-
-import requests
-from requests.packages.urllib3.util.retry import Retry
-from requests.adapters import HTTPAdapter
 
 
 @router.get("/item")
