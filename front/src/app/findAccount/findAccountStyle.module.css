@@ -1,3 +1,5 @@
+/*DESKTOP21*/
+
 .desktop {
   /* Desktop - 7 */
   position: relative;
@@ -6,6 +8,8 @@
 
   background: #FFFFFF;
 }
+
+
 
 /* 상단바--whatdesk로고 */
 .top{
@@ -33,6 +37,7 @@
   left: 577px;
   top: 531px;
   
+  
   border: 1px solid #A26D07; /* 갈색 테두리 설정 */
   font-size: 35px
 }
@@ -56,7 +61,6 @@
   height: 109px;
   left: 577px;
   top: 362px;
-  
   border: 1px solid #A26D07; /* 갈색 테두리 설정 */
   font-size: 35px
 }
@@ -72,4 +76,59 @@
   line-height: 39px;
   border: none; /* 입력 필드의 기본 테두리 제거 */
   outline: none; /* 입력 필드에 대한 포커스 테두리 제거 */
+  
+}
+.findID{
+  position: absolute;
+  width: 239px;
+  height: 75px;
+  left: 401px;
+  top: 4px;
+  
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 25px;
+  line-height: 48px;
+  
+  color: #000000;
+
+}
+.line{
+
+  position: absolute;
+width: 1898.02px;
+height: 0px;
+left: 11px;
+top: 60px;
+
+border: 1px solid #A26D07;
+}
+
+
+.inputField {
+  width: 100%;  /* 전체 상자 크기에 맞춰 확장 */
+  padding: 10px;  /* 패딩 추가 */
+  border: none;  /* 테두리 제거 */
+  outline: none;  /* 클릭 시 아웃라인 제거 */
+  background: transparent;  /* 투명 배경 */
+}
+
+
+.findPW{
+  
+
+  position: absolute;
+  width: 231px;
+  height: 75px;
+  left: 83px;
+  top: 4px;
+  
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 25px;
+  line-height: 48px;
+  
+  color: #000000;
 }

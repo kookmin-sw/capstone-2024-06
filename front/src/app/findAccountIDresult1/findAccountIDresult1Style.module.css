@@ -27,7 +27,6 @@
   }
   
   
-  /* 글씨 아이디 찾기 */
   .findID{
     position: absolute;
     width: 239px;
@@ -48,7 +47,7 @@
   
   .findPW{
     
-
+  
     position: absolute;
     width: 231px;
     height: 75px;

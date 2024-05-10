@@ -26,42 +26,6 @@ color: #A26D07;
 }
 
 
-/* 글씨 아이디 찾기 */
-.findID{
-position: absolute;
-width: 231px;
-height: 75px;
-left: 83px;
-top: 70px;
-
-font-family: 'Inter';
-font-style: normal;
-font-weight: 400;
-font-size: 25px;
-line-height: 48px;
-
-color: #000000;
-
-}
-
-
-.findPW{
-position: absolute;
-width: 239px;
-height: 75px;
-left: 401px;
-top: 70px;
-
-font-family: 'Inter';
-font-style: normal;
-font-weight: 400;
-font-size: 25px;
-line-height: 48px;
-
-color: #000000;
-
-}
-
 
 /* 상단바 */
 .topbar {
@@ -86,22 +50,6 @@ top: 342px;
 border: 1px solid #A26D07;
 
 }
-
-/* 아이디 찾기 글씨*/
-.idFinder {
-  position: absolute;
-  width: 231px;
-  height: 75px;
-  left: 83px;
-  top: 47px;
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 90px;
-  line-height: 48px;
-  color: #000000;
-}
-
 
 
 /* 완료 Line 13 ---위에 갈색 라*/
@@ -210,4 +158,41 @@ border: 1px solid #A26D07;
   top: 622px;
   background: #F3F3F3;
 
+}
+
+ /* 글씨 아이디 찾기 */
+ .findID{
+  position: absolute;
+  width: 239px;
+  height: 75px;
+  left: 401px;
+  top: 70px;
+  
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 25px;
+  line-height: 48px;
+  
+  color: #000000;
+
+}
+
+
+.findPW{
+  
+
+  position: absolute;
+  width: 231px;
+  height: 75px;
+  left: 83px;
+  top: 70px;
+  
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 25px;
+  line-height: 48px;
+  
+  color: #000000;
 }
