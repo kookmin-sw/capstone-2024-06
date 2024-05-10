@@ -279,6 +279,11 @@ class OhouseItemCrawler(BaseCrawler):
         fetched_items = response_data["productions"]
         for fetched_item in fetched_items:
             url = fetched_item["original_image_url"]
+            if "amazon" in url:
+                url = re.sub(r"\.s.*?\.com", "", url)
+                url = url.replace("https://", "https://image.ohou.se/i/")
+            url += "?gif=1&webp=1"
+            
             item = {
                 "name": fetched_item["name"],
                 "src_url": url,
