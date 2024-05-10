@@ -63,16 +63,22 @@ async def recommend_by_preference(rated_images: list[RatedImage], user_id: str =
 @router.post("/preference", response_model=list[DesignImage])
 async def recommend_by_preference2(rated_images: list[RatedImage], user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
     feature_mat = np.load("vectors/features.npy")
-    query_mat = feature_mat[np.array([rated_image.index for rated_image in rated_images])]
+    rated_images_index = [rated_image.index for rated_image in rated_images]
+    query_mat = feature_mat[np.array(rated_images_index)]
     preference_mat = np.array([[rated_image.rating for rated_image in rated_images]])
 
     similarity_mat = query_mat @ feature_mat.T
     result_mat = preference_mat @ similarity_mat
+    result_index = result_mat[0].argsort()[::-1]
 
     design_images = []
-    for i in result_mat[0].argsort()[-1:-6:-1]:
-        design_image = await crud.read_design_images(db, int(i))
-        design_images.append(design_image)
+    i = 0
+    while len(design_images) < 5:
+        index = result_index[i]
+        if index not in rated_images_index:
+            design_image = await crud.read_design_images(db, int(index))
+            design_images.append(design_image)
+        i += 1
     
     return design_images
 
@@ -139,7 +145,7 @@ async def recoomend_items_by_color(index: int, user_id: str = Depends(get_curren
     pixels = np.float32(pixels)
 
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 100, 0.2)
-    _, labels, centers = cv2.kmeans(pixels, 5, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
+    _, labels, centers = cv2.kmeans(pixels, 3, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
 
     colors = np.uint8(centers)
     result = []
