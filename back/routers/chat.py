@@ -28,6 +28,7 @@ async def chatting_websocket(
     if user_id in connections:
         del connections[user_id]
     connections[user_id] = websocket
+    print(f"user <{user_id}> connected")
 
     try:
         while True:
@@ -42,15 +43,17 @@ async def chatting_websocket(
     except WebSocketDisconnect:
         ...
     finally:
+        print(f"user <{user_id}> disconnected")
         if user_id in connections:
             del connections[user_id]
         connections[user_id] = websocket
+        await crud.update_chat_access_history(db, user_id, opponent_id)
 
 
 @router.get("/history/{opponent_id}", response_model=list[ChatHistory])
 async def get_chat_histories(
     opponent_id: str,
-    last_chat_history_id: int,
+    last_chat_history_id: int | None = None,
     user_id: str = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -62,5 +65,5 @@ async def get_chat_histories(
 
 @router.get("/room", response_model=list[ChatRoom])
 async def get_chatting_rooms(user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
-    opponents = await crud.read_chatting_rooms(db, user_id)
-    return opponents
+    chat_rooms = await crud.read_chatting_rooms(db, user_id)
+    return chat_rooms

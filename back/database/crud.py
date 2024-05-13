@@ -465,8 +465,20 @@ async def create_chat_history(db: Session, chat_history: ChatHistory):
     return chat_history
 
 
+async def update_chat_access_history(db: Session, user_id: str, opponent_id: str):
+    chat_access_history = db.query(ChatAccessHistories).filter(and_(ChatAccessHistories.user_id == user_id, ChatAccessHistories.opponent_id == opponent_id)).first()
+
+    if chat_access_history is None:
+        chat_access_history = ChatAccessHistories(user_id=user_id, opponent_id=opponent_id)
+        db.add(chat_access_history)
+    else:
+        chat_access_history.created_at = datetime.now()
+    db.commit()
+    return chat_access_history
+
+
 async def read_chat_histories(
-    db: Session, sender_id: str, receiver_id: str, last_chat_history_id: int
+    db: Session, sender_id: str, receiver_id: str, last_chat_history_id: int | None = None
 ):
     query = db.query(ChatHistories).filter(
         or_(
@@ -477,7 +489,8 @@ async def read_chat_histories(
         )
     )
 
-    query = query.filter(ChatHistories.chat_history_id < last_chat_history_id)
+    if last_chat_history_id:
+        query = query.filter(ChatHistories.chat_history_id < last_chat_history_id)
 
     query = query.order_by(ChatHistories.created_at.desc())
     query = query.limit(100)
@@ -517,7 +530,15 @@ async def read_chatting_rooms(db: Session, user_id: str):
         user = UserInfo.model_validate(user)
         chat_history = ChatHistory.model_validate(chat_history)
 
-        chatroom = ChatRoom(opponent=user, last_chat=chat_history)
+        opponent_id = chat_history.sender_id if chat_history.sender_id != user_id else chat_history.receiver_id
+        chat_access_history = db.query(ChatAccessHistories).filter(and_(ChatAccessHistories.user_id == user_id, ChatAccessHistories.opponent_id == opponent_id)).first()
+
+        if chat_access_history is None:
+            unread = True
+        else:
+            unread = chat_history.created_at > chat_access_history.created_at
+
+        chatroom = ChatRoom(opponent=user, last_chat=chat_history, unread=unread)
         chatrooms.append(chatroom)
     
     return chatrooms
