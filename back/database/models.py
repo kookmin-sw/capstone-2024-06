@@ -277,6 +277,14 @@ class ChatHistories(Base):
     receiver = relationship("Users", foreign_keys=[receiver_id], back_populates="received_chat")
 
 
+class ChatAccessHistories(Base):
+    __tablename__ = "chat_access_histories"
+
+    user_id = Column(String, ForeignKey("users.user_id"), primary_key=True)
+    opponent_id = Column(String, ForeignKey("users.user_id"), primary_key=True)
+    created_at = Column(DateTime, default=datetime.now, nullable=False)
+
+
 class DesignImages(Base):
     __tablename__ = "design_images"
 

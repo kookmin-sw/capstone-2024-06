@@ -129,6 +129,7 @@ class ChatHistory(BaseChatHistory):
 class ChatRoom(BaseModel):
     opponent: UserInfo
     last_chat: ChatHistory
+    unread: bool
 
 
 class DesignImage(BaseModel):
