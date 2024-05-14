@@ -2,11 +2,14 @@
 import { useState, MouseEventHandler, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 
 const ChatModal = ({
   onClose,
+  First,
 }: {
   onClose: MouseEventHandler<HTMLButtonElement>;
+  First: boolean;
 }) => {
   const ChatScrollRef = useRef<HTMLDivElement>(null);
   const ScrollToBottom = () => {
@@ -31,8 +34,22 @@ const ChatModal = ({
         name: "",
         user_id: "",
       },
+      unread: true,
     },
   ]);
+
+  const [UserData, SetUserData] = useState({
+    email: "",
+    followed: false,
+    followee_count: 0,
+    follower_count: 0,
+    image: "",
+    name: "‍",
+    user_id: "",
+  });
+  const params = useSearchParams();
+  const user_id = params.get("user_id");
+
   const [ChatingData, SetChatingData] = useState([
     {
       chat_history_id: 0,
@@ -42,6 +59,7 @@ const ChatModal = ({
       sender_id: "",
     },
   ]);
+
   const EnterKey = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       SendMessage();
@@ -55,6 +73,7 @@ const ChatModal = ({
 
   const [Client, SetClient] = useState<WebSocket | null>(null);
   const OpenWebSoket = (UserId: string) => {
+    console.log(UserId + "ss");
     const newClient = new WebSocket(
       `ws://${process.env.OnlyiP}/chat/${UserId}`
     );
@@ -99,6 +118,45 @@ const ChatModal = ({
   const [AnotherProfile, SetAnotherProfile] = useState("");
   const [AnotherName, SetAnotherName] = useState("");
 
+  const OpenFirstWindow = (
+    Id: string,
+    chat_history_id: number,
+    anotherprofile: string,
+    anothername: string,
+    anotheruserid: string
+  ) => {
+    if (Id != "") {
+      SetAnotherProfile(anotherprofile);
+      SetAnotherName(anothername);
+      OpenWebSoket(anotheruserid);
+      const ChatingLoad = async () => {
+        try {
+          const response = await fetch(
+            `${process.env.Localhost}/chat/history/${Id}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${(session as any)?.access_token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          const data = await response.json();
+          console.log(data);
+          SetChatingData(data);
+        } catch (error) {
+          console.error("Error", error);
+        }
+      };
+      ChatingLoad();
+    } else {
+      SetChatingData([]);
+      SetOpenChatings(!OpenChatings);
+      CloseWebSocket();
+    }
+    SetOpenChat(!OpenChat);
+  };
+
   const OpenChatWindow = (
     Id: string,
     chat_history_id: number,
@@ -125,6 +183,7 @@ const ChatModal = ({
             }
           );
           const data = await response.json();
+          console.log(data);
           SetChatingData(data);
         } catch (error) {
           console.error("Error", error);
@@ -138,8 +197,9 @@ const ChatModal = ({
     }
     SetOpenChat(!OpenChat);
   };
+
   useEffect(() => {
-      ScrollToBottom();
+    ScrollToBottom();
   }, [ChatingData]);
 
   useEffect(() => {
@@ -153,7 +213,18 @@ const ChatModal = ({
             "Content-Type": "application/json",
           },
         });
+
+        [
+          {
+            type: "missing",
+            loc: ["query", "last_chat_history_id"],
+            msg: "Field required",
+            input: null,
+            url: "https://errors.pydantic.dev/2.6/v/missing",
+          },
+        ];
         const data = await response.json();
+        console.log(data);
         SetChatDatas(data);
       } catch (error) {
         console.error("Error", error);
@@ -161,6 +232,40 @@ const ChatModal = ({
     };
     ChatLoad();
   }, [OpenChatings]);
+
+  useEffect(() => {
+    console.log(First);
+    if (First === false) {
+      First = true;
+      SetOpenChat(!OpenChat);
+      const fetchUserData = async () => {
+        try {
+          const response = await fetch(
+            `${process.env.Localhost}/user/profile/${user_id}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${(session as any)?.access_token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          if (response.ok) {
+            const userData = await response.json();
+            console.log(userData)
+            SetUserData(userData);
+            OpenFirstWindow(userData.user_id, -1, userData.image, userData.name, userData.user_id);
+          } else {
+            console.error("Failed to fetch user data");
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      };
+      fetchUserData();
+      
+    }
+  }, []);
 
   return (
     <div className="fixed inset-0 z-50 overflow-auto bg-opacity-75 flex">
@@ -172,7 +277,10 @@ const ChatModal = ({
             </div>
             <button
               className="text-[#FFFAFA] text-3xl  focus:outline-none mb-2"
-              onClick={onClose}
+              onClick={(e) => {
+                onClose(e);
+                CloseWebSocket();
+              }}
             >
               &times;
             </button>
@@ -254,6 +362,22 @@ const ChatModal = ({
                         {ChatData.last_chat.message}
                       </div>
                     </div>
+                    {!ChatData.unread ? (
+                      <></>
+                    ) : (
+                      <div className="h-[50px] flex items-center">
+                        <div className="w-[15px]">
+                          <Image
+                            src="/alret.PNG"
+                            alt="Profile image"
+                            width={100}
+                            height={1}
+                            objectFit="cover"
+                            className="rounded-full"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -266,16 +390,19 @@ const ChatModal = ({
               onChange={MessageChange}
               onKeyDown={(e) => EnterKey(e)}
               placeholder="메세지를 입력하세요..."
-              className="w-3/4 border border-gray-300 rounded px-3 py-2"
+              className="w-3/4 border border-gray-300 rounded px-3 py-2 mr-2"
             />
             <button
               onClick={SendMessage}
-              className="w-1/4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              className="w-[80px] mr-1 h-full text-white bg-blue-700 hover:bg-blue-800 font-medium rounded text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
             >
               전송
             </button>
-            <button onClick={() => OpenChatWindow("", 0, "", "", "")}>
-              임시
+            <button
+              onClick={() => OpenChatWindow("", 0, "", "", "")}
+              className="w-[80px] focus:outline-none text-white bg-red-700 hover:bg-red-800  font-medium rounded text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+            >
+             종료
             </button>
           </div>
         </div>
@@ -284,22 +411,34 @@ const ChatModal = ({
   );
 };
 
-const Chat = () => {
+const Chat = ({ First }: { First: boolean }) => {
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const ModalClick = () => {
     setIsModalOpen(!isModalOpen);
+    
   };
 
-  return (
+  return First ? (
     <div>
       <button
         onClick={ModalClick}
-        className="text-sm text-[#808080] mx-1 cursor-pointer"
+        className="text-sm text-[#808080] mx-1 cursor-pointer hover:text-[#F4A460]"
       >
         채팅
       </button>
-      {isModalOpen && <ChatModal onClose={ModalClick} />}
+      {isModalOpen && <ChatModal onClose={ModalClick} First={true} />}
+    </div>
+  ) : (
+    <div>
+      <button
+        onClick={ModalClick}
+        className="bg-blue-500 text-white rounded-md px-2 py-1 cursor-pointer ml-3"
+      >
+        메세지 보내기
+      </button>
+      {isModalOpen && <ChatModal onClose={ModalClick} First={false} />}
     </div>
   );
 };

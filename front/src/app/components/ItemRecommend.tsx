@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Modal from "./Modal";
 
@@ -18,8 +17,6 @@ interface RecommendItem {
 }
 
 const ItemRecommend = ({ Ritems}: { Ritems: RecommendItem[] }) => {
-
-
 
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [ImageLanding, SetImageLanding] = useState("")
