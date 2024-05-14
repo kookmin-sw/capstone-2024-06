@@ -5,10 +5,10 @@ import {
   ChangeEvent,
   DragEvent,
   useEffect,
+  useReducer,
 } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import SelectCategory from "./SelectCategory";
 
 interface ImagePreview {
   url: string;
@@ -60,7 +60,7 @@ const PostCreates = () => {
       // Posting Post
       const PostCreateData = {
         title: PostCreateTitle,
-        category: SelectedCategory,
+        category: state,
         content: PostCreateContent,
       };
       const PostCreate = await fetch(
@@ -110,11 +110,24 @@ const PostCreates = () => {
     setImagePreview(null);
   };
 
-  const [SelectedCategory, SetSelectedCategory] = useState("자유");
-
-  const SelectCategoryChange = (category: string) => {
-    SetSelectedCategory(category);
+  const reducer = (state: any, action: any) => {
+    switch (action.type) {
+      case "자유":
+        return { Category: "자유" };
+      case "인기":
+        return { Category: "인기" };
+      case "삽니다":
+        return { Category: "삽니다" };
+      case "팝니다":
+        return { Category: "팝니다" };
+      default:
+        return state;
+    }
   };
+
+  const CateGory = { Category: "" };
+
+  const [state, dispatch] = useReducer(reducer, CateGory);
 
   return (
     <main>
@@ -181,13 +194,33 @@ const PostCreates = () => {
           onChange={PostCreateContentChange}
         />
       </div>
-      <SelectCategory OnSelectCategory={SelectCategoryChange} />
-      <button
-        className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
-        onClick={PostCreateBt}
-      >
-        글 작성하기
-      </button>
+      <div className="">
+        <div className="flex justify-center mb-2 text-2xl text-gray-600 dark:text-white">
+          카테고리
+        </div>
+        <div className="flex space-x-2 justify-center">
+          <select
+            value={state.Category} // 선택된 값이 state에 의해 제어됨
+            onChange={(e) => dispatch({ type: e.target.value })} // 선택된 값에 따라 state 업데이트
+            className="w-[100px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          >
+            <option value="자유">자유</option>
+            <option value="팝니다">팝니다</option>
+            <option value="삽니다">삽니다</option>
+            <option value="인기">인기</option>
+            <option value="실시간">실시간</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="flex w-full justify-center">
+        <button
+          className="my-10 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
+          onClick={PostCreateBt}
+        >
+          글 작성하기
+        </button>
+      </div>
     </main>
   );
 };

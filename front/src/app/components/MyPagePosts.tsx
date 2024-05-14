@@ -2,7 +2,7 @@
 
 const MyPagePosts = () => {
     return (
-        <main className="w-full border"></main>
+        <></>
     )
 }
 

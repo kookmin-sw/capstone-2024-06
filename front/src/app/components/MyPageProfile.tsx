@@ -47,9 +47,9 @@ const MyPageProfile = () => {
     "/Scrap.png",
   ]);
 
-  const MyPageProfileName = ["내 글", "분석", "스크랩"]
+  const MyPageProfileName = ["내 글", "팔로우", "스크랩", "메세지"]
 
-  const handleClick = async (index) => {
+  const handleClick = async (index : any) => {
     switch (index) {
       case 0:
         router.push("/Mypage/MyPost");
@@ -79,15 +79,13 @@ const MyPageProfile = () => {
 
 
   return (
-    <main className="w-[600px] mt-10 border h-[400px]">
-      <div className="absolute w-[500px] h-[0px] left-[644px] top-[151px] border border-gray-300 transform rotate-0.05"></div>
+    <main className="w-[600px] mt-10 border h-[400px] rounded-md">
       <div className="flex-col">
         <div className="flex w-full h-[150px]">
           <div className="flex h-full w-1/2 justify-center items-center">
-            <div className="w-[100px] h-[100px]">
+            <div className="w-[100px] h-[100px] flex justify-center items-center">
               <Image
                 src={session?.user?.image ?? ""}
-                //src="/Profilex2.webp"
                 alt="Profile image"
                 width={1000}
                 height={1000}
@@ -96,7 +94,7 @@ const MyPageProfile = () => {
               />
             </div>
           </div>
-          <div className="flex w-1/2 h-full items-center">
+          <div className="flex w-1/2 h-full items-center flex justify-center items-center">
             <div className="text-2xl">{session?.user?.name}</div>
           </div>
         </div>
@@ -115,12 +113,12 @@ const MyPageProfile = () => {
         <div className="flex w-full h-[100px] justify-center items-center space-x-5">
           {MyPageProfileIcons.map((icon, index) => (
             <div key={index}>
-              <div>
+              <div className="w-[40px] h-[40px] mb-2">
                 <Image
                   src={icon}
                   alt="Profile image"
-                  width={40}
-                  height={40}
+                  width={100}
+                  height={1000}
                   objectFit="cover"
                   className="cursor-pointer mr-1"
                   onClick={() => handleClick(index)}

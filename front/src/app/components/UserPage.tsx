@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from "next-auth/react";
 import MyProfile from "./MyProfile";
+import Chat from "./Chat";
 
 const User = ({ }) => {
   const { data: session } = useSession();
@@ -28,7 +29,6 @@ const User = ({ }) => {
         });
         if (response.ok) {
           const userData = await response.json();
-          console.log(userData);
           setUserProfile(userData);
         } else {
           console.error('Failed to fetch user data');
@@ -52,6 +52,7 @@ const User = ({ }) => {
         });
         if (response.ok) {
           const data = await response.json();
+          console.log(data)
           setUserPosts(data);
         } else {
           console.error('Failed to fetch user posts');
@@ -119,11 +120,11 @@ const User = ({ }) => {
   };
 
   const FollowerClick = () => {
-    router.push("/Users/follwer")
+    router.push("/Users/Follwer")
   }
 
   const FollowingClick = () => {
-    router.push("/Users/following")
+    router.push("/Users/Following")
   }
 
 
@@ -132,7 +133,7 @@ const User = ({ }) => {
       <div className="flex flex-col items-center w-full">
         <div className="flex flex-col items-center w-full">
           <div className="flex flex-col items-center w-11/12">
-            <div className="flex justify-between w-full mt-6 border border-brown-500">
+            <div className="flex justify-between w-full mt-6 ">
               <div className="flex items-center">
                 {userProfile && (
                   <Image
@@ -148,18 +149,19 @@ const User = ({ }) => {
                     {/* 팔로우 버튼 또는 언팔로우 버튼 표시 */}
                     {userProfile && (
                       <button
-                        className={`ml-4 bg-[#FFD600] text-black rounded-md px-2 py-1 ${userProfile.followed ? 'bg-red-500' : ''}`}
+                        className={`ml-4 bg-blue-500 text-white rounded-md px-2 py-1 ${userProfile.followed ? 'bg-red-500' : ''}`}
                         onClick={handleFollowToggle}
                       >
                         {userProfile.followed ? '언팔로우' : '팔로우'}
                       </button>
                     )}
+                    <Chat First={false}/>
                   </div>
                   <div className="flex items-center mt-2">
-                    <h1 className="text-sm hover:text-[#F4A460]">팔로워 {userProfile?.follower_count}</h1>
+                    <h1 className="text-sm hover:text-[#F4A460]" >팔로워 {userProfile?.follower_count}</h1>
                   </div>
                   <div className="flex items-center mt-2">
-                    <h1 className="text-sm hover:text-[#F4A460]">팔로잉 {userProfile?.followee_count}</h1>
+                    <h1 className="text-sm hover:text-[#F4A460]" >팔로잉 {userProfile?.followee_count}</h1>
                   </div>
                 </div>
               </div>
