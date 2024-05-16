@@ -110,7 +110,7 @@ class Posts(Base):
         cascade="all, delete",
         uselist=True,
     )
-    images = relationship("Images", cascade="all, delete-orphan")
+    images = relationship("PostImages", cascade="all, delete-orphan")
     scrapped: Mapped[Optional[bool]] = query_expression()
     liked: Mapped[Optional[bool]] = query_expression()
 
@@ -121,10 +121,18 @@ class Posts(Base):
     @hybrid_method
     def increment_scrap_count(self):
         self.scrap_count += 1
+    
+    @hybrid_method
+    def decrement_scrap_count(self):
+        self.scrap_count -= 1
 
     @hybrid_method
     def increment_like_count(self):
         self.like_count += 1
+    
+    @hybrid_method
+    def decrement_like_count(self):
+        self.like_count -= 1
 
     @hybrid_method
     def increment_comment_count(self):
@@ -221,11 +229,11 @@ class TempPosts(Base):
 
     author_id = Column(String, ForeignKey("users.user_id"), unique=True)
 
-    images = relationship("Images", cascade="all, delete-orphan")
+    images = relationship("PostImages", cascade="all, delete-orphan")
     author = relationship("Users")
 
 
-class Images(Base):
+class PostImages(Base):
     __tablename__ = "images"
 
     image_id = Column(String, primary_key=True)
@@ -269,12 +277,21 @@ class ChatHistories(Base):
     )
     sender_id = Column(String, ForeignKey("users.user_id"), nullable=False)
     receiver_id = Column(String, ForeignKey("users.user_id"), nullable=False)
+    image_id = Column(String, ForeignKey("chat_images.image_id"), nullable=True)
 
-    message = Column(String, nullable=False)
+    message = Column(String, nullable=True)
     created_at = Column(DateTime, nullable=False)
 
     sender = relationship("Users", foreign_keys=[sender_id], back_populates="sended_chat")
     receiver = relationship("Users", foreign_keys=[receiver_id], back_populates="received_chat")
+    image = relationship("ChatImages", foreign_keys=[image_id])
+
+
+class ChatImages(Base):
+    __tablename__ = "chat_images"
+
+    image_id = Column(String, primary_key=True)
+    filename = Column(String, nullable=False)
 
 
 class ChatAccessHistories(Base):

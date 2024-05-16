@@ -5,7 +5,7 @@ from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from routers import recommend, user, chat, community
+from routers import recommend, user, chat, community, images
 
 from database.database import Base, engine
 
@@ -25,31 +25,32 @@ app.include_router(recommend.router)
 app.include_router(user.router)
 app.include_router(chat.router)
 app.include_router(community.router)
+app.include_router(images.router)
 
 os.makedirs(config["PATH"]["upload"], exist_ok=True)
 os.makedirs(config["PATH"]["result"], exist_ok=True)
 os.makedirs(config["PATH"]["train"], exist_ok=True)
 
-app.mount(
-    "/images/upload",
-    StaticFiles(directory=config["PATH"]["upload"]),
-    name="uploaded_images",
-)
-app.mount(
-    "/images/result",
-    StaticFiles(directory=config["PATH"]["result"]),
-    name="result_images",
-)
-app.mount(
-    "/images/train",
-    StaticFiles(directory=config["PATH"]["train"]),
-    name="train_images",
-)
-app.mount(
-    "/images/default",
-    StaticFiles(directory=config["PATH"]["default"]),
-    name="default_images",
-)
+# app.mount(
+#     "/images/upload",
+#     StaticFiles(directory=config["PATH"]["upload"]),
+#     name="uploaded_images",
+# )
+# app.mount(
+#     "/images/result",
+#     StaticFiles(directory=config["PATH"]["result"]),
+#     name="result_images",
+# )
+# app.mount(
+#     "/images/train",
+#     StaticFiles(directory=config["PATH"]["train"]),
+#     name="train_images",
+# )
+# app.mount(
+#     "/images/default",
+#     StaticFiles(directory=config["PATH"]["default"]),
+#     name="default_images",
+# )
 
 
 # 메인

@@ -243,6 +243,7 @@ async def read_comments(db: Session, post_id: int):
             selectinload(Comments.author),
         )
         .filter(Comments.post_id == post_id, Comments.parent_comment_id.is_(None))
+        .order_by(desc(Comments.created_at))
         .all()
     )
 
@@ -381,11 +382,17 @@ async def read_comment_like(db: Session, user_id: str, comment_id: int):
 
 
 async def create_image(db: Session, image: Image, temp_post_id: int):
-    image = Images(**image.model_dump(), temp_post_id=temp_post_id)
+    image = PostImages(**image.model_dump(), temp_post_id=temp_post_id)
     db.add(image)
     db.commit()
     return image
 
+
+async def create_chat_image(db: Session, image: Image):
+    image = ChatImages(**image.model_dump())
+    db.add(image)
+    db.commit()
+    return image
 
 async def delete_post(db: Session, post: Posts):
     db.delete(post)
@@ -458,6 +465,24 @@ async def delete_notifications(db: Session, user_id: str):
     db.commit()
 
 
+async def delete_post_like(db: Session, user_id: str, post_id: int):
+    user = db.query(Users).filter(Users.user_id == user_id).first()
+    post = db.query(Posts).filter(Posts.post_id == post_id).first()
+    user.liked_posts.remove(post)
+    post.decrement_like_count()
+
+    db.commit()
+
+
+async def delete_post_scrap(db: Session, user_id: str, post_id: int):
+    user = db.query(Users).filter(Users.user_id == user_id).first()
+    post = db.query(Posts).filter(Posts.post_id == post_id).first()
+    user.scrapped_posts.remove(post)
+    post.decrement_scrap_count()
+
+    db.commit()
+
+
 async def create_chat_history(db: Session, chat_history: ChatHistory):
     chat_history = ChatHistories(**chat_history.model_dump())
     db.add(chat_history)
@@ -480,7 +505,7 @@ async def update_chat_access_history(db: Session, user_id: str, opponent_id: str
 async def read_chat_histories(
     db: Session, sender_id: str, receiver_id: str, last_chat_history_id: int | None = None
 ):
-    query = db.query(ChatHistories).filter(
+    query = db.query(ChatHistories).options(joinedload(ChatHistories.image)).filter(
         or_(
             (ChatHistories.sender_id == sender_id)
             & (ChatHistories.receiver_id == receiver_id),
@@ -550,6 +575,7 @@ async def read_random_design_images(db: Session, n: int):
 
 async def read_design_images(db: Session, i: int):
     return db.query(DesignImages).filter(DesignImages.index == i).first()
+
 
 async def read_item_images(db: Session, color: list):
     return db.query(ItemImages).order_by(ItemImages.color.l2_distance(color)).limit(5).all()

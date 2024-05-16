@@ -112,10 +112,15 @@ async def scrap_post(
     post = await crud.read_post(db, post_id)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
-
-    await crud.create_post_scrap(db, user_id, post_id)
-    return {"message": "User scrroutered post successfully"}
-
+    
+    scrap = await crud.read_post_scrap(db, user_id, post_id)
+    if scrap is None:
+        await crud.create_post_scrap(db, user_id, post_id)
+        return {"message": "User scrapped post successfully"}
+    else:
+        await crud.delete_post_scrap(db, user_id, post_id)
+        return {"message": "User unscrapped post successfully"}
+    
 
 @router.post("/post/like/{post_id}")
 async def scrap_post(
@@ -127,11 +132,17 @@ async def scrap_post(
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
 
-    await crud.create_post_like(db, user_id, post_id)
-    return {"message": "User liked post successfully"}
+    like = await crud.read_post_like(db, user_id, post_id)
+    if like is None:
+        await crud.create_post_like(db, user_id, post_id)
+        return {"message": "User liked post successfully"}
+    else:
+        await crud.delete_post_like(db, user_id, post_id)
+        return {"message": "User unliked post successfully"}
+    
 
 
-@router.post("/comment/scrap/{comment_id}")
+@router.post("/comment/like/{comment_id}")
 async def scrap_comment(
     comment_id: int,
     user_id: str = Depends(get_current_user),
@@ -141,8 +152,12 @@ async def scrap_comment(
     if not comment:
         raise HTTPException(status_code=404, detail="Comment not found")
 
-    await crud.create_comment_scrap(db, user_id, comment_id)
-    return {"message": "User scrroutered comment successfully"}
+    comment_like = await crud.read_comment_like(db, user_id, comment_id)
+    if comment_like is None:
+        await crud.create_comment_like(db, user_id, comment_id)
+        return {"message": "User liked comment successfully"}
+    else:
+        return {"message": "User alread liked comment"}
 
 
 @router.post("/comment")

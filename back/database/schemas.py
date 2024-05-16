@@ -116,14 +116,22 @@ class Notification(BaseModel):
 class BaseChatHistory(BaseModel):
     sender_id: str
     receiver_id: str
-    message: str
+    message: str | None = None
+    image_id: str | None = None
     created_at: datetime = Field(default_factory=datetime.now)
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class ChatHistory(BaseChatHistory):
+class ChatHistory(BaseModel):
+    sender_id: str
+    receiver_id: str
+    message: str | None = None
+    image: Image | None = None
     chat_history_id: int | None = None
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ChatRoom(BaseModel):
