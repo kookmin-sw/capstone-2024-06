@@ -4,11 +4,13 @@ const nextConfig = {
   reactStrictMode: false,
   env: {
 
-    Localhost: "http://175.194.198.155:8080",
-    OnlyiP : "175.194.198.155:8080",
+    Localhost: "http://10.223.120.122:8080",
+    OnlyiP: "10.223.120.122:8080",
   },
   images: {
+
     domains: ['t1.kakaocdn.net', '175.194.198.155', 'k.kakaocdn.net' , '10.223.115.184'], 
+
 
     remotePatterns: [
       {

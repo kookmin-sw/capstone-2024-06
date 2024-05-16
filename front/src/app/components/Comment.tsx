@@ -245,6 +245,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
               height={1}
               objectFit="cover"
               className="cursor-pointer mr-1  border-black rounded-full"
+              onClick={() => handleAuthorImageClick(comment.author.user_id)}
             />
           </div>
           <div className="flex-col  w-full">
@@ -298,7 +299,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
                       height={1}
                       objectFit="cover"
                       className="cursor-pointer mr-1  border-black rounded-full"
-                      onClick={() => handleAuthorImageClick(replys.author.user_id)}
+                      onClick={() => handleAuthorImageClick(comment.author.user_id)}
                     />
                   </div>
                   <div className="flex-col  w-full">

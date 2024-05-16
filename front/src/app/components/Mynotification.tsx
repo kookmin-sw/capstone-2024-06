@@ -63,6 +63,7 @@ const MyNotification = () => {
         await router.push(
           `/Community/${SwitchCategory(Category)}/${reference_id}`
         );
+
       } else {
         console.error("Failed to update notification status");
       }
