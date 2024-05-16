@@ -58,6 +58,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
         }
       );
       const data = await response.json();
+      console.log(data)
       SetComments(data);
     } catch (error) {
       console.error("Error", error);
@@ -146,7 +147,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
         parent_comment_id: Comments[index].comment_id,
         content: Reply,
       };
-      const response = await fetch(`${process.env.Localhost}/comment`, {
+      const response = await fetch(`${process.env.Localhost}/community/comment`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${(session as any)?.access_token}`,
@@ -200,6 +201,25 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
     // Users 페이지로 이동
   };
 
+  const CommentLikeBtClick = async (comment_id : number) => {
+    try {
+      const response = await fetch(
+        `${process.env.Localhost}/community/comment/like/${comment_id}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${(session as any)?.access_token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error("Error", error);
+    }
+  };
+
   return (
     <main className="flex-col w-full mt-4">
       <div className="flex items-center mb-3">
@@ -219,7 +239,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
         <div key={comment.comment_id} className="my-2 flex h-auto mb-8">
           <div className="pt-2 w-[50px]">
             <Image
-              src="/Profilex2.webp"
+              src={comment.author.image}
               alt="Profile image"
               width={40}
               height={1}
@@ -237,7 +257,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
               <div className="mr-1">
                 {getTimeDifference(comment.created_at)}
               </div>
-              <button className="mr-1 cursor-pointer hover:border-b hover:border-[#666a73]">
+              <button onClick={()=>CommentLikeBtClick(comment.comment_id)} className="mr-1 cursor-pointer hover:border-b hover:border-[#666a73]">
                 좋아요
               </button>
               <div className="mr-1">{comment.like_count}</div>
@@ -273,7 +293,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
                 <div key={replys.comment_id} className="my-2 flex h-auto mb-1">
                   <div className="pt-2 w-[50px]">
                     <Image
-                      src="/Profilex2.webp"
+                      src={replys.author.image}
                       alt="Profile image"
                       width={40}
                       height={1}
@@ -291,7 +311,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
                       <div className="mr-1">
                         {getTimeDifference(replys.created_at)}
                       </div>
-                      <button className="mr-1 cursor-pointer hover:border-b hover:border-[#666a73]">
+                      <button onClick={()=>CommentLikeBtClick(replys.comment_id)} className="mr-1 cursor-pointer hover:border-b hover:border-[#666a73]">
                         좋아요
                       </button>
                       <div className="mr-1">{replys.like_count}</div>

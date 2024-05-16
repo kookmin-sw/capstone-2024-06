@@ -28,7 +28,7 @@ const MyProfile: React.FC<MyProfileProps> = ({ UserName, UserProfile }) => {
           className="cursor-pointer rounded-full"
         />
       </div>
-      <div className="flex items-center font-semibold text-[10.5px]">{ProfileDummyData.User}</div>
+      <div className="flex items-center font-semibold text-[10.5px]">{ProfileDummyData.User.length > 10 ? `${ProfileDummyData.User.slice(0, 5)}...` : ProfileDummyData.User}</div>
     </main>
   );
 };
