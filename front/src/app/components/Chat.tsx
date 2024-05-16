@@ -1,5 +1,11 @@
 "use client";
-import { useState, MouseEventHandler, useEffect, useRef } from "react";
+import {
+  useState,
+  MouseEventHandler,
+  useEffect,
+  useRef,
+  ChangeEvent,
+} from "react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
@@ -26,6 +32,7 @@ const ChatModal = ({
         created_at: "",
         message: "",
         receiver_id: "",
+        image: { filename: "", image_id: "" },
         sender_id: "",
       },
       opponent: {
@@ -47,6 +54,7 @@ const ChatModal = ({
     name: "‍",
     user_id: "",
   });
+
   const params = useSearchParams();
   const user_id = params.get("user_id");
 
@@ -54,6 +62,7 @@ const ChatModal = ({
     {
       chat_history_id: 0,
       created_at: "",
+      image: { filename: "", image_id: "" },
       message: "",
       receiver_id: "",
       sender_id: "",
@@ -66,6 +75,13 @@ const ChatModal = ({
     }
   };
 
+  const ESCKey = async (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.keyCode === 27) {
+      OpenChatWindow("", 0, "", "", "");
+      console.log("ESC");
+    }
+  };
+
   const [Message, SetMessage] = useState("");
   const MessageChange = (e: any) => {
     SetMessage(e.target.value);
@@ -73,26 +89,33 @@ const ChatModal = ({
 
   const [Client, SetClient] = useState<WebSocket | null>(null);
   const OpenWebSoket = (UserId: string) => {
-    console.log(UserId + "ss");
     const newClient = new WebSocket(
       `ws://${process.env.OnlyiP}/chat/${UserId}`
     );
     newClient.onopen = () => {
-      newClient.send((session as any)?.access_token);
+      newClient.send(
+        JSON.stringify({
+          type: "token",
+          content: (session as any)?.access_token,
+        })
+      );
     };
     newClient.onmessage = (message) => {
       const parsed = JSON.parse(message.data);
-      AddMessage(parsed.message, parsed.sender_id);
+      const pparse = JSON.parse(parsed);
+      const images_ids = pparse.image ?  pparse.image.image_id : null   
+      AddMessage(pparse.message, pparse.sender_id, images_ids);
     };
     SetClient(newClient);
   };
 
-  const AddMessage = (message: string, id: string) => {
+  const AddMessage = (message: string, id: string, image_id: string) => {
     const newMessage = {
       chat_history_id: 0,
       created_at: "",
       message: message,
       receiver_id: "",
+      image: { filename: "", image_id: image_id },
       sender_id: id,
     };
     SetChatingData((PrevChatData) => [...PrevChatData, newMessage]);
@@ -100,8 +123,7 @@ const ChatModal = ({
 
   const SendMessage = () => {
     if (Message.trim() !== "" && Client) {
-      Client.send(Message);
-      AddMessage(Message, "");
+      Client.send(JSON.stringify({ type: "text", content: Message }));
       SetMessage("");
     }
   };
@@ -142,7 +164,6 @@ const ChatModal = ({
             }
           );
           const data = await response.json();
-          console.log(data);
           SetChatingData(data);
         } catch (error) {
           console.error("Error", error);
@@ -234,7 +255,6 @@ const ChatModal = ({
   }, [OpenChatings]);
 
   useEffect(() => {
-    console.log(First);
     if (First === false) {
       First = true;
       SetOpenChat(!OpenChat);
@@ -252,9 +272,15 @@ const ChatModal = ({
           );
           if (response.ok) {
             const userData = await response.json();
-            console.log(userData)
+
             SetUserData(userData);
-            OpenFirstWindow(userData.user_id, -1, userData.image, userData.name, userData.user_id);
+            OpenFirstWindow(
+              userData.user_id,
+              -1,
+              userData.image,
+              userData.name,
+              userData.user_id
+            );
           } else {
             console.error("Failed to fetch user data");
           }
@@ -263,12 +289,48 @@ const ChatModal = ({
         }
       };
       fetchUserData();
-      
     }
   }, []);
 
+  const [ChatImage, SetChatImage] = useState<File | null>(null);
+  var url : any;
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      SetChatImage(file);
+      url = URL.createObjectURL(file);
+      console.log(url)
+    }
+  };
+
+  const ChatImageSend = (file: any) => {
+    console.log(url)
+    if (Client && Client.readyState === WebSocket.OPEN) {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const base64Content = reader.result?.split(",")[1];
+        Client.send(
+          JSON.stringify({
+            type: "image",
+            filename: file.name,
+            content: base64Content,
+          })
+        );
+      };
+    }
+    // AddMessage("", session?.user.user_id , url)
+    SetChatImage(null);
+    
+  };
+
   return (
-    <div className="fixed inset-0 z-50 overflow-auto bg-opacity-75 flex">
+    <div
+      className="fixed inset-0 z-50 overflow-auto bg-opacity-75 flex "
+      tabIndex={0}
+      onKeyDown={(e) => ESCKey(e)}
+    >
       <div className="absolute right-0 bottom-0 p-4 w-[400px]">
         <div className="relative bg-white shadow-lg rounded-lg text-gray-900 ">
           <div className="flex justify-between items-center p-2 border-b bg-gradient-to-r from-cyan-500 to-blue-500 rounded-t-lg">
@@ -307,9 +369,26 @@ const ChatModal = ({
                             <div className="text-sm text-gray-900 dark:text-white mb-1">
                               {AnotherName}
                             </div>
-                            <div className="flex flex-col w-fit h-fit border bg-white rounded-lg p-2 ">
-                              {ChatData.message}
-                            </div>
+                            {ChatData.message ? (
+                              <div className="flex flex-col w-fit h-fit border bg-white rounded-lg p-2 ">
+                                {ChatData.message}
+                              </div>
+                            ) : ChatData.image.image_id ? (
+                              <div className="flex w-[100px] ">
+                                <Image
+                                  src={`${process.env.Localhost}${ChatData.image.image_id}?w=300&h=300`}
+                                  alt={ChatData.image.filename}
+                                  width={100}
+                                  height={100}
+                                  objectFit="cover"
+                                  className="rounded-md"
+                                />
+                              </div>
+                            ) : (
+                              <div className="flex flex-col w-fit h-fit border bg-white rounded-lg p-2 ">
+                                {ChatData.message}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -318,9 +397,22 @@ const ChatModal = ({
                   {(ChatData.sender_id === (session as any)?.user.user_id ||
                     ChatData.sender_id === "") && (
                     <div className="flex justify-end items-end w-full">
-                      <div className="w-fit h-fit bg-[#F7D358] rounded-lg p-2 mb-3">
-                        {ChatData.message}
-                      </div>
+                      {ChatData.message ? (
+                        <div className="w-fit h-fit bg-[#F7D358] rounded-lg p-2 mb-3">
+                          {ChatData.message}
+                        </div>
+                      ) : (
+                        <div className="flex w-[140px] border">
+                          <Image
+                            src={`${process.env.Localhost}${ChatData.image.image_id}?w=300&h=300`}
+                            alt={ChatData.image.filename}
+                            width={300}
+                            height={300}
+                            objectFit="cover"
+                            className="rounded-md"
+                          />
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -358,9 +450,15 @@ const ChatModal = ({
                       <div className="text-base text-black dark:text-white mb-1">
                         {ChatData.opponent.name}
                       </div>
-                      <div className="text-sm text-gray-400 dark:text-white ">
-                        {ChatData.last_chat.message}
-                      </div>
+                      {ChatData.last_chat.message ? (
+                        <div className="text-sm text-gray-400 dark:text-white ">
+                          {ChatData.last_chat.message}
+                        </div>
+                      ) : (
+                        <div className="text-sm text-gray-400 dark:text-white ">
+                          사진을 보냈습니다.
+                        </div>
+                      )}
                     </div>
                     {!ChatData.unread ? (
                       <></>
@@ -392,18 +490,30 @@ const ChatModal = ({
               placeholder="메세지를 입력하세요..."
               className="w-3/4 border border-gray-300 rounded px-3 py-2 mr-2"
             />
-            <button
-              onClick={SendMessage}
-              className="w-[80px] mr-1 h-full text-white bg-blue-700 hover:bg-blue-800 font-medium rounded text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-            >
-              전송
-            </button>
-            <button
-              onClick={() => OpenChatWindow("", 0, "", "", "")}
-              className="w-[80px] focus:outline-none text-white bg-red-700 hover:bg-red-800  font-medium rounded text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
-            >
-             종료
-            </button>
+
+            {!ChatImage ? (
+              <div className="flex">
+                <input
+                  type="file"
+                  id="file-upload"
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+                <label
+                  htmlFor="file-upload"
+                  className="cursor-pointer w-[110px]  h-full text-white bg-blue-700 hover:bg-blue-800 font-medium rounded text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                >
+                  파일 선택
+                </label>
+              </div>
+            ) : (
+              <div
+                className="w-[110px] h-full text-white bg-blue-700 hover:bg-blue-800 font-medium rounded text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                onClick={() => ChatImageSend(ChatImage)}
+              >
+                사진 전송
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -412,12 +522,10 @@ const ChatModal = ({
 };
 
 const Chat = ({ First }: { First: boolean }) => {
-  
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const ModalClick = () => {
     setIsModalOpen(!isModalOpen);
-    
   };
 
   return First ? (
