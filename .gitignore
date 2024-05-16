@@ -1,5 +1,4 @@
-
-venv/
+*venv/
 **/__pycache__/
 **/.DS_Store
 yolo*
@@ -9,7 +8,9 @@ back/config.ini
 back/images/
 back/models/
 back/vectors/
-
+back/Stanford_Online_Products/
+back/LaundryGothic_TTF/
+back/nltk_data/
 
 front/.next
 front/.env

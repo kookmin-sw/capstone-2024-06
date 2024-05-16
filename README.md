@@ -1,179 +1,169 @@
-![header](https://capsule-render.vercel.app/api?type=Rounded&color=73&height=300&section=header&text=어떤데스크%20(what_desk)&fontColor=a16d07)
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&pause=1000&color=A16D07&random=false&width=435&lines=%EC%9D%B4+%EC%B1%85%EC%83%81+%EC%96%B4%EB%96%A4%EB%8D%B0%3F+++%EC%96%B4%EB%96%A4%EB%8D%B0%EC%8A%A4%ED%81%AC(what_desk))](https://git.io/typing-svg)
 
+<div align="center">
+  <img width="400" alt="로고 그림자" src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/42de40d2-e789-435c-89be-c47b501eb097">
+</div>
 
 > 2024 KMU SW 캡스톤 디자인 06조
-> https://kookmin-sw.github.io/capstone-2024-06/
+> <a href="https://kookmin-sw.github.io/capstone-2024-06/">어떤데스크(what_desk)</a>
+
 
 ---
 
-## 📔 목차
+## 목차
 
-#### 후에 각각에 아이콘 추가하기
 - [ 프로젝트 소개](#-프로젝트-소개)
-- [ 기술스택](#%EF%B8%8F-기술스택)
-- [ 팀 소개](#-팀-소개)
 - [ 주요 기능](#-주요-기능)
+- [ 기술스택](#-기술-스택)
+- [ 팀 소개](#-팀-소개)
+- [ 프로젝트 구조도](#-프로젝트-구조도)
+- [ 문서](#-문서)
 - [ 사용법](#-사용법)
-- [ 시연 영상](#-시연-영상)
 
 ---
 
-### 프로젝트 소개
-"어떤데스크 (what_desk)"는 현대 사회에서 가장 많이 사용되는 책상을 중심으로 한 일의 효율성과 생산성을 증진시키기 위한 인테리어 디자인에 관한 것입니다. 이 프로젝트는 사용자에게 적합한 책상 디자인을 추천하는 것뿐만 아니라, 사용자의 책상을 분석하여 다양한 정보를 제공하고 있습니다.
 
-어떤데스크는 사용자의 책상을 분석하여 그에 맞는 적절한 디자인을 추천하는데 그치지 않고, 사용자들에게 다양한 정보를 제공하는데 주력하고 있습니다. 이 프로젝트는 ### 여기에 사용자에게 알려줄 정보 추가 ###
+### 1. 프로젝트 소개
+"어떤데스크 (what_desk)"는 현대 사회에서 가장 많이 사용되는 책상을 중심으로 한 일의 효율성과 생산성을 증진시키기 위한 인테리어 디자인에 관한 것입니다. 이 프로젝트는 사용자에게 어울리는 책상 디자인을 추천하는 것뿐만 아니라, 데스크테리어와 관련된 여러가지 도움을 주려고 합니다. 기존에 디자인 정보를 제공해주는 사이트는 많지만 사용자들은 너무나 많은 데이터에 어떤 정보를 고르고 선택해야 할지 난감해 합니다. 그래서 데스크테리어에 집중한 저희만의 추천 시스템을 만들어 여러 사이트에 있는 매우 많은 사진 중 어울리는 사진을 추천해 줄 것입니다.
+
+
+어떤데스크는 사용자의 책상을 분석하여 그에 맞는 적절한 디자인을 추천하는데 그치지 않고, 사용자들에게 다양한 정보를 제공하려고 합니다. 데스크테리어에 관련하여 어떤 키워드가 많이 검색되는지 혹은 어떤 아이템들이 인기가 많은지 알려주고 사용자의 책상 정보를 분석하여 시각적으로 제공해 사용자에게 데스크테리어의 가이드라인이 되어 줄 것입니다.
 
 어떤데스크는 커뮤니티 기능을 통해 사용자들끼리 정보를 공유하고 소통할 수 있는 플랫폼을 제공하고 있습니다. 사용자들은 자신의 작업 공간을 공유하고 다른 사용자들의 경험을 듣고 의견을 나눌 수 있습니다. 이를 통해 사용자들은 더 나은 작업 환경을 조성하는 데 도움을 받을 수 있습니다. 뿐만 아니라 사용자들간의 활발한 물건 거래도 지향하고 있습니다.
  
-어떤데스크는 현대 사회에서의 작업 문화를 개선하고 생산성을 향상시키는 데 기여하고자 합니다. 사용자들이 보다 효율적으로 일할 수 있도록 돕는 것을 목표로 하고 있으며, 이를 위해 계속해서 기능을 개선하고 새로운 아이디어를 제공하고 있습니다.
+어떤데스크는 데스크테리어를 쉽게 만들어 사용자들이 작업 문화를 개선하고 생산성을 향상시키고 사용자들이 자신의 개성을 표현하는데 도움을 주려고 합니다.
 
 ---
+
 ### Abstract
-"What Desk" focuses on interior design aimed at enhancing efficiency and productivity in modern workspaces, with a particular emphasis on the most commonly used desk setups. The project not only recommends suitable desk designs to users but also provides various insights by analyzing users' desks.
 
-What Desk goes beyond merely recommending appropriate designs based on desk analysis; it prioritizes offering diverse information to users. This project provides ### Add additional information to inform users here ###.
+"What_desk" focuses on interior design aimed at enhancing efficiency and productivity centered around the most commonly used desks in modern society. This project not only recommends desk designs that suit users but also aims to provide various aids related to desk decor. While there are many existing sites offering design information, users often find themselves overwhelmed by the abundance of data and struggle to choose relevant information. Therefore, we aim to create our own recommendation system focused on desk decor, sorting through the plethora of photos available on various sites to recommend suitable options.
 
-What Desk offers a community feature where users can share information and communicate with each other. Users can share their workspace setups, listen to others' experiences, and exchange opinions. This fosters a collaborative environment for users to create better workspaces. Additionally, What Desk encourages active trading among users.
+"What_desk" goes beyond merely recommending appropriate designs based on users' desks; it also seeks to provide diverse information to users. It informs users about popular keywords related to desk decor or trending items, and visually analyzes users' desk information to offer guidelines for desk decor.
 
-What Desk aims to improve modern work culture and enhance productivity. The project strives to assist users in working more efficiently by continually improving features and offering new ideas.
+Furthermore, "What_desk" provides a platform for community interaction, enabling users to share information and communicate with each other. Users can share their workspaces, listen to others' experiences, and exchange opinions, thereby facilitating the creation of better work environments. Additionally, the platform encourages active trading among users.
+
+"What_desk" aims to make desk decor easily accessible, helping users improve their work culture, enhance productivity, and express their individuality.
+
+---
+
+### 2. 주요 기능
+
+  1. **책상 분석 및 디자인 추천**
+      - 내 책상은 어떤 책상인지 분석하고 사용자에게 어울리는 책상 디자인을 추천 해드립니다
+  2. **커뮤니티**
+      - 게시글을 작성해 개성을 표현하거나 다른 사용자로부터 아이디어를 얻을 수 있습니다.
+  3. **통계 제공**
+      - 데스크테리어와 관련된 여러가지 재미있고 도움이 될만한 통계를 제공합니다.
+  4. **실시간 채팅**
+      - 채팅을 통해 중고 물품을 거래하거나 의견을 교환할 수 있습니다.
+
+----
+
+### 3. 기술 스택
+
+<div align="center"> 
+    <img src="https://img.shields.io/badge/Next.JS-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js">
+    <img src="https://img.shields.io/badge/Tailwindcss-06B6D4?style=for-the-badge&logo=Tailwindcss&logoColor=white" alt="Tailwind CSS">
+    <img src="https://img.shields.io/badge/typescript-3178c6?style=for-the-badge&logo=TypeScript&logoColor=white" alt="TypeScript"><br>
+    <img src="https://img.shields.io/badge/fastapi-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI">
+    <img src="https://img.shields.io/badge/postgresql-4169e1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
+    <img src="https://img.shields.io/badge/plotly-3f4f75?style=for-the-badge&logo=plotly&logoColor=white" alt="Plotly">
+    <img src="https://img.shields.io/badge/dbeaver-382923?style=for-the-badge&logo=dbeaver&logoColor=white" alt="DBeaver">
+    <img src="https://img.shields.io/badge/sqlalchemy-d71f00?style=for-the-badge&logo=sqlalchemy&logoColor=white" alt="sqla"><br>
+    <img src="https://img.shields.io/badge/opencv-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white" alt="opencv">
+    <img src="https://img.shields.io/badge/pytorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" alt="PyTorch"><br>
+    <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white" alt="Git">
+    <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=GitHub&logoColor=white" alt="GitHub">
+    <img src="https://img.shields.io/badge/Figma-f24e1e?style=for-the-badge&logo=Figma&logoColor=white" alt="Figma">
+    <img src="https://img.shields.io/badge/Discord-5865f2?style=for-the-badge&logo=Discord&logoColor=white" alt="discord">
+    <img src="https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white" alt="slcak">
+    <img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=Notion&logoColor=white" alt="notion"><br>
+    <img src="https://img.shields.io/badge/AWS_RDS-527FFF?style=for-the-badge&logo=amazonRDS&logoColor=white" alt="ec2">
+    <img src="https://img.shields.io/badge/AWS_S3-569A31?style=for-the-badge&logo=amazons3&logoColor=white" alt="s3">
+    <img src="https://img.shields.io/badge/AWS_EC2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white" alt="rds">
+    <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=Docker&logoColor=white" alt="docker">
+</div>
 
 
-- 구체적 기능
-  1. **책상 사진 추천 및 디자인 기능:**
-- 사용자가 선택한 사진을 기반으로 한 인테리어 된 사진 추천
- #### 1) 책상 사진 추천 및 디자인 기능
+---
 
-      - 사용자가 책상 사진을 업로드하면 해당 책상에 어울리는 디자인(스탠드, 의자 등)을 추천
-      - 사용자가 설정한 아이템을 기준으로 추천을 제공할수도 있음
-      - 사용자가 책상 사진을 올리면 사진의 분위기를 평가해주기도 함
-  #### 2) 사용자 선호도 및 추천 순위
-      - 사용자가 선택한 아이템이나 디자인에 대한 선호도를 기록하여 추천에 반영
-      - 다른 사용자들이 많이 선택한 아이템이나 디자인을 순위로 공유가능
-  #### 3) 상품 추천 및 구매처 링크
-      - 추천된 제품의 가격 및 사용자 사진에 자주 등장하는 상품을 추천
-      - 구매처 링크를 제공하여 사용자가 실제로 구매할 수 있도록 연결
-  #### 4) 인테리어 키워드 추천
-      - 인테리어에 익숙하지 않은 초보 사용자가 처음부터 인테리어를 시작할 때 키워드를 추천
-      - 구글 검색 결과나 다른 플랫폼의 트렌드를 분석하여 키워드를 추출
-  #### 5) 사진에서 추출된 물건 가격 및 크롤링
-      - 추천된 물건의 가격을 제공하고, 크롤링을 통해 실제 구매 가능한 상품 정보를 제공
-  #### 6) 커뮤니티 기능
-      - 로그인 및 회원가입을 통해 커뮤니티 이용이 가능하게 함
-      - 중고 거래 기능을 추가하여 사용자간 거래가 가능토록함
-      - 사용자가 원하는 아이템을 체크박스로 선택가능토록
-  #### 7) 투표 및 사용자 참여
-      - 사용자가 게시판에 글을 작성할때 투표를 통태 사진 선정시 도움이 되도록 도움
-      - 커뮤니티에서  사용자 간 토론도 가능토록
-  #### 8) 커뮤니티에 추가될 기능
-      - 로그인, 회원가입, 게시판, 검색어 인기 순위, 중고 거래 게시판, 인공지능을 활용한 특별한 기능 등을 포함
-#### 1) 프로젝트 내용
-#### 2) 프로젝트 개발 배경
-#### 3) 프로젝트 목적
-#### 4)기대 효과
- 
+### 4. 팀 소개
 
-</br>
+<table align="center">
+  <tr>
+    <th>이름</th>
+    <th>사진</th>
+    <th>학번</th>
+    <th>역할</th>
+    <th>깃허브 주소</th>
+  </tr>
+  <tr>
+    <td>박승현</td>
+    <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/1eedf542-55f7-408e-9916-72a3457b0795" alt="박승현" width="100" height="100"></td>
+    <td>xxxx1595</td>
+    <td>Team Leader, BackEnd, AI</td>
+    <td><a href="https://github.com/gustmdqkr321"><img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white"></a></td>
+  </tr>
+  <tr>
+    <td>마준영</td>
+    <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/0f98c7ab-bca7-4943-9ddf-661e7b2b0cf6" alt="마준영" width="100" height="100"></td>
+    <td>xxxx1588</td>
+    <td>BackEnd, AI</td>
+    <td><a href="https://github.com/joonyoung1"><img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white"></a></td>
+  </tr>
+  <tr>
+    <td>박근우</td>
+    <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/3d87db83-46b0-4db3-a9f2-9687ffbee33e" alt="박근우" width="100" height="100"></td>
+    <td>xxxx1591</td>
+    <td>FrontEnd, Design</td>
+    <td><a href="https://github.com/YouSungBlade"><img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white"></a></td>
+  </tr>
+  <tr>
+    <td>윤유진</td>
+    <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/75f50039-8ec4-4dd8-852c-5d28ab497e4f" alt="윤유진" width="100" height="100"></td>
+    <td>xxxx0682</td>
+    <td>FrontEnd, Design</td>
+    <td><a href="https://github.com/yujin8731"><img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white"></a></td>
+  </tr>
+  <tr>
+    <td>조한울</td>
+    <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/70ef9add-f364-4f7e-9766-076bd1db979c" alt="조한울" width="100" height="100"></td>
+    <td>xxxx0038</td>
+    <td>FrontEnd, Design</td>
+    <td><a href="https://github.com/3809271"><img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white"></a></td>
+  </tr>
+</table>
 
-### 2. 소개 영상
 
-프로젝트 소개하는 영상을 추가하세요
+---
 
-### 3. 👩‍💻 팀 소개
+### 5. 프로젝트 구조도
 
-<table>
-    <tr align="center">
-        <td style="min-width: 160px;">
-            <a href="https://github.com/gustmdqkr321">
-              <b>박승현</b>
-            </a>
-            <br/>
-              XXXX1595
-        </td>
-        <td style="min-width: 160px;">
-              <b>박근우</b>
-            </a>
-            <br/>
-              XXXX
-        </td>
-        <td style="min-width: 160px;">
-              <b>마준영</b>
-            </a> 
-            <br/>
-              XXXX
-        </td>
-        <td style="min-width: 160px;">
-              <b>윤유진</b>
-            </a> 
-            <br/>
-              XXXX
-        </td>
-                <td style="min-width: 160px;">
-              <b>조한울</b>
-            </a> 
-            <br/>
-              XXXX
-        </td>
+<table align="center">
+    <tr>
+        <th>Architecture</th>
+        <th>Use Case</th>
+        <th>ERD</th>
     </tr>
-    <tr align="center">
-        <td>
-            역할 추가
-        </td>
-        <td>
-        </td>
-        <td>
-        </td>
-                <td>
-        </td>
-                <td>
-                
-        </td>
+    <tr>
+        <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/f76c6b8a-09a3-40ae-90dc-dafba99d68d7" alt="구조도" width="500" height="200"></td>
+        <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/8fa9cce0-fea7-45b1-8583-d65f9b9b109f" alt="Use Case" width="500" height="200"></td>
+        <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/3cf9be4e-ff38-45be-b847-9ea32a2041f9" alt="ERD" width="500" height="200"></td>
     </tr>
 </table>
 
-</br>
 
-팀원정보 및 담당이나 사진 및 SNS를 이용하여 소개하세요.
+---
 
+### 6. 보고서 및 활동 기록
 
-</br>
+<a href="https://www.notion.so/e67d1212bdbc420fb42695f2800feaf3?pvs=4">팀 노션</a><br>
+<a href="https://drive.google.com/drive/folders/1zog5XhqHQVDgI3lmMYcss9qFbO88FDZJ?usp=drive_link">중간보고</a>
 
-### 4. 사용법
+---
+### 7. 사용법
 
-#### 1) 접속 방법
+준비 중
 
-
-소스코드제출시 설치법이나 사용법을 작성하세요.
-</br>
-
-### 5. 기타
-
-추가적인 내용은 자유롭게 작성하세요.
-
-
-## Markdown을 사용하여 내용꾸미기
-
-Markdown은 작문을 스타일링하기위한 가볍고 사용하기 쉬운 구문입니다. 여기에는 다음을위한 규칙이 포함됩니다.
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-자세한 내용은 [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Support or Contact
-
-readme 파일 생성에 추가적인 도움이 필요하면 [도움말](https://help.github.com/articles/about-readmes/) 이나 [contact support](https://github.com/contact) 을 이용하세요.
+---
