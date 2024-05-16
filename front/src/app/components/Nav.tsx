@@ -66,19 +66,17 @@ const Nav = () => {
         </div>
         <div className="font-mono  w-[280px] text-semibold font-[600] flex space-x-4">
           <div
-            className={`cursor-pointer hover:text-[#F4A460] ${
-              pathname.startsWith("/Community")
+            className={`cursor-pointer hover:text-[#F4A460] ${pathname.startsWith("/Community")
                 ? "text-[#F4A460]"
                 : "text-[#808080]"
-            }`}
+              }`}
             onClick={CommunityClick}
           >
             커뮤니티
           </div>
           <div
-            className={`cursor-pointer hover:text-[#F4A460] ${
-              pathname === "/DeskAnalysis" ? "text-[#F4A460]" : "text-[#808080]"
-            }`}
+            className={`cursor-pointer hover:text-[#F4A460] ${pathname === "/DeskAnalysis" ? "text-[#F4A460]" : "text-[#808080]"
+              }`}
             onClick={DeskAnalysisClick}
           >
             책상분석
@@ -124,12 +122,12 @@ const Nav = () => {
               마이페이지
             </div>
             <button
-              className="text-sm text-[#808080] mx-1 cursor-pointer"
+              className="text-sm text-[#808080] mx-1 cursor-pointer hover:text-[#F4A460]"
               onClick={() => signOut()}
             >
               로그아웃
             </button>
-            <Chat />
+            <Chat First={true}/>
           </div>
         )}
       </div>

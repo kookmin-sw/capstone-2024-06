@@ -2,7 +2,7 @@ import React from 'react';
 import Nav from '../../../components/Nav';
 import MyPageProfile from "../../../components/MyPageProfile";
 import MyPagePosts from "../../../components/MyPagePosts";
-import Following from '../../../components/Following';
+import Follower from '../../../components/Followers';
 
 const MyPost = () => {
   return (
@@ -13,7 +13,7 @@ const MyPost = () => {
           <div className="flex items-center min-w-[700px] max-w-[1000px] w-11/12 h-auto">
             <MyPageProfile />
             <MyPagePosts />
-            <Following />
+            <Follower />
           </div>
         </div>
       </main>

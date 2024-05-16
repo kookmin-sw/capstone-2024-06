@@ -16,11 +16,10 @@
 }
 
 .title {
-  position: absolute;
-  width: 168px;
+  
+  width: fit;
   height: 40px;
-  left: 600px;
-  top: 110px;
+  
 
   font-style: normal;
   font-weight: 600;
@@ -32,7 +31,7 @@
 
 .subtitle {
   position: absolute;
-  width: 75px;
+  width: fit;
   height: 25px;
   left: 650px;
   top: 171px;
@@ -51,11 +50,10 @@
 
   box-sizing: border-box;
 
-  position: absolute;
+
   width: 394px;
   height: 60px;
-  left: 500px;
-  top: 250px;
+  
 
   background: #F3F3F3;
   border: 1px solid #BEBEBE;
@@ -68,6 +66,7 @@
   height: 60px;
   left: 500px;
   top: 250px;
+  padding : 10px;
 
   background: #F3F3F3;
 }
@@ -82,6 +81,7 @@
   height: 60px;
   left: 500px;
   top: 355.5px;
+  
 
   background: #F3F3F3;
   border: 1px solid #BEBEBE;
@@ -265,7 +265,7 @@
   /* 로그인 */
 
   position: absolute;
-  width: 42px;
+  width: fit;
   height: 18px;
   left: 522px;
   top: 897px;
@@ -286,7 +286,7 @@
   /* 계정찾기 */
 
   position: absolute;
-  width: 56px;
+  width: fit;
   height: 18px;
   left: 812px;
   top: 897px;
