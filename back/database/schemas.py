@@ -16,6 +16,14 @@ class UserProfile(BaseModel):
 
 class UserInfo(UserProfile):
     user_id: str
+    followed: bool | None = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class UserInfoView(UserInfo):
+    follower_count: int | None = None
+    followee_count: int | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -73,6 +81,13 @@ class BasePost(BaseModel):
     liked: bool
 
 
+class Image(BaseModel):
+    image_id: str
+    filename: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class PostPreview(BasePost):
     thumbnail: Image | None = None
 
@@ -90,33 +105,55 @@ class TempPost(BaseModel):
     temp_post_id: int
 
 
-class Image(BaseModel):
-    image_id: str
-    filename: str
-
-    model_config = ConfigDict(from_attributes=True)
-
-
 class Notification(BaseModel):
     notification_id: int
-    reference_id: int
+    reference_id: int | None = None
     content: str
+    category: str | None = None
     checked: bool
 
 
 class BaseChatHistory(BaseModel):
     sender_id: str
     receiver_id: str
-    message: str
+    message: str | None = None
+    image_id: str | None = None
     created_at: datetime = Field(default_factory=datetime.now)
 
-    model_config = ConfigDict(from_attributes=True)\
+    model_config = ConfigDict(from_attributes=True)
 
 
-class ChatHistory(BaseChatHistory):
+class ChatHistory(BaseModel):
+    sender_id: str
+    receiver_id: str
+    message: str | None = None
+    image: Image | None = None
     chat_history_id: int | None = None
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ChatRoom(BaseModel):
     opponent: UserInfo
     last_chat: ChatHistory
+    unread: bool
+
+
+class DesignImage(BaseModel):
+    index: int
+    src_url: str
+    landing: str
+
+
+class RatedImage(BaseModel):
+    index: int
+    rating: int
+
+
+class ItemImage(BaseModel):
+    name: str
+    src_url: str
+    landing: str
+    
+    model_config = ConfigDict(from_attributes=True)

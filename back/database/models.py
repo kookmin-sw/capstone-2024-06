@@ -1,6 +1,7 @@
 from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, Sequence, DateTime
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
-from sqlalchemy.orm import relationship, query_expression, Mapped
+from sqlalchemy.orm import relationship, query_expression, Mapped, mapped_column
+from pgvector.sqlalchemy import Vector
 from database.database import Base
 from datetime import datetime
 from typing import Optional
@@ -22,6 +23,7 @@ class Users(Base):
     email = Column(String, unique=True)
     image = Column(String)
     hashed_password = Column(String)
+    embedding = Column(Vector(8192))
 
     posts = relationship("Posts", back_populates="author", uselist=True)
     comments = relationship("Comments", back_populates="author", uselist=True)
@@ -66,6 +68,8 @@ class Users(Base):
         "ChatHistories", foreign_keys="ChatHistories.receiver_id", back_populates="receiver", cascade="all, delete", uselist=True
     )
 
+    followed: Mapped[Optional[bool]] = query_expression()
+
 
 class Posts(Base):
     __tablename__ = "posts"
@@ -106,7 +110,7 @@ class Posts(Base):
         cascade="all, delete",
         uselist=True,
     )
-    images = relationship("Images", cascade="all, delete-orphan")
+    images = relationship("PostImages", cascade="all, delete-orphan")
     scrapped: Mapped[Optional[bool]] = query_expression()
     liked: Mapped[Optional[bool]] = query_expression()
 
@@ -117,10 +121,18 @@ class Posts(Base):
     @hybrid_method
     def increment_scrap_count(self):
         self.scrap_count += 1
+    
+    @hybrid_method
+    def decrement_scrap_count(self):
+        self.scrap_count -= 1
 
     @hybrid_method
     def increment_like_count(self):
         self.like_count += 1
+    
+    @hybrid_method
+    def decrement_like_count(self):
+        self.like_count -= 1
 
     @hybrid_method
     def increment_comment_count(self):
@@ -136,7 +148,7 @@ class Posts(Base):
             return self.images[0]
         else:
             return {
-                "image_id": "/images/default/deault_thumbnail.png",
+                "image_id": "/images/default/default_thumbnail.png",
                 "filename": "default_thumbnail.png",
             }
 
@@ -217,11 +229,11 @@ class TempPosts(Base):
 
     author_id = Column(String, ForeignKey("users.user_id"), unique=True)
 
-    images = relationship("Images", cascade="all, delete-orphan")
+    images = relationship("PostImages", cascade="all, delete-orphan")
     author = relationship("Users")
 
 
-class Images(Base):
+class PostImages(Base):
     __tablename__ = "images"
 
     image_id = Column(String, primary_key=True)
@@ -251,7 +263,9 @@ class Notifications(Base):
 
     content = Column(String, nullable=False)
     checked = Column(Boolean, default=False, nullable=False)
-
+    category = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.now, nullable=False)
+    
     receiver = relationship("Users", back_populates="notifications")
 
 
@@ -263,9 +277,47 @@ class ChatHistories(Base):
     )
     sender_id = Column(String, ForeignKey("users.user_id"), nullable=False)
     receiver_id = Column(String, ForeignKey("users.user_id"), nullable=False)
+    image_id = Column(String, ForeignKey("chat_images.image_id"), nullable=True)
 
-    message = Column(String, nullable=False)
+    message = Column(String, nullable=True)
     created_at = Column(DateTime, nullable=False)
 
     sender = relationship("Users", foreign_keys=[sender_id], back_populates="sended_chat")
     receiver = relationship("Users", foreign_keys=[receiver_id], back_populates="received_chat")
+    image = relationship("ChatImages", foreign_keys=[image_id])
+
+
+class ChatImages(Base):
+    __tablename__ = "chat_images"
+
+    image_id = Column(String, primary_key=True)
+    filename = Column(String, nullable=False)
+
+
+class ChatAccessHistories(Base):
+    __tablename__ = "chat_access_histories"
+
+    user_id = Column(String, ForeignKey("users.user_id"), primary_key=True)
+    opponent_id = Column(String, ForeignKey("users.user_id"), primary_key=True)
+    created_at = Column(DateTime, default=datetime.now, nullable=False)
+
+
+class DesignImages(Base):
+    __tablename__ = "design_images"
+
+    filename = Column(String, primary_key=True)
+
+    index = Column(Integer, nullable=True)
+    src_url = Column(String, unique=True)
+    landing = Column(String, nullable=False)
+
+
+class ItemImages(Base):
+    __tablename__ = "item_images"
+
+    name = Column(String, primary_key=True)
+
+    src_url = Column(String, unique=True)
+    landing = Column(String, nullable=False)
+    color = Column(Vector(3))
+    category_id = Column(Integer)
