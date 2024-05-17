@@ -88,8 +88,8 @@ const Posts = ({ PostCateGory }: { PostCateGory: string }) => {
     <main className="flex-col w-full h-auto justify-center items-center mt-5">
       {chunkedPosts.map((row: any[], rowIndex: number) => (
         <div key={rowIndex} className="flex justify-start mb-5">
-          {row.map((post) => (
-            <div className="w-1/3">
+          {row.map((post, index) => (
+            <div key={index} className="w-1/3">
               <div
                 key={post.post_id}
                 className="flex flex-col  cursor-pointer w-[95%] h-[300px] border rounded "

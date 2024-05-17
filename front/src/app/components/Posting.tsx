@@ -152,7 +152,7 @@ const Posting = () => {
           />
           <div className="ml-2 w-full">{Posting.author.name}</div>
           <div className="flex w-[78px] h-full mr-1 text-xs">
-            <div className="mr-1">조회수</div>
+            <div className="w-[40px] ">조회수</div>
             <div>{Posting.view_count}</div>
           </div>
           <div className="flex w-[78px] h-full mr-1 text-xs">

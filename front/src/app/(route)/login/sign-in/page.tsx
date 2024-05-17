@@ -62,10 +62,10 @@ export default function LoginPage({ searchParams }: PageProps) {
   return (
     <>
       <Nav />
-      <div className={style.title}>What Desk</div>
+      <div className="flex justify-center text-[#A26D07] text-5xl font-normal mt-24">What Desk</div>
       <line className="flex items-center justify-center mt-10"></line>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="user_id" className="block text-sm font-medium leading-6 text-gray-800">
