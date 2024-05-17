@@ -1,0 +1,205 @@
+/* desktop23 */
+/* 로고 */
+.logo{
+  position: absolute;
+  width: 413px;
+  height: 126px;
+  left: 819px;
+  top: 204px;
+  
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 50px;
+  line-height: 73px;
+  
+  color: #A26D07;
+  
+  }
+
+  
+/* Rectangle 103 */
+.box{
+  box-sizing: border-box;
+
+position: absolute;
+width: 1042px;
+height: 518px;
+left: 495px;
+top: 342px;
+
+border: 1px solid #A26D07;
+
+
+}
+
+/* 비밀번호를 찾고자 하는 아이디를 입력해주세요 텍스트 */
+.text{
+  position: absolute;
+width: 920px;
+height: 54px;
+left: 650px;
+top: 409px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 35px;
+line-height: 54px;
+
+color: #000000;
+
+}
+
+
+/* 아이디 입력칸 */
+.smallbox{
+
+  box-sizing: border-box;
+
+position: absolute;
+width: 642px;
+height: 102px;
+left: 695px;
+top: 480px;
+
+border: 1px solid #A3A3A9;
+}
+
+/* Rectangle 87 다음글자의 칼라박스 */
+.colorbox{
+box-sizing: border-box;
+
+position: absolute;
+width: 642px;
+height: 69px;
+left: 695px;
+top: 700px;
+
+background: #A26D07;
+border: 1px solid #000000;
+border-radius: 10px;
+
+
+}
+
+.handleNavigate{
+  position: absolute;
+width: 398px;
+height: 23px;
+left: 813px;
+top: 679px;
+
+font-family: 'Actor';
+font-style: normal;
+font-weight: 400;
+font-size: 30px;
+line-height: 36px;
+text-align: center;
+
+color: #F3F3F3;
+
+}
+
+/* 다음 */
+.colorboxtext{
+
+  position: absolute;
+width: 398px;
+height: 23px;
+left: 813px;
+top: 679px;
+
+font-family: 'Actor';
+font-style: normal;
+font-weight: 400;
+font-size: 30px;
+line-height: 36px;
+text-align: center;
+
+color: #F3F3F3;
+
+
+}
+
+
+/* Line 13 */
+.line{
+
+  position: absolute;
+width: 1898.02px;
+height: 0px;
+left: 11px;
+top: 133px;
+
+border: 1px solid #A26D07;
+}
+
+
+.findID{
+  position: absolute;
+  width: 239px;
+  height: 75px;
+  left: 401px;
+  top: 70px;
+  
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 25px;
+  line-height: 48px;
+  
+  color: #000000;
+
+}
+
+
+.findPW{
+  
+
+  position: absolute;
+  width: 231px;
+  height: 75px;
+  left: 83px;
+  top: 70px;
+  
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 25px;
+  line-height: 48px;
+  
+  color: #000000;
+}
+
+
+/* Rectangle 106 */
+.smallbox1{
+  position: absolute;
+width: 642px;
+height: 102px;
+left: 695px;
+top: 600px;
+border: 1px solid #A3A3A9;
+}
+
+/* 변경하고자 하는 비밀번호를 입력해주세요 글씨 입력 칸 */
+.inputpass{
+  position: absolute;
+width: 580px;
+height: 23px;
+left: 726px;
+top: 708px;
+
+font-family: 'Actor';
+font-style: normal;
+font-weight: 400;
+font-size: 30px;
+line-height: 36px;
+text-align: center;
+
+color: #000000;
+
+}
+
+
