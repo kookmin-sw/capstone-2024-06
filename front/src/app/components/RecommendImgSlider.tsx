@@ -1,51 +1,146 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
+import Modal from "./Modal";
 
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Autoplay, Navigation} from "swiper/modules";
-
+import { FreeMode, Navigation } from "swiper/modules";
 
 import "swiper/css";
 import "swiper/css/pagination";
-import 'swiper/css/navigation';
+import "swiper/css/navigation";
 
+interface ImageItem {
+  index: number;
+  src_url: string;
+  landing: string;
+  score: number;
+}
 
+const RecommendImgSlider = ({ Images }: { Images: ImageItem[] }) => {
 
-const RecommendImgSlider = () => {
+  const SampleImageScore = (index: number, score: number) => {
+    Images[index].score = score;
+  };
+
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [ImageLanding, SetImageLanding] = useState("")
+
+  const handleImageClick = (imageUrl: string, imageLanding : string) => {
+    setPreviewImage(imageUrl);
+    SetImageLanding(imageLanding)
+  };
+
+  const closePreview = () => {
+    setPreviewImage(null);
+  };
+
   
-  const DeskImages = [ "/desk1.png", "/desk2.png", "/desk3.png", "/desk4.jpg", "/desk5.png", "/desk6.jpg", "/desk5.png",  "/desk5.png", "/desk5.png", "/desk5.png",];
-
   return (
-    <main>
-      <div className="swiper-container w-full h-[500px]">
-      <Swiper
-        spaceBetween={30}
-        centeredSlides={true}
-        autoplay={{
-          delay: 2500,
-          disableOnInteraction: false,
-        }}
-        pagination={{
-          clickable: true,
-        }}
-        navigation={true}
-        modules={[Autoplay, Pagination, Navigation]}
-        className="mySwiper"
-      >
-          {DeskImages.map((src, index) => (
+    <main className="flex w-full justify-center ">
+      <div className="swiper-container w-[1000px] h-fit flex">
+        <Swiper
+          slidesPerView={3}
+          spaceBetween={30}
+          freeMode={true}
+          navigation = {true}
+          modules={[FreeMode]}
+          className="mySwiper"
+        >
+          {Images.map((src, index) => (
             <SwiperSlide key={index}>
-              <Image
-                src={src}
-                alt={`Desk ${index + 1}`}
-                className="cursor-pointer transition-transform hover:scale-105"
-                width={300}
-                height={300}
-              />
+              <div
+                className="w-[300px] h-[300px] relative"
+                onClick={() =>
+                  handleImageClick(src.src_url, src.landing)
+                }
+              >
+                <Image
+                  src={`${src.src_url}&w=300&h=300&c=c&q=80`}
+                  alt={`Desk ${index + 1}`}
+                  layout="fill"
+                  objectFit="cover"
+                  className="cursor-pointer transition-transform transform hover:scale-105"
+                />
+                
+              </div>
+              <div className="mx-5 flex flex-row-reverse justify-center text-2xl">
+                  <input
+                    type="radio"
+                    className="peer hidden"
+                    id={`value5_${index}`}
+                    value="5"
+                    name={`score_${index}`}
+                    onChange={() => SampleImageScore(index, 5)}
+                  />
+                  <label
+                    htmlFor={`value5_${index}`}
+                    className="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-400"
+                  >
+                    ★
+                  </label>
+                  <input
+                    type="radio"
+                    className="peer hidden"
+                    id={`value4_${index}`}
+                    value="4"
+                    name={`score_${index}`}
+                    onChange={() => SampleImageScore(index, 4)}
+                  />
+                  <label
+                    htmlFor={`value4_${index}`}
+                    className="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-400"
+                  >
+                    ★
+                  </label>
+                  <input
+                    type="radio"
+                    className="peer hidden"
+                    id={`value3_${index}`}
+                    value="3"
+                    name={`score_${index}`}
+                    onChange={() => SampleImageScore(index, 3)}
+                  />
+                  <label
+                    htmlFor={`value3_${index}`}
+                    className="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-400"
+                  >
+                    ★
+                  </label>
+                  <input
+                    type="radio"
+                    className="peer hidden"
+                    id={`value2_${index}`}
+                    value="2"
+                    name={`score_${index}`}
+                    onChange={() => SampleImageScore(index, 2)}
+                  />
+                  <label
+                    htmlFor={`value2_${index}`}
+                    className="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-400"
+                  >
+                    ★
+                  </label>
+                  <input
+                    type="radio"
+                    className="peer hidden"
+                    id={`value1_${index}`}
+                    value="1"
+                    name={`score_${index}`}
+                    onChange={() => SampleImageScore(index, 1)}
+                  />
+                  <label
+                    htmlFor={`value1_${index}`}
+                    className="cursor-pointer peer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-400"
+                  >
+                    ★
+                  </label>
+                </div>
             </SwiperSlide>
           ))}
         </Swiper>
       </div>
+      {previewImage && <Modal imageUrl={previewImage} onClose={closePreview} imageLanding={ImageLanding} />}
     </main>
   );
 };

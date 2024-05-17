@@ -1,4 +1,21 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+*venv/
+**/__pycache__/
+**/.DS_Store
+yolo*
+vgg*
+
+back/config.ini
+back/images/
+back/models/
+back/vectors/
+back/Stanford_Online_Products/
+back/LaundryGothic_TTF/
+back/nltk_data/
+
+front/.next
+front/.env
+front/node_modules
+
 
 # dependencies
 /front/node_modules
@@ -35,3 +52,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+
+next.config.js

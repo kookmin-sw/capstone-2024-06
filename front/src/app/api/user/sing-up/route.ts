@@ -1,4 +1,7 @@
+import { useState } from 'react';
 import { useRouter } from 'next/router';
+import Image from "next/image";
+import { routeModule } from 'next/dist/build/templates/app-page';
 
 const handleSubmit = async (
   user_id: string,
@@ -7,8 +10,12 @@ const handleSubmit = async (
   image: string,
   password: string,
   confirmPassword: string,
-  setError: (error: string) => void
+  setError: (error: string) => void,
 ) => {
+
+  // const [message, setMessage] = useState<string>('');
+
+
   // 비밀번호 조건 확인
   const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,16}$/;
   if (!passwordRegex.test(password)) {
@@ -26,7 +33,7 @@ const handleSubmit = async (
 
   // 회원가입 요청
   try {
-    const response = await fetch("http://10.223.114.14:8080/user", {
+    const response = await fetch(`${process.env.Localhost}/user`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -40,6 +47,7 @@ const handleSubmit = async (
     if (response.ok) {
       // 회원가입 성공
       console.log('회원가입이 완료되었습니다.');
+      // setMessage('회원가입이 완료되었습니다. 로그인 페이지로 돌아가세요.');
     } else {
       // 회원가입 실패
       setError('회원가입에 실패했습니다.');
@@ -48,6 +56,7 @@ const handleSubmit = async (
     console.error('회원가입 중 오류 발생:', error);
     setError('회원가입 중 오류가 발생했습니다.');
   }
+
 };
 
 export default handleSubmit;

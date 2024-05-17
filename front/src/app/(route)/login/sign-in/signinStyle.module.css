@@ -1,0 +1,111 @@
+.desktop {
+  /* Desktop - 7 */
+  position: relative;
+  width: 1930px;
+  height: 952px;
+
+  background: #FFFFFF;
+}
+
+.title {
+  /* 이름 */
+
+  position: absolute;
+  width: fit;
+  height: 40px;
+  left: 600px;
+  top: 120px;
+  
+  font-style: normal;
+  font-weight: 600;
+  font-size: 40px;
+  line-height: 39px;
+
+  color: #A26D07;
+}
+
+.rectangle56 {
+  /* Rectangle 56 아이디 */
+
+  box-sizing: border-box;
+
+  position: absolute;
+  width: 168px;
+  height: 40px;
+  left: 60px;
+  top: 150px;
+
+  background: #F3F3F3;
+  border-radius: 5px;
+}
+
+.inputField56 {
+  width: 168px;
+  height: 40px;
+  left: 60px;
+  top: 150px;
+
+  background: #F3F3F3;
+  border: 1px solid #A26D07;
+  border-radius: 5px;
+}
+
+.rectangle57 {
+  /* Rectangle 56 비밀번호 */
+
+  box-sizing: border-box;
+
+  position: absolute;
+  width: 168px;
+  height: 40px;
+  left: 60px;
+  top: 200px;
+
+  background: #F3F3F3;
+  border-radius: 5px;
+}
+
+.inputField57 {
+  width: 168px;
+  height: 40px;
+  left: 60px;
+  top: 200px;
+
+  background: #F3F3F3;
+  border: 1px solid #A26D07;
+  border-radius: 5px;
+}
+
+.singupbutton {
+  /* 회원가입 */
+
+  position: absolute;
+  width: 56px;
+  height: 18px;
+  left: 844px;
+  top: 532px;
+
+  font-style: normal;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 18px;
+
+  color: #000000;
+}
+
+.findaccountbutton {
+  /* 계정찾기 */
+
+  position: absolute;
+  width: 56px;
+  height: 18px;
+  left: 844px;
+  top: 220x;
+
+  font-style: normal;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 18px;
+
+  color: #000000;
+}

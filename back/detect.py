@@ -40,7 +40,36 @@ def count_class(image_path, conf_threshold=0.25):
 
     return object_counter
 
+def img_obj2csv(data_dir, output_csv):
+    # CSV 파일 헤더 작성
+    with open(output_csv, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        target_classes = [41,56,58,59,60,62,63,64,66,73,74,75]
+        writer.writerow(["Image Path"] + [f"Class {cls}" for cls in target_classes] + ["total"])
+
+    # 해당 폴더가 디렉터리인지 확인
+    if os.path.isdir(data_dir):
+        print("Processing folder:", data_dir)
+
+        # 각 이미지 파일에 대해 클래스별 객체 수 확인
+        for file_name in os.listdir(data_dir):
+            file_path = os.path.join(data_dir, file_name)
+            # 이미지 파일인지 확인
+            if file_name.endswith((".jpg", ".jpeg", ".png")):
+                class_counts = count_class(file_path)
+                # 클래스별 객체 수가 6개를 넘을 때만 CSV 파일에 기록
+                # if sum(class_counts) > 6:
+                with open(output_csv, mode='a', newline='') as file:
+                    writer = csv.writer(file)
+                    writer.writerow([file_path] + class_counts + [sum(class_counts)])
+                # else:
+                #     print("Deleting image:", file_name)
+                #     os.remove(file_path)
+
 # if __name__ == "__main__":
+#     data_dir = "./images/train"
+#     csv_path = "./class_count.csv"
+#     img_obj2csv(data_dir,csv_path)
 #     # 결과 이미지를 저장할 폴더 생성
 #     result_folder = "./result"
 #     os.makedirs(result_folder, exist_ok=True)

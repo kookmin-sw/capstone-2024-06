@@ -8,7 +8,6 @@ import KakaoProvider from "next-auth/providers/kakao";
 import NaverProvider from "next-auth/providers/naver";
 
 //자체 로그인
-
 const credentialsProvider = CredentialsProvider({
   // The name to display on the sign in form (e.g. "Sign in with...")
   name: 'credentials',
@@ -33,7 +32,7 @@ const credentialsProvider = CredentialsProvider({
     try {
       console.log(process.env.Localhost)
       console.log(process.env.api_url)
-      const res = await fetch(`${process.env.api_url}/token`, {
+      const res = await fetch(`${process.env.Localhost}/user/token`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -85,6 +84,7 @@ kakaoCustomProvider.style = {
 };
 
 // 네이버 로그인 버튼
+
 const naverCustomProvider = NaverProvider({
   clientId: process.env.NAVER_CLIENT_ID || '',
   clientSecret: process.env.NAVER_CLIENT_SECRET || '',
@@ -130,31 +130,35 @@ const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    async jwt({ token, account, user }) {
-      if (account) {
-        if (account.provider == 'credentials') {
-          token.user = user.user;
-          token.access_token = user.access_token;
-        } else {
-          user = {
-            ...user,
-            user_id: user.id,
-            id: undefined
-          };
-          const res = await fetch(`${process.env.api_url}/token/${account.access_token}?provider=${account.provider}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(user)
-          });
-          if (res.ok) {
-            const body = await res.json();
-            token.user = body.user;
-            token.access_token = body.access_token;
+    async jwt({ token, account, user, trigger, session }) {
+      if (trigger === "update") {
+        token.user = session.user;
+      } else {
+        if (account) {
+          if (account.provider == 'credentials') {
+            token.user = user.user;
+            token.access_token = user.access_token;
           } else {
-            console.log(res.status, await res.text());
-            throw Error("Custom Error");
+            user = {
+              ...user,
+              user_id: user.id,
+              id: undefined
+            };
+            const res = await fetch(`${process.env.api_url}/user/token/${account.access_token}?provider=${account.provider}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(user)
+            });
+            if (res.ok) {
+              const body = await res.json();
+              token.user = body.user;
+              token.access_token = body.access_token;
+            } else {
+              console.log(res.status, await res.text());
+              throw Error("Custom Error");
+            }
           }
         }
       }
@@ -163,11 +167,12 @@ const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       session.user = token.user;
       session.access_token = token.access_token;
+      console.log("inside session callback", session);
       return session
     },
   },
   pages: {
-    signIn: "/sign-in",
+    signIn: "/login/sign-in",
   },
 };
 

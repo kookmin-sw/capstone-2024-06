@@ -1,11 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ["three"],
   reactStrictMode: false,
   env: {
-    Localhost: "http://10.223.116.139:8080",
+
+    Localhost: "http://10.30.112.18:8080",
+    OnlyiP : "10.30.112.18:8080",
   },
   images: {
-    domains: ['t1.kakaocdn.net', '10.223.116.139', 'k.kakaocdn.net'], 
+    domains: ['t1.kakaocdn.net', '10.30.112.18', 'k.kakaocdn.net' , '10.223.115.184'], 
+
     remotePatterns: [
       {
         protocol: "https",
