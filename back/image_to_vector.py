@@ -79,12 +79,12 @@ def merge_index_files(vector_folder, index_file_path):
     print("Faiss index has been saved to:", index_file_path)
 
 # 이미지 폴더와 벡터 파일을 저장할 폴더를 지정합니다.
-image_folder = "./images/train"
-vector_folder = "./vectors/train_vector"
-index_file_path = "image_index.index"
+# image_folder = "./images/train"
+# vector_folder = "./vectors/train_vector"
+# index_file_path = "image_index.index"
 
-# 이미지 폴더 내의 이미지를 벡터 파일로 변환하여 저장합니다.
-create_vector_files_from_images(image_folder, vector_folder)
+# # 이미지 폴더 내의 이미지를 벡터 파일로 변환하여 저장합니다.
+# create_vector_files_from_images(image_folder, vector_folder)
 
-# 이미지 벡터를 Faiss 인덱스에 추가하고 저장합니다.
-merge_index_files(vector_folder, index_file_path)
+# # 이미지 벡터를 Faiss 인덱스에 추가하고 저장합니다.
+# merge_index_files(vector_folder, index_file_path)

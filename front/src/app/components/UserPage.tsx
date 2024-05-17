@@ -10,6 +10,7 @@ const User = ({ }) => {
 
   const [userProfile, setUserProfile] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
+  const [isFollowing, setIsFollowing] = useState(false);
 
   const params = useSearchParams();
   const user_id = params.get('user_id');
@@ -119,6 +120,7 @@ const User = ({ }) => {
     }
   };
 
+
   const FollowerClick = () => {
     router.push("/Users/Follwer")
   }
@@ -126,6 +128,7 @@ const User = ({ }) => {
   const FollowingClick = () => {
     router.push("/Users/Following")
   }
+
 
 
   return (
@@ -158,10 +161,12 @@ const User = ({ }) => {
                     <Chat First={false}/>
                   </div>
                   <div className="flex items-center mt-2">
+
                     <h1 className="text-sm hover:text-[#F4A460]" >팔로워 {userProfile?.follower_count}</h1>
                   </div>
                   <div className="flex items-center mt-2">
                     <h1 className="text-sm hover:text-[#F4A460]" >팔로잉 {userProfile?.followee_count}</h1>
+
                   </div>
                 </div>
               </div>
@@ -171,8 +176,12 @@ const User = ({ }) => {
       </div>
       <div className="border-t border-gray-500 w-full mt-4"></div>
       <div className="border-t border-transparent w-full mt-4"></div>
+      <div className="absolute w-[173px] h-[83px] left-[200px] top-[230px] font-semibold text-base leading-9 text-black hover:text-[#F4A460]"
+      >
+        작성한 글
+      </div>
       {chunkedPosts.map((row: any[], rowIndex: number) => (
-        <div key={rowIndex} className="flex justify-start space-x-20 mb-5">
+        <div key={rowIndex} className="absolute left-[200px] top-[280px]">
           {row.map((post) => (
             <div
               key={post.post_id}
