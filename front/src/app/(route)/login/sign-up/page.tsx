@@ -1,11 +1,53 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import handleSubmit from "../../../api/user/sing-up/route";
+import { SetStateAction } from "react";
 import style from "./signupStyle.module.css";
 import Nav from "../../../components/Nav";
 
 const RegisterForm = () => {
+  const handleSubmit = async (
+    user_id: string,
+    name: string,
+    email: string,
+    image: string,
+    password: string,
+    confirmPassword: string,
+    setError: { (value: SetStateAction<string>): void; (arg0: string): void }
+  ) => {
+    const passwordRegex =
+      /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,16}$/;
+    if (!passwordRegex.test(password)) {
+      setError(
+        "비밀번호는 8~16자의 영문, 숫자, 특수문자(!,@,#,$,%,^,&,*)를 포함해야 합니다."
+      );
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("비밀번호가 일치하지 않습니다.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${process.env.Localhost}/user`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user_id, name, email, image, password }),
+      });
+
+      if (response.ok) {
+        console.log("회원가입이 완료되었습니다.");
+      } else {
+        setError("회원가입에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("회원가입 중 오류 발생:", error);
+      setError("회원가입 중 오류가 발생했습니다.");
+    }
+  };
   const [user_id, setUserid] = useState<string>("");
   const [name, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -99,12 +141,14 @@ const RegisterForm = () => {
               <div className="w-[400px] border border-b-[#a69067]"></div>
             </div>
             <div className="flex justify-center mt-5">
-              <button
-                type="submit"
-                className="w-[400px] bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              >
-                회원가입
-              </button>
+              <Link href="/login/sign-in">
+                <button
+                  type="submit"
+                  className="w-[400px] bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  회원가입
+                </button>
+              </Link>
             </div>
             <div className="flex mt-3 w-full justify-center">
               <div className="mr-10">
@@ -118,7 +162,6 @@ const RegisterForm = () => {
                 </Link>
               </div>
             </div>
-           
           </form>
         </div>
       </div>
