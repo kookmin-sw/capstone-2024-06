@@ -28,10 +28,7 @@
 
 
 ### 1. 프로젝트 소개
-"어떤데스크 (what_desk)"는 현대 사회에서 가장 많이 사용되는 책상을 중심으로 한 일의 효율성과 생산성을 증진시키기 위한 인테리어 디자인에 관한 것입니다. 이 프로젝트는 사용자에게 어울리는 책상 디자인을 추천하는 것뿐만 아니라, 데스크테리어와 관련된 여러가지 도움을 주려고 합니다. 기존에 디자인 정보를 제공해주는 사이트는 많지만 사용자들은 너무나 많은 데이터에 어떤 정보를 고르고 선택해야 할지 난감해 합니다. 그래서 데스크테리어에 집중한 저희만의 추천 시스템을 만들어 여러 사이트에 있는 매우 많은 사진 중 어울리는 사진을 추천해 줄 것입니다.
-
-
-어떤데스크는 사용자의 책상을 분석하여 그에 맞는 적절한 디자인을 추천하는데 그치지 않고, 사용자들에게 다양한 정보를 제공하려고 합니다. 데스크테리어에 관련하여 어떤 키워드가 많이 검색되는지 혹은 어떤 아이템들이 인기가 많은지 알려주고 사용자의 책상 정보를 분석하여 시각적으로 제공해 사용자에게 데스크테리어의 가이드라인이 되어 줄 것입니다.
+"어떤데스크 (what_desk)"는 현대 사회에서 가장 많이 사용되는 책상을 중심으로 한 일의 효율성과 생산성을 증진시키기 위한 인테리어 디자인에 관한 것입니다. 이 프로젝트는 사용자에게 어울리는 책상 디자인을 추천하는 것뿐만 아니라, 데스크테리어와 관련된 여러가지 도움을 주려고 합니다. 기존에 디자인 정보를 제공해주는 사이트는 많지만 사용자들은 너무나 많은 데이터에 어떤 정보를 고르고 선택해야 할지 난감해 합니다. 그래서 데스크테리어에 집중한 저희만의 추천 시스템을 만들어 여러 사이트에 있는 매우 많은 사진 중 사용자의 맞춤 디자인 그리고 함께 사용할 수 있는 아이템을 추천 하려고 합니다.
 
 어떤데스크는 커뮤니티 기능을 통해 사용자들끼리 정보를 공유하고 소통할 수 있는 플랫폼을 제공하고 있습니다. 사용자들은 자신의 작업 공간을 공유하고 다른 사용자들의 경험을 듣고 의견을 나눌 수 있습니다. 이를 통해 사용자들은 더 나은 작업 환경을 조성하는 데 도움을 받을 수 있습니다. 뿐만 아니라 사용자들간의 활발한 물건 거래도 지향하고 있습니다.
  
@@ -41,24 +38,22 @@
 
 ### Abstract
 
-"What_desk" focuses on interior design aimed at enhancing efficiency and productivity centered around the most commonly used desks in modern society. This project not only recommends desk designs that suit users but also aims to provide various aids related to desk decor. While there are many existing sites offering design information, users often find themselves overwhelmed by the abundance of data and struggle to choose relevant information. Therefore, we aim to create our own recommendation system focused on desk decor, sorting through the plethora of photos available on various sites to recommend suitable options.
+"What_Desk" is a project focused on enhancing efficiency and productivity through interior design centered around the most commonly used desks in modern society. This project aims not only to recommend suitable desk designs to users but also to provide various aids related to desk decor. While there are many websites offering design information, users often feel overwhelmed by the vast amount of data and struggle to select the right information. Therefore, we have developed our unique recommendation system that focuses on desk decor to recommend personalized designs and complementary items from a large collection of photos available across various sites.
 
-"What_desk" goes beyond merely recommending appropriate designs based on users' desks; it also seeks to provide diverse information to users. It informs users about popular keywords related to desk decor or trending items, and visually analyzes users' desk information to offer guidelines for desk decor.
+What_Desk offers a community feature that provides a platform for users to share information and interact with each other. Users can share their workspaces, listen to others' experiences, and exchange opinions. Through this, users can receive help in creating better work environments. Additionally, the platform encourages active trading of items among users.
 
-Furthermore, "What_desk" provides a platform for community interaction, enabling users to share information and communicate with each other. Users can share their workspaces, listen to others' experiences, and exchange opinions, thereby facilitating the creation of better work environments. Additionally, the platform encourages active trading among users.
-
-"What_desk" aims to make desk decor easily accessible, helping users improve their work culture, enhance productivity, and express their individuality.
+What_Desk aims to simplify desk decor, helping users improve their work culture, increase productivity, and express their individuality.
 
 ---
 
 ### 2. 주요 기능
 
-  1. **책상 분석 및 디자인 추천**
-      - 내 책상은 어떤 책상인지 분석하고 사용자에게 어울리는 책상 디자인을 추천 해드립니다
-  2. **커뮤니티**
+  1. **책상 디자인 추천**
+      - 사용자가 직접 디자인을 고르거나 저희가 제공하는 디자인을 통해 선호도를 조사하고 이를 기반으로 추천해드립니다.
+  2. **아이템 추천**
+      - 추천된 디자인에 맞는 아이템을 같이 추천해드립니다.
+  3. **커뮤니티**
       - 게시글을 작성해 개성을 표현하거나 다른 사용자로부터 아이디어를 얻을 수 있습니다.
-  3. **통계 제공**
-      - 데스크테리어와 관련된 여러가지 재미있고 도움이 될만한 통계를 제공합니다.
   4. **실시간 채팅**
       - 채팅을 통해 중고 물품을 거래하거나 의견을 교환할 수 있습니다.
 
@@ -152,8 +147,8 @@ Furthermore, "What_desk" provides a platform for community interaction, enabling
     </tr>
     <tr>
         <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/f76c6b8a-09a3-40ae-90dc-dafba99d68d7" alt="구조도" width="500" height="200"></td>
-        <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/8fa9cce0-fea7-45b1-8583-d65f9b9b109f" alt="Use Case" width="500" height="200"></td>
-        <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/3cf9be4e-ff38-45be-b847-9ea32a2041f9" alt="ERD" width="500" height="200"></td>
+        <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/29961234-537f-4da4-ac51-7e44eea1eb64" alt="Use Case" width="500" height="200"></td>
+        <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/09902c12-f908-4026-8ea4-54d64b65d9e9" alt="ERD" width="500" height="200"></td>
     </tr>
 </table>
 
@@ -162,9 +157,9 @@ Furthermore, "What_desk" provides a platform for community interaction, enabling
 
 ### 6. 보고서 및 활동 기록
 
-<a href="https://www.notion.so/e67d1212bdbc420fb42695f2800feaf3?pvs=4">팀 노션</a><br>
-<a href="https://drive.google.com/drive/folders/1zog5XhqHQVDgI3lmMYcss9qFbO88FDZJ?usp=drive_link">중간보고</a>
-
+<a href="https://www.notion.so/ca0573a611e843218cf85eff7d14bd6a?pvs=4">팀 노션</a><br>
+<a href="https://drive.google.com/drive/folders/1zog5XhqHQVDgI3lmMYcss9qFbO88FDZJ?usp=drive_link">중간발표자료</a>
+<a href="https://drive.google.com/drive/folders/1PIEs6FPnuhyzRXx4TUhYroRguS8A2Vgu?usp=drive_link">최종발표자료</a>
 ---
 ### 7. 사용법
 
