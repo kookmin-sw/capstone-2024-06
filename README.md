@@ -1,7 +1,7 @@
 [![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&pause=1000&color=A16D07&random=false&width=435&lines=%EC%9D%B4+%EC%B1%85%EC%83%81+%EC%96%B4%EB%96%A4%EB%8D%B0%3F+++%EC%96%B4%EB%96%A4%EB%8D%B0%EC%8A%A4%ED%81%AC(what_desk))](https://git.io/typing-svg)
 
 <div align="center">
-  <img width="400" alt="로고 그림자" src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/42de40d2-e789-435c-89be-c47b501eb097">
+  <img width="400" alt="포스터" src="https://github.com/kookmin-sw/capstone-2024-06/files/15373556/default.pdf">
 </div>
 
 > 2024 KMU SW 캡스톤 디자인 06조
