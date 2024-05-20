@@ -1,10 +1,11 @@
 "use client";
 import { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Nav from "../../../components/Nav";
-import EditUserInfo from "../../../components/EditUserInfo";
-import EditUserProfileImg from "../../../components/EditUserprofileImg";
+import EditUserInfo from "../../../components/EditMyInfo";
+import EditUserProfileImg from "../../../components/EditMyprofileImg";
 
 
 interface IProps {
@@ -13,6 +14,12 @@ interface IProps {
 
 const EditPost = () => {
   const { data: session } = useSession();
+  const router = useRouter();
+
+
+  const MypageClick = () => {
+    router.push("/Mypage");
+  }
 
   return (
     <>
@@ -43,6 +50,17 @@ const EditPost = () => {
       </div>
       <EditUserInfo />
       <EditUserProfileImg />
+      <div className="absolute w-[1049px] h-0 left-[179px] top-[750px] border border-gray-300 transform rotate-0.05" />
+      <div className="absolute left-[590px] top-[800px] text-sm">
+        변경사항을 다음과 같이 저장하시겠습니까?
+      </div>
+      <div>
+        <button className='absolute left-[650px] top-[870px] justify-center rounded-md bg-yellow-700 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500'
+          onClick={MypageClick}>
+          변경사항 저장
+        </button>
+        <div className="h-60"></div>
+      </div>
     </>
   );
 };

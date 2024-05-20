@@ -66,8 +66,7 @@ What_Desk aims to simplify desk decor, helping users improve their work culture,
     <img src="https://img.shields.io/badge/typescript-3178c6?style=for-the-badge&logo=TypeScript&logoColor=white" alt="TypeScript"><br>
     <img src="https://img.shields.io/badge/fastapi-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI">
     <img src="https://img.shields.io/badge/postgresql-4169e1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
-    <img src="https://img.shields.io/badge/plotly-3f4f75?style=for-the-badge&logo=plotly&logoColor=white" alt="Plotly">
-    <img src="https://img.shields.io/badge/dbeaver-382923?style=for-the-badge&logo=dbeaver&logoColor=white" alt="DBeaver">
+  <img src="https://img.shields.io/badge/dbeaver-382923?style=for-the-badge&logo=dbeaver&logoColor=white" alt="DBeaver">
     <img src="https://img.shields.io/badge/sqlalchemy-d71f00?style=for-the-badge&logo=sqlalchemy&logoColor=white" alt="sqla"><br>
     <img src="https://img.shields.io/badge/opencv-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white" alt="opencv">
     <img src="https://img.shields.io/badge/pytorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" alt="PyTorch"><br>

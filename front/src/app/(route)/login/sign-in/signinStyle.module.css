@@ -11,14 +11,14 @@
   /* 이름 */
 
   position: absolute;
-  width: 168px;
+  width: fit;
   height: 40px;
   left: 600px;
   top: 120px;
-
+  
   font-style: normal;
   font-weight: 600;
-  font-size: 32px;
+  font-size: 40px;
   line-height: 39px;
 
   color: #A26D07;

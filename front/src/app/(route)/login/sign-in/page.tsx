@@ -62,16 +62,16 @@ export default function LoginPage({ searchParams }: PageProps) {
   return (
     <>
       <Nav />
-      <div className={style.title}>what_desk</div>
+      <div className={style.title}>What Desk</div>
       <line className="flex items-center justify-center mt-10"></line>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="user_id" className="block text-sm font-medium leading-6 text-gray-900">
+              <label htmlFor="user_id" className="block text-sm font-medium leading-6 text-gray-800">
                 아이디
               </label>
-              <div className="mt-">
+              <div className="mt-1">
                 <input
                   id="user_id"
                   name="user_id"
@@ -91,7 +91,7 @@ export default function LoginPage({ searchParams }: PageProps) {
                   비밀번호
                 </label>
               </div>
-              <div className="mt-2">
+              <div className="mt-1">
                 <input
                   id="password"
                   name="password"
@@ -108,7 +108,7 @@ export default function LoginPage({ searchParams }: PageProps) {
             <div>
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-yellow-700 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                className="flex w-full justify-center rounded-md bg-yellow-700 px-3 py-1.5 text-md font-semibold leading-6 text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
               >
                 로그인
               </button>
@@ -145,7 +145,7 @@ export default function LoginPage({ searchParams }: PageProps) {
             >
               <img src='https://developers.kakao.com/tool/resource/static/img/button/kakaotalksharing/kakaotalk_sharing_btn_small.png'
                 alt="Kakao Logo"
-                className="w-6 h-6" />
+                className="w-6 h-6 mr-2" />
               카카오 로그인
             </button>
           </form>
@@ -157,7 +157,7 @@ export default function LoginPage({ searchParams }: PageProps) {
             >
               <img src='https://logoproject.naver.com/favicon.ico'
                 alt="naver Logo"
-                className="w-6 h-6" />
+                className="w-6 h-6 mr-2" />
               네이버 로그인
             </button>
           </form>
@@ -169,7 +169,7 @@ export default function LoginPage({ searchParams }: PageProps) {
             >
               <img src='https://w7.pngwing.com/pngs/326/85/png-transparent-google-logo-google-text-trademark-logo-thumbnail.png'
                 alt="Google Logo"
-                className="w-6 h-6" />
+                className="w-6 h-6 mr-2" />
               구글 로그인
             </button>
           </form>
