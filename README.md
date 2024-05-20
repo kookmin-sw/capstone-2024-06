@@ -2,7 +2,6 @@
 
 <div align="center">
   <img width="546" alt="포스터 표시용" src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/71e5974d-3530-44a5-b610-a0619c2dd956">
-">
 </div>
 
 > 포스터 pdf링크
@@ -78,9 +77,8 @@ What_Desk aims to simplify desk decor, helping users improve their work culture,
     <img src="https://img.shields.io/badge/Discord-5865f2?style=for-the-badge&logo=Discord&logoColor=white" alt="discord">
     <img src="https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white" alt="slcak">
     <img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=Notion&logoColor=white" alt="notion"><br>
-    <img src="https://img.shields.io/badge/AWS_RDS-527FFF?style=for-the-badge&logo=amazonRDS&logoColor=white" alt="ec2">
-    <img src="https://img.shields.io/badge/AWS_S3-569A31?style=for-the-badge&logo=amazons3&logoColor=white" alt="s3">
-    <img src="https://img.shields.io/badge/AWS_EC2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white" alt="rds">
+    <img src="https://img.shields.io/badge/AWS_EC2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white" alt="ec2">
+    <img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=Vercel&logoColor=white" alt="Vercel">
     <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=Docker&logoColor=white" alt="docker">
 </div>
 
@@ -158,7 +156,7 @@ What_Desk aims to simplify desk decor, helping users improve their work culture,
 ### 6. 보고서 및 활동 기록
 
 <a href="https://www.notion.so/ca0573a611e843218cf85eff7d14bd6a?pvs=4">팀 노션</a><br>
-<a href="https://drive.google.com/drive/folders/1zog5XhqHQVDgI3lmMYcss9qFbO88FDZJ?usp=drive_link">중간발표자료</a>
+<a href="https://drive.google.com/drive/folders/1zog5XhqHQVDgI3lmMYcss9qFbO88FDZJ?usp=drive_link">중간발표자료</a><br>
 <a href="https://drive.google.com/drive/folders/1PIEs6FPnuhyzRXx4TUhYroRguS8A2Vgu?usp=drive_link">최종발표자료</a>
 ---
 ### 7. 사용법
