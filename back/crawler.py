@@ -368,7 +368,9 @@ if __name__ == "__main__":
 
     # # desk_crawler = PinterestCrawler(train_path, "desk interior", verbose=True)
 
-    categories = ["28070000"]
+    # categories = ["28070000"]
+    # categories = ["11040000"]
+    categories = ["11010013"]
     for category_id in categories:
         path = os.path.join(path, category_id)
         item_crawler = OhouseItemCrawler(path, category_id, verbose=True)

@@ -238,3 +238,32 @@ async def delete_notification(
 ):
     await crud.delete_notifications(db, user_id)
     return {"message": "Notification deleted successfully"}
+
+
+@router.get("/find/id/{email}")
+async def find_user_id(email: str, db: Session = Depends(get_db)):
+    user = await crud.read_user_by_email(db, email)
+    if user is None:
+        HTTPException(status_code=404, detail="User does not Exist")
+    
+    external_mapping = await crud.read_user_external_map_by_user_id(db, user.user_id)
+    if external_mapping is None:
+        return {"user_id": user.user_id}
+    else:
+        return {"provider": external_mapping.provider}
+
+
+@router.post("/find/password")
+async def find_user_password(password_form: PasswordForm, db: Session = Depends(get_db)):
+    user = await crud.read_user_by_id(db, password_form.user_id)
+    if user is None:
+        HTTPException(status_code=404, detail="User does not Exist")
+    if password_form.email != user.email:
+        HTTPException(status_code=404, detail="User does not Exist")
+    
+    new_password = str(uuid.uuid4())
+    hashed_password = get_hashed_password(new_password)
+    user.hashed_password = hashed_password
+    db.commit()
+
+    return {"password": new_password}
