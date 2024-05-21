@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, Sequence, DateTime
+from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, Sequence, DateTime, JSON
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
 from sqlalchemy.orm import relationship, query_expression, Mapped, mapped_column
 from pgvector.sqlalchemy import Vector
@@ -100,16 +100,23 @@ class Posts(Base):
         "Users",
         secondary="post_scraps",
         back_populates="scrapped_posts",
-        cascade="all, delete",
+        cascade="save-update",
         uselist=True,
     )
     likers = relationship(
         "Users",
         secondary="post_likes",
         back_populates="liked_posts",
-        cascade="all, delete",
+        cascade="save-update",
         uselist=True,
     )
+    notifications = relationship(
+        "Notifications",
+        back_populates="post",
+        cascade="all, delete-orphan",
+        uselist=True,
+    )
+
     images = relationship("PostImages", cascade="all, delete-orphan")
     scrapped: Mapped[Optional[bool]] = query_expression()
     liked: Mapped[Optional[bool]] = query_expression()
@@ -267,7 +274,8 @@ class Notifications(Base):
     created_at = Column(DateTime, default=datetime.now, nullable=False)
     
     receiver = relationship("Users", back_populates="notifications")
-
+    post = relationship("Posts", back_populates="notifications")
+    
 
 class ChatHistories(Base):
     __tablename__ = "chat_histories"
@@ -321,3 +329,10 @@ class ItemImages(Base):
     landing = Column(String, nullable=False)
     color = Column(Vector(3))
     category_id = Column(Integer)
+
+
+class AnalysisHistories(Base):
+    __tablename__ = "analysis_histories"
+
+    user_id = Column(String, ForeignKey("users.user_id"), primary_key=True)
+    history = Column(JSON, nullable=False)

@@ -83,6 +83,8 @@ async def recommend_by_preference2(rated_images: list[RatedImage], user_id: str 
             design_image = await crud.read_design_images(db, int(index))
             design_images.append(design_image)
         i += 1
+
+    await crud.update_analysis_history(db, user_id, design_images)
     
     return design_images
 
@@ -108,6 +110,8 @@ async def recommend_by_source_image(file: UploadFile, user_id: str = Depends(get
     for i in similarity_mat[0].argsort()[-1:-6:-1]:
         design_image = await crud.read_design_images(db, int(i))
         design_images.append(design_image)
+
+    await crud.update_analysis_history(db, user_id, [DesignImage.model_validate(design_image).model_dump_json() for design_image in design_images])
     
     return design_images
 
@@ -157,3 +161,12 @@ async def recoomend_items_by_color(index: int, user_id: str = Depends(get_curren
         })
     
     return result
+
+
+@router.post("/reload", response_model=list[DesignImage])
+async def reload_analysis_history(user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    analysis_history = await crud.read_analysis_history(db, user_id)
+    if analysis_history is None:
+        raise HTTPException(status_code=400, detail="Analysis history does not exist")
+
+    return [DesignImage.model_validate_json(design_image) for design_image in analysis_history.history]

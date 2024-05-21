@@ -185,6 +185,10 @@ async def read_user_external_map(db: Session, external_id: str, provider: str):
     )
 
 
+async def read_user_external_map_by_user_id(db: Session, user_id: str):
+    return db.query(UserExternalMapping).filter(UserExternalMapping.user_id == user_id).first()
+
+
 async def read_post(db: Session, post_id: int):
     return db.query(Posts).filter(Posts.post_id == post_id).first()
 
@@ -578,4 +582,21 @@ async def read_design_images(db: Session, i: int):
 
 
 async def read_item_images(db: Session, color: list):
-    return db.query(ItemImages).order_by(ItemImages.color.l2_distance(color)).limit(5).all()
+    return db.query(ItemImages).order_by(ItemImages.color.l2_distance(color)).limit(10).all()
+
+
+async def read_analysis_history(db: Session, user_id: str):
+    return db.query(AnalysisHistories).filter(AnalysisHistories.user_id == user_id).first()
+
+
+async def update_analysis_history(db: Session, user_id: str, history: dict):
+    analysis_history = db.query(AnalysisHistories).filter(AnalysisHistories.user_id == user_id).first()
+
+    if analysis_history is None:
+        analysis_history = AnalysisHistories(user_id=user_id, history=history)
+        db.add(analysis_history)
+    else:
+        analysis_history.history = history
+    db.commit()
+    return analysis_history
+    

@@ -31,6 +31,11 @@ class UserInfoView(UserInfo):
 class UserForm(UserSignIn, UserInfo): ...
 
 
+class PasswordForm(BaseModel):
+    user_id: str
+    email: str
+
+
 class HashedUser(UserInfo):
     user_id: str
     hashed_password: str | None = None
@@ -144,6 +149,8 @@ class DesignImage(BaseModel):
     index: int
     src_url: str
     landing: str
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class RatedImage(BaseModel):
