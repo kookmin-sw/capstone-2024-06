@@ -576,8 +576,14 @@ async def read_chatting_rooms(db: Session, user_id: str):
 async def read_random_design_images(db: Session, n: int):
     return db.query(DesignImages).order_by(func.random()).limit(n).all()
 
+def read_random_design_images_sync(db: Session, n: int):
+    return db.query(DesignImages).order_by(func.random()).limit(n).all()
+
 
 async def read_design_images(db: Session, i: int):
+    return db.query(DesignImages).filter(DesignImages.index == i).first()
+
+def read_design_images_sync(db: Session, i: int):
     return db.query(DesignImages).filter(DesignImages.index == i).first()
 
 
