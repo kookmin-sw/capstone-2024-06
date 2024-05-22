@@ -6,7 +6,6 @@ from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 
 from dependencies import *
-from config_loader import config
 
 
 router = APIRouter(

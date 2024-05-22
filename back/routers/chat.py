@@ -1,8 +1,6 @@
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
-from base64 import b64encode
 import os
 import uuid
-import shutil
 
 from sqlalchemy.orm import Session
 

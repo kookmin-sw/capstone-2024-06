@@ -1,4 +1,4 @@
-from sqlalchemy import and_, or_, desc, exists, case, literal, func
+from sqlalchemy import and_, or_, desc, case, literal, func
 from sqlalchemy.orm import (
     Session,
     joinedload,
@@ -6,7 +6,6 @@ from sqlalchemy.orm import (
     subqueryload,
     with_expression,
 )
-from sqlalchemy.sql import alias, select, column
 from database.models import *
 from database.schemas import *
 
@@ -183,6 +182,10 @@ async def read_user_external_map(db: Session, external_id: str, provider: str):
         )
         .first()
     )
+
+
+async def read_user_external_map_by_user_id(db: Session, user_id: str):
+    return db.query(UserExternalMapping).filter(UserExternalMapping.user_id == user_id).first()
 
 
 async def read_post(db: Session, post_id: int):
@@ -572,10 +575,33 @@ async def read_chatting_rooms(db: Session, user_id: str):
 async def read_random_design_images(db: Session, n: int):
     return db.query(DesignImages).order_by(func.random()).limit(n).all()
 
+def read_random_design_images_sync(db: Session, n: int):
+    return db.query(DesignImages).order_by(func.random()).limit(n).all()
+
 
 async def read_design_images(db: Session, i: int):
     return db.query(DesignImages).filter(DesignImages.index == i).first()
 
+def read_design_images_sync(db: Session, i: int):
+    return db.query(DesignImages).filter(DesignImages.index == i).first()
+
 
 async def read_item_images(db: Session, color: list):
-    return db.query(ItemImages).order_by(ItemImages.color.l2_distance(color)).limit(5).all()
+    return db.query(ItemImages).order_by(ItemImages.color.l2_distance(color)).limit(10).all()
+
+
+async def read_analysis_history(db: Session, user_id: str):
+    return db.query(AnalysisHistories).filter(AnalysisHistories.user_id == user_id).first()
+
+
+async def update_analysis_history(db: Session, user_id: str, history: dict):
+    analysis_history = db.query(AnalysisHistories).filter(AnalysisHistories.user_id == user_id).first()
+
+    if analysis_history is None:
+        analysis_history = AnalysisHistories(user_id=user_id, history=history)
+        db.add(analysis_history)
+    else:
+        analysis_history.history = history
+    db.commit()
+    return analysis_history
+    

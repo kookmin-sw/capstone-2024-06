@@ -1,26 +1,39 @@
 import os
 import numpy as np
 from PIL import Image
+import requests
+from io import BytesIO
 from tqdm import tqdm
 
 import torch
 import torchvision.transforms as transforms
 
 from ultralytics import YOLO
-from config_loader import config
 
 
 class Img2Vec:
+    def __init__(self, from_url, verbose):
+        self.from_url = from_url
+        self.verbose = verbose
+
     def get_vector(self, image_path):
         return self.get_vectors([image_path])[0]
 
     def get_vectors(self, image_paths): ...
 
+    def open_image(self, path):
+        if self.from_url:
+            response = requests.get(path)
+            image = Image.open(BytesIO(response.content)).convert("RGB")
+        else:
+            image = Image.open(path).convert("RGB")
+        return image
+
 
 class Feat2Vec(Img2Vec):
-    def __init__(self, model, transform=None, batch_size=32, resize=(256, 256), verbose=False):
+    def __init__(self, model, transform=None, batch_size=32, resize=(256, 256), from_url = False, verbose=False):
+        super().__init__(from_url, verbose)
         self.batch_size = batch_size
-        self.verbose = verbose
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         self.model = model
@@ -45,7 +58,7 @@ class Feat2Vec(Img2Vec):
         for i in iterator:
             batch_image_paths = image_paths[i : i + self.batch_size]
             batch_images = torch.stack([
-                    self.preprocess(Image.open(path).convert("RGB")).to(self.device)
+                    self.preprocess(self.open_image(path)).to(self.device)
                     for path in batch_image_paths
             ])
 
@@ -61,8 +74,8 @@ class Feat2Vec(Img2Vec):
 
 class Obj2Vec(Img2Vec):
     def __init__(self, conf_threshold=0.25, verbose=False):
+        super().__init__(False, verbose)
         self.conf_threshold = conf_threshold
-        self.verbose = verbose
         self.model = YOLO("yolov8x.pt")
         self.classes = [41, 56, 58, 59, 60, 62, 63, 64, 66, 73, 74, 75]
         self.cls_to_idx = {x: i for i, x in enumerate(self.classes)}
@@ -91,9 +104,8 @@ class Obj2Vec(Img2Vec):
 
 
 class Color2Vec(Img2Vec):
-    def __init__(self, verbose=False):
-        super().__init__()
-        self.verbose = verbose
+    def __init__(self, from_url=False, verbose=False):
+        super().__init__(from_url, verbose)
 
     def get_vectors(self, image_paths):
         iterator = image_paths
@@ -102,7 +114,7 @@ class Color2Vec(Img2Vec):
 
         vectors = []
         for image_path in iterator:
-            image = Image.open(image_path)
+            image = self.open_image(image_path)
             image = image.resize((256, 256))
             image_arr = np.array(image)
             pixels = image_arr.reshape(-1, 3)
