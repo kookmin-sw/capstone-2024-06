@@ -4,6 +4,16 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Comment from "./Comment";
 import { useSession } from "next-auth/react";
+import { Session } from "next-auth";
+
+interface ExtendedSession extends Session {
+  user?: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+    user_id: string;
+  }
+}
 
 const Posting = () => {
   const { data: session } = useSession();
@@ -88,7 +98,7 @@ const Posting = () => {
     try {
       const postIdKey = Object.keys(Postid)[0];
       const response = await fetch(
-        `${process.env.Localhost}/post/${Postid[postIdKey]}`,
+        `${process.env.Localhost}/community/post/${Postid[postIdKey]}`,
         {
           method: "DELETE",
           headers: {
@@ -105,7 +115,7 @@ const Posting = () => {
   };
 
   const handleAuthorImageClick = (user_id: string) => {
-    if (user_id === session?.user?.user_id) {
+    if (user_id === (session as ExtendedSession)?.user?.user_id) {
       router.push("/Mypage");
     } else router.push(`/Users?user_id=${user_id}`);
     // Users 페이지로 이동

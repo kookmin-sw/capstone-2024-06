@@ -112,13 +112,6 @@ const authOptions: NextAuthOptions = {
   ],
   // 세션의 비밀 값으로 사용할 문자열
   secret: process.env.NEXTAUTH_SECRET,
-  // 페이지 경로 설정
-  pages: {
-    // 오류 발생 시 이동할 페이지 경로 설정
-    error: '/error',
-    // 로그아웃 시 이동할 페이지 경로 설정
-    signOut: '/'
-  },
   // 세션 설정
   session: {
     // 세션 저장 방식 설정
@@ -135,14 +128,13 @@ const authOptions: NextAuthOptions = {
         token.user = session.user;
       } else {
         if (account) {
-          if (account.provider == 'credentials') {
+          if (account.provider == 'credentials' && 'user' in user && 'access_token' in user) {
             token.user = user.user;
             token.access_token = user.access_token;
           } else {
             user = {
               ...user,
-              user_id: user.id,
-              id: undefined
+              id: user.id,
             };
             const res = await fetch(`${process.env.api_url}/user/token/${account.access_token}?provider=${account.provider}`, {
               method: 'POST',
@@ -165,8 +157,11 @@ const authOptions: NextAuthOptions = {
       return token
     },
     async session({ session, token }) {
-      session.user = token.user;
-      session.access_token = token.access_token;
+      session.user = {
+        email: token.email,
+        image: token.picture,
+        name: token.name
+      };
       console.log("inside session callback", session);
       return session
     },

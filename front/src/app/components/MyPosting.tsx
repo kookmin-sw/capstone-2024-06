@@ -7,6 +7,16 @@ import Nav from "../components/Nav";
 import MyProfile from "../components/MyProfile";
 import MyPosting from "../components/MyPosting";
 import MyPageProfile from "../components/MyPageProfile";
+import { Session } from 'next-auth';
+
+interface ExtendedSession extends Session {
+  user?: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+    user_id: string;
+  }
+}
 
 const MyPost = () => {
   const { data: session, status } = useSession(); // status 가져오기
@@ -17,7 +27,7 @@ const MyPost = () => {
     const fetchUserPosts = async () => {
       try {
         if (status === 'authenticated') { // 인증된 경우에만 게시물 가져오기
-          const response = await fetch(`${process.env.Localhost}/community/post/search?author_id=${session?.user?.user_id}`, {
+          const response = await fetch(`${process.env.Localhost}/community/post/search?author_id=${(session as ExtendedSession)?.user?.user_id}`, {
             method: 'GET',
             headers: {
               Authorization: `Bearer ${(session as any)?.access_token}`,

@@ -31,7 +31,7 @@ const FindUserIDpage = () => {
 
         setFoundUserId(data.user_id);
         setError('');
-      } catch (error) {
+      } catch (error : any) {
         setError(error.message);
         setFoundUserId('');
       } finally {

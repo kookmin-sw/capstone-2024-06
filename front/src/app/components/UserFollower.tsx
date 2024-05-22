@@ -3,13 +3,37 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from "next-auth/react";
+import { Session } from "next-auth";
+
+interface ExtendedSession extends Session {
+  user?: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+    user_id: string;
+  }
+}
 
 const UserFollowerlist = ({ }) => {
   const { data: session } = useSession();
 
-  const [userProfile, setUserProfile] = useState(null);
+  const [userProfile, setUserProfile] = useState<{
+    name: string;
+    email: string;
+    image: string;
+    user_id: string;
+    followed: boolean;
+    follower_count: number;
+    followee_count: number;
+  } | null>(null);
   const [isFollowing, setIsFollowing] = useState(false);
-  const [followerlist, setFollowerlist] = useState([]);
+  const [followerlist, setFollowerlist] = useState<Array<{
+    name: string;
+    email: string;
+    image: string;
+    user_id: string;
+    followed: boolean;
+  }>>([]);
 
 
   const params = useSearchParams();
@@ -45,6 +69,8 @@ const UserFollowerlist = ({ }) => {
 
   //팔로우 또는 언팔로우 요청을 보내는 함수
   const handleFollowToggle = async () => {
+    if (!userProfile) return;
+
     try {
       const response = await fetch(`${process.env.Localhost}/community/follow/${user_id}`, {
         method: userProfile.followed ? 'DELETE' : 'POST',
@@ -94,7 +120,7 @@ const UserFollowerlist = ({ }) => {
   }, [session]);
 
   const handleAuthorImageClick = (user_id: string) => {
-    if (user_id === session?.user?.user_id) {
+    if (user_id === (session as ExtendedSession)?.user?.user_id) {
       router.push("/Mypage");
     }
     else router.push(`/Users?user_id=${user_id}`);
@@ -102,7 +128,7 @@ const UserFollowerlist = ({ }) => {
   };
 
   const handleFolloweeClick = (user_id: string) => {
-    if (user_id === session?.user?.user_id) {
+    if (user_id === (session as ExtendedSession)?.user?.user_id) {
       router.push("/Mypage");
     }
     else router.push(`/Users/Followee?user_id=${user_id}`);
@@ -110,7 +136,7 @@ const UserFollowerlist = ({ }) => {
   };
 
   const handleFollowerClick = (user_id: string) => {
-    if (user_id === session?.user?.user_id) {
+    if (user_id === (session as ExtendedSession)?.user?.user_id) {
       router.push("/Mypage");
     }
     else router.push(`/Users/Follower?user_id=${user_id}`);
@@ -149,10 +175,14 @@ const UserFollowerlist = ({ }) => {
                     )}
                   </div>
                   <div className="flex items-center mt-2">
-                    <h1 className="text-sm hover:text-[#F4A460]" onClick={() => handleFollowerClick(userProfile?.user_id)} >팔로워 {userProfile?.follower_count}</h1>
+                    <h1 className="text-sm hover:text-[#F4A460]" onClick={() => {
+                      if (userProfile?.user_id != null) handleFollowerClick(userProfile.user_id)
+                    }} >팔로워 {userProfile?.follower_count}</h1>
                   </div>
                   <div className="flex items-center mt-2">
-                    <h1 className="text-sm hover:text-[#F4A460]" onClick={() => handleFolloweeClick(userProfile?.user_id)}>팔로잉 {userProfile?.followee_count}</h1>
+                    <h1 className="text-sm hover:text-[#F4A460]" onClick={() => {
+                      if (userProfile?.user_id != null) handleFollowerClick(userProfile.user_id)
+                    }}>팔로잉 {userProfile?.followee_count}</h1>
                   </div>
                 </div>
               </div>

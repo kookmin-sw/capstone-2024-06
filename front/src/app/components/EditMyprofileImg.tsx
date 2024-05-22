@@ -32,7 +32,7 @@ const EditUserProfileImg = () => {
     }
 
     try {
-      if (imagePreview) {
+      if (imagePreview && session != null) {
         const formData = new FormData();
         formData.append('file', imagePreview.file);
         console.log(imagePreview.file);
@@ -48,7 +48,6 @@ const EditUserProfileImg = () => {
         );
         session.user = await response.json();
         update(session);
-
       }
     } catch (error) {
       console.error('Error updating profile image:', error);
@@ -61,7 +60,7 @@ const EditUserProfileImg = () => {
       {message && <p>{message} </p>}
       <form onSubmit={handleSubmit} >
         <input type="file" accept="image/*" onChange={handleImageChange} />
-        {image && <img src={imagePreview.url} alt="Preview" />}
+        {image && <img src={imagePreview?.url} alt="Preview" />}
         <button className='absolute left-[40px] top-[90px] justify-center rounded-md bg-yellow-700 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500'
           type="submit" > 프로필 사진 저장 </button>
       </form>

@@ -32,9 +32,9 @@ const ResetPasswordPage = () => {
         const data = await response.json();
         setPassword(data.password);
         setError('');
-      } catch (error) {
+      } catch (error : any) {
         setError(error.message || 'Something went wrong.');
-        setSuccessMessage('');
+        
       } finally {
         setIsSubmitting(false);
       }

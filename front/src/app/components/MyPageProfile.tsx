@@ -3,14 +3,30 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { Session } from "next-auth";
 
-
+interface ExtendedSession extends Session {
+  user?: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+    user_id: string;
+  }
+}
 
 const MyPageProfile = () => {
   const { data: session } = useSession();
   const router = useRouter();
 
-  const [MyPageProfile, setMyPageProfile] = useState([]);
+  const [MyPageProfile, setMyPageProfile] = useState<{
+    name: string;
+    email: string;
+    image: string;
+    user_id: string;
+    followed: boolean;
+    follower_count: number;
+    followee_count: number;
+  }>();
 
   useEffect(() => {
     if (!session) {
@@ -18,7 +34,9 @@ const MyPageProfile = () => {
     }
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`${process.env.Localhost}/user/profile/${session?.user?.user_id}`, {
+        if (!session) return;
+
+        const response = await fetch(`${process.env.Localhost}/user/profile/${(session as ExtendedSession)?.user?.user_id}`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${(session as any)?.access_token}`,

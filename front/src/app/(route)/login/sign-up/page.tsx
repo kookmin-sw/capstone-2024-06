@@ -93,7 +93,7 @@ const RegistrationForm = () => {
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="닉네임"
                   value={name}
-                  onChange={(e) => setUsername(e.target.value)}
+                  onChange={(e) => setName(e.target.value)}
                 />
               </div>
             </div>
@@ -104,7 +104,7 @@ const RegistrationForm = () => {
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="아이디"
                   value={user_id}
-                  onChange={(e) => setUserid(e.target.value)}
+                  onChange={(e) => setUserId(e.target.value)}
                 />
               </div>
             </div>
@@ -148,14 +148,14 @@ const RegistrationForm = () => {
               <div className="w-[400px] border border-b-[#a69067]"></div>
             </div>
             <div className="flex justify-center mt-5">
-              <Link href="/login/sign-in">
+             
                 <button
                   type="submit"
                   className="w-[400px] bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                 >
                   회원가입
                 </button>
-              </Link>
+              
             </div>
             <div className="flex mt-3 w-full justify-center">
               <div className="mr-10">

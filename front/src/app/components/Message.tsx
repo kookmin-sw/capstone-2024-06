@@ -39,7 +39,7 @@ const SingleClient = ({ userId }: { userId: number }) => {
   );
 };
 
-const Message = (another:string) => {
+const Message = () => {
   return (
     <div>
       <SingleClient userId={1} />

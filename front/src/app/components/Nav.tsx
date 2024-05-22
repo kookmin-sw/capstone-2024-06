@@ -83,7 +83,7 @@ const Nav = () => {
           </div>
         </div>
         <div className="flex justify-center items-center">
-          <div className="relative w-[300px] border rounded-lg">
+          <div className="relative w-[300px] border rounded-lg mr-3">
             <input
               type="search"
               className="block w-full p-3  text-sm text-gray-900"
