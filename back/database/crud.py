@@ -1,4 +1,4 @@
-from sqlalchemy import and_, or_, desc, exists, case, literal, func
+from sqlalchemy import and_, or_, desc, case, literal, func
 from sqlalchemy.orm import (
     Session,
     joinedload,
@@ -6,7 +6,6 @@ from sqlalchemy.orm import (
     subqueryload,
     with_expression,
 )
-from sqlalchemy.sql import alias, select, column
 from database.models import *
 from database.schemas import *
 

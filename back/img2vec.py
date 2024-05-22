@@ -9,7 +9,6 @@ import torch
 import torchvision.transforms as transforms
 
 from ultralytics import YOLO
-from config_loader import config
 
 
 class Img2Vec:

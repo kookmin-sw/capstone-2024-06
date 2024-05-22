@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, Sequence, DateTime, JSON
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
-from sqlalchemy.orm import relationship, query_expression, Mapped, mapped_column
+from sqlalchemy.orm import relationship, query_expression, Mapped
 from pgvector.sqlalchemy import Vector
 from database.database import Base
 from datetime import datetime
