@@ -19,6 +19,7 @@ interface ImageItem {
 }
 
 const ImageAnalysisSlider = ({ Images }: { Images: ImageItem[] }) => {
+  console.log(Images)
   const { data: session } = useSession();
 
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -94,7 +95,7 @@ const ImageAnalysisSlider = ({ Images }: { Images: ImageItem[] }) => {
           modules={[FreeMode, Navigation]}
           className="mySwiper"
         >
-          {Images.map((src, index) => (
+          { Array.isArray(Images) && Images.map((src, index) => (
             <SwiperSlide key={index}>
               <div
                 className="w-[300px] h-[300px] relative"

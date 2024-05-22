@@ -6,9 +6,13 @@ import ImageAnalysisSlider from "@/app/components/ImageAnalysisSlider";
 
 const EditPost = () => {
   const { data: session } = useSession();
-  const [ LastAnalysisData, SetLastAnalysisData ] = useState([
-    { index: 0, src_url: "", landing: "" },
-  ])
+  const [LastAnalysisData, SetLastAnalysisData] = useState<
+    Array<{
+      index: number;
+      src_url: string;
+      landing: string;
+    }>
+  >([]);
   useEffect(() => {
     if (!session) return;
     const MyAnalysis = async () => {
@@ -24,8 +28,8 @@ const EditPost = () => {
           }
         );
         const data = await response.json();
-        console.log(data)
-        SetLastAnalysisData(data)
+        console.log(data);
+        SetLastAnalysisData(data);
       } catch (error) {
         console.error("Error", error);
       }
@@ -34,13 +38,20 @@ const EditPost = () => {
   }, [session]);
 
   return (
-    <main>
+    <main className="flex-col justify-center w-full h-full">
       <Nav />
-      <div className="relative w-screen h-screen bg-[background-color]">
-        <div className="absolute w-[251px] h-[91px] left-[200px] top-[66px] font-inter font-semibold text-4xl leading-14 text-yellow-600">
-          어떤데스크
+      <div className="flex justify-center w-full h-auto">
+        <div className="flex-col items-center min-w-[700px] max-w-[1000px] w-11/12 h-auto">
+          <div className="w-fit h-fit font-inter font-semibold text-4xl text-yellow-600 my-20">
+            어떤데스크
+          </div>
+          <div className="mb-10 text-xl font-semibold text-[#808080]">마지막 분석 결과</div>
+          <div className="w-fit">
+            {LastAnalysisData.length > 0 && (
+              <ImageAnalysisSlider Images={LastAnalysisData} />
+            )}
+          </div>
         </div>
-        {/* <ImageAnalysisSlider Images={LastAnalysisData} /> */}
       </div>
     </main>
   );

@@ -6,6 +6,7 @@ import { useSession, signOut } from "next-auth/react";
 import Chat from "./Chat";
 
 const Nav = () => {
+
   const { data: session } = useSession();
 
   const router = useRouter();
@@ -110,10 +111,10 @@ const Nav = () => {
             </div>
           </div>
         )}
-        {session && (
+        {session && session.user &&(
           <div className="flex justify-center items-center w-fit">
             <div className="text-sm text-[#808080] mx-1 cursor-pointer">
-              {session.user?.name}
+              {session.user.name?.substring(0,4)}
             </div>
             <div
               className="text-sm text-[#808080] mx-1 cursor-pointer hover:text-[#F4A460]"

@@ -1,7 +1,6 @@
 "use client";
 import { signIn } from "next-auth/react";
 import { ChangeEvent, FormEvent, useState } from "react";
-import style from "./signinStyle.module.css";
 import Link from "next/link";
 import Nav from "../../../components/Nav";
 
@@ -16,7 +15,6 @@ type PageProps = {
 }
 
 export default function LoginPage({ searchParams }: PageProps) {
-  console.log(process.env.NAVER_CLIENT_ID)
   const [inputs, setInputs] = useState<LoginInput>({ user_id: "", password: "" });
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {

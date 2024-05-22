@@ -100,7 +100,7 @@ const MyPageProfile = () => {
     <main className="w-[600px] mt-10 border h-[400px] rounded-md">
       <div className="flex-col">
         <div className="flex w-full h-[150px]">
-          <div className="flex h-full w-1/2 justify-center items-center">
+          <div className="flex h-full w-1/2 justify-center items-center ">
             <div className="w-[100px] h-[100px] flex justify-center items-center">
               <Image
                 src={session?.user?.image ?? ""}
@@ -113,7 +113,7 @@ const MyPageProfile = () => {
             </div>
           </div>
           <div className="flex w-1/2 h-full items-center flex justify-center items-center">
-            <div className="text-2xl">{session?.user?.name}</div>
+            <div className="text-2xl">{session?.user?.name?.substring(0, 4)}</div>
           </div>
         </div>
         <div className="flex justify-center items-center w-full h-[60px]">

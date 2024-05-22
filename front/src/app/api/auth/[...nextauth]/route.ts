@@ -1,12 +1,16 @@
 //Users/user/Desktop/signforms/signforms/src/app/api/auth/[...nextauth]/route.ts
 
-import NextAuth from "next-auth";
+import NextAuth, { Session } from "next-auth";
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import KakaoProvider from "next-auth/providers/kakao";
 import NaverProvider from "next-auth/providers/naver";
 
+
+interface ExtendedSession extends Session {
+  access_token?: string;
+}
 //자체 로그인
 const credentialsProvider = CredentialsProvider({
   // The name to display on the sign in form (e.g. "Sign in with...")
@@ -124,17 +128,20 @@ const authOptions: NextAuthOptions = {
 
   callbacks: {
     async jwt({ token, account, user, trigger, session }) {
+      console.log(account)
+          console.log(user)
       if (trigger === "update") {
         token.user = session.user;
       } else {
         if (account) {
-          if (account.provider == 'credentials' && 'user' in user && 'access_token' in user) {
-            token.user = user.user;
-            token.access_token = user.access_token;
+          if (account.provider == 'credentials') {
+            token.user = (user as any).user;
+            token.access_token = (user as any).access_token;
           } else {
             user = {
-              ...user,
-              id: user.id,
+              ...(user as any),
+              user_id: user.id,
+              id: "",
             };
             const res = await fetch(`${process.env.api_url}/user/token/${account.access_token}?provider=${account.provider}`, {
               method: 'POST',
@@ -157,13 +164,10 @@ const authOptions: NextAuthOptions = {
       return token
     },
     async session({ session, token }) {
-      session.user = {
-        email: token.email,
-        image: token.picture,
-        name: token.name
-      };
+      session.user = (token as { user?: any }).user;
+      (session as ExtendedSession).access_token = (token as { access_token?: any }).access_token;
       console.log("inside session callback", session);
-      return session
+      return session;
     },
   },
   pages: {
