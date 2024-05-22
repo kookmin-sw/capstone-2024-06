@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { ChangeEventHandler, FormEventHandler, useState } from 'react';
 import { useSession } from 'next-auth/react';
 
 const EditUserInfo = () => {
@@ -11,7 +11,7 @@ const EditUserInfo = () => {
   });
   const [message, setMessage] = useState('');
 
-  const handleChange = (e) => {
+  const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     const { name, value } = e.target;
     setUserInfo((prev) => ({
       ...prev,
@@ -19,7 +19,7 @@ const EditUserInfo = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
     try {
       const response = await fetch(`${process.env.Localhost}/user/modification`, {
@@ -30,7 +30,7 @@ const EditUserInfo = () => {
         },
         body: JSON.stringify(userInfo),
       });
-      if (response.ok) {
+      if (response.ok && session != null) {
         session.user = await response.json();
         update(session);
         setMessage('User information updated successfully.');

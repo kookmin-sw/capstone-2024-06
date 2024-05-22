@@ -1,12 +1,16 @@
 //Users/user/Desktop/signforms/signforms/src/app/api/auth/[...nextauth]/route.ts
 
-import NextAuth from "next-auth";
+import NextAuth, { Session } from "next-auth";
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import KakaoProvider from "next-auth/providers/kakao";
 import NaverProvider from "next-auth/providers/naver";
 
+
+interface ExtendedSession extends Session {
+  access_token?: string;
+}
 //자체 로그인
 const credentialsProvider = CredentialsProvider({
   // The name to display on the sign in form (e.g. "Sign in with...")
@@ -112,13 +116,6 @@ const authOptions: NextAuthOptions = {
   ],
   // 세션의 비밀 값으로 사용할 문자열
   secret: process.env.NEXTAUTH_SECRET,
-  // 페이지 경로 설정
-  pages: {
-    // 오류 발생 시 이동할 페이지 경로 설정
-    error: '/error',
-    // 로그아웃 시 이동할 페이지 경로 설정
-    signOut: '/'
-  },
   // 세션 설정
   session: {
     // 세션 저장 방식 설정
@@ -131,18 +128,20 @@ const authOptions: NextAuthOptions = {
 
   callbacks: {
     async jwt({ token, account, user, trigger, session }) {
+      console.log(account)
+          console.log(user)
       if (trigger === "update") {
         token.user = session.user;
       } else {
         if (account) {
           if (account.provider == 'credentials') {
-            token.user = user.user;
-            token.access_token = user.access_token;
+            token.user = (user as any).user;
+            token.access_token = (user as any).access_token;
           } else {
             user = {
-              ...user,
+              ...(user as any),
               user_id: user.id,
-              id: undefined
+              id: "",
             };
             const res = await fetch(`${process.env.api_url}/user/token/${account.access_token}?provider=${account.provider}`, {
               method: 'POST',
@@ -165,10 +164,10 @@ const authOptions: NextAuthOptions = {
       return token
     },
     async session({ session, token }) {
-      session.user = token.user;
-      session.access_token = token.access_token;
+      session.user = (token as { user?: any }).user;
+      (session as ExtendedSession).access_token = (token as { access_token?: any }).access_token;
       console.log("inside session callback", session);
-      return session
+      return session;
     },
   },
   pages: {

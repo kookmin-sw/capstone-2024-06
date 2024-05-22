@@ -5,35 +5,43 @@ import { useSession } from "next-auth/react";
 
 const MyNotification = () => {
   const { data: session, status } = useSession();
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState<
+    Array<{
+      notification_id: number;
+      reference_id: number;
+      content: string;
+      category: string;
+      checked: boolean;
+    }>
+  >([]);
+
+  const fetchNotifications = async () => {
+    try {
+      if (status === "authenticated") {
+        const response = await fetch(
+          `${process.env.Localhost}/user/notification`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${(session as any)?.access_token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          setNotifications(data);
+        } else {
+          console.error("Failed to fetch notifications");
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        if (status === "authenticated") {
-          const response = await fetch(
-            `${process.env.Localhost}/user/notification`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: `Bearer ${(session as any)?.access_token}`,
-                "Content-Type": "application/json",
-              },
-            }
-          );
-          if (response.ok) {
-            const data = await response.json();
-            console.log(data);
-            setNotifications(data);
-          } else {
-            console.error("Failed to fetch notifications");
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching notifications:", error);
-      }
-    };
-
     fetchNotifications();
   }, [session, status]);
 
@@ -63,7 +71,6 @@ const MyNotification = () => {
         await router.push(
           `/Community/${SwitchCategory(Category)}/${reference_id}`
         );
-
       } else {
         console.error("Failed to update notification status");
       }

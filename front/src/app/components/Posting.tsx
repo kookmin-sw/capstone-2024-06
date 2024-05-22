@@ -4,6 +4,16 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Comment from "./Comment";
 import { useSession } from "next-auth/react";
+import { Session } from "next-auth";
+
+interface ExtendedSession extends Session {
+  user?: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+    user_id: string;
+  }
+}
 
 const Posting = () => {
   const { data: session } = useSession();
@@ -38,35 +48,57 @@ const Posting = () => {
   });
 
   useEffect(() => {
-    if (!session) return;
-    const PostLoadBt = async () => {
-      try {
-        const postIdKey = Object.keys(Postid)[0];
-        const response = await fetch(
-          `${process.env.Localhost}/community/post/${Postid[postIdKey]}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${(session as any)?.access_token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        const data = await response.json();
-        console.log(data);
-        SetPosting(data);
-      } catch (error) {
-        console.error("Error", error);
-      }
-    };
-    PostLoadBt();
+    if (!session) {
+      const PostLoadBt = async () => {
+        try {
+          const postIdKey = Object.keys(Postid)[0];
+          const response = await fetch(
+            `${process.env.Localhost}/community/post/${Postid[postIdKey]}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          const data = await response.json();
+          console.log(data);
+          SetPosting(data);
+        } catch (error) {
+          console.error("Error", error);
+        }
+      };
+      PostLoadBt();
+    } else {
+      const PostLoadBt = async () => {
+        try {
+          const postIdKey = Object.keys(Postid)[0];
+          const response = await fetch(
+            `${process.env.Localhost}/community/post/${Postid[postIdKey]}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${(session as any)?.access_token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          const data = await response.json();
+          console.log(data);
+          SetPosting(data);
+        } catch (error) {
+          console.error("Error", error);
+        }
+      };
+      PostLoadBt();
+    }
   }, [Postid, session]);
 
   const PostingDeleteBt = async () => {
     try {
       const postIdKey = Object.keys(Postid)[0];
       const response = await fetch(
-        `${process.env.Localhost}/post/${Postid[postIdKey]}`,
+        `${process.env.Localhost}/community/post/${Postid[postIdKey]}`,
         {
           method: "DELETE",
           headers: {
@@ -83,7 +115,7 @@ const Posting = () => {
   };
 
   const handleAuthorImageClick = (user_id: string) => {
-    if (user_id === session?.user?.user_id) {
+    if (user_id === (session as ExtendedSession)?.user?.user_id) {
       router.push("/Mypage");
     } else router.push(`/Users?user_id=${user_id}`);
     // Users 페이지로 이동
@@ -135,7 +167,7 @@ const Posting = () => {
     <main className="flex">
       <div className="flex-col w-[900px] h-auto mr-2">
         <div className="w-full flex mb-1">
-          <div className="text-xl font-bold pl-3 w-full ">{Posting.title}</div>
+          <div className="text-2xl font-bold mb-1 w-full ">{Posting.title}</div>
           <div className="mr-2 w-[120px]">
             {Posting.created_at.slice(0, 10)}
           </div>
@@ -147,12 +179,12 @@ const Posting = () => {
             width={40}
             height={30}
             alt={""}
-            className="rounded-full"
+            className="rounded-full cursor-pointer"
             onClick={() => handleAuthorImageClick(Posting.author.user_id)}
           />
-          <div className="ml-2 w-full">{Posting.author.name}</div>
+          <div className="ml-2 w-full cursor-pointer">{Posting.author.name}</div>
           <div className="flex w-[78px] h-full mr-1 text-xs">
-            <div className="mr-1">조회수</div>
+            <div className="w-[40px] ">조회수</div>
             <div>{Posting.view_count}</div>
           </div>
           <div className="flex w-[78px] h-full mr-1 text-xs">
@@ -179,12 +211,13 @@ const Posting = () => {
         </div>
         <Comment comment_count={Posting.comment_count} />
         <div className="flex justify-center items-center w-full m-6">
-        <button
-          onClick={PostingDeleteBt}
-          className="bg-transparent w-[200px] h-[50px] hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
-        >
-          글 삭제하기
-        </button></div>
+          <button
+            onClick={PostingDeleteBt}
+            className="bg-transparent w-[200px] h-[50px] hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
+          >
+            글 삭제하기
+          </button>
+        </div>
       </div>
       <div className="flex-col w-[100px] border-2 rounded-full h-fit sticky top-5 pt-5 ml-2">
         <div className="flex justify-center items-center">

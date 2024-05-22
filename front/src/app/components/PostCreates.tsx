@@ -60,9 +60,10 @@ const PostCreates = () => {
       // Posting Post
       const PostCreateData = {
         title: PostCreateTitle,
-        category: state,
+        category: Category,
         content: PostCreateContent,
       };
+      console.log(PostCreateData)
       const PostCreate = await fetch(
         `${process.env.Localhost}/community/post/${PostCreateTempId.PostCreateId}`,
         {
@@ -125,9 +126,10 @@ const PostCreates = () => {
     }
   };
 
-  const CateGory = { Category: "" };
-
-  const [state, dispatch] = useReducer(reducer, CateGory);
+  const [Category, SetCategory] = useState('자유');
+  const handleChange = (e : any) => {
+    SetCategory(e.target.value);
+  };
 
   return (
     <main>
@@ -200,8 +202,8 @@ const PostCreates = () => {
         </div>
         <div className="flex space-x-2 justify-center">
           <select
-            value={state.Category} // 선택된 값이 state에 의해 제어됨
-            onChange={(e) => dispatch({ type: e.target.value })} // 선택된 값에 따라 state 업데이트
+            value={Category} 
+            onChange={handleChange} 
             className="w-[100px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
             <option value="자유">자유</option>

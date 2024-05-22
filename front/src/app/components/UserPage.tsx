@@ -8,7 +8,15 @@ import Chat from "./Chat";
 const User = ({ }) => {
   const { data: session } = useSession();
 
-  const [userProfile, setUserProfile] = useState(null);
+  const [userProfile, setUserProfile] = useState<{
+    name: string;
+    email: string;
+    image: string;
+    user_id: string;
+    followed: boolean;
+    follower_count: number;
+    followee_count: number;
+  } | null>(null);
   const [userPosts, setUserPosts] = useState([]);
   const [isFollowing, setIsFollowing] = useState(false);
 
@@ -69,6 +77,8 @@ const User = ({ }) => {
 
   //팔로우 또는 언팔로우 요청을 보내는 함수
   const handleFollowToggle = async () => {
+    if (!userProfile) return;
+
     try {
       const response = await fetch(`${process.env.Localhost}/community/follow/${user_id}`, {
         method: userProfile.followed ? 'DELETE' : 'POST',

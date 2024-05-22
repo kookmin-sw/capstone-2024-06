@@ -3,12 +3,28 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Image from "next/image";
+import { Session } from 'next-auth';
+
+interface ExtendedSession extends Session {
+  user?: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+    user_id: string;
+  }
+}
 
 const Following = () => {
   const { data: session } = useSession();
   const router = useRouter();
 
-  const [followinglist, setFollowinglist] = useState([]);
+  const [followinglist, setFollowinglist] = useState<Array<{
+    "name": string;
+    "email": string;
+    "image": string;
+    "user_id": string;
+    "followed": boolean
+  }>>([]);
 
   useEffect(() => {
     const fetchFollowings = async () => {
@@ -16,7 +32,7 @@ const Following = () => {
         if (!session) return;
 
         // 팔로잉 정보를 가져오는 API 요청
-        const res = await fetch(`${process.env.Localhost}/user/followee/${session?.user?.user_id}`, {
+        const res = await fetch(`${process.env.Localhost}/user/followee/${(session as ExtendedSession)?.user?.user_id}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

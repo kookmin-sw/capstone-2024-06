@@ -19,40 +19,41 @@ interface ImageItem {
 }
 
 const ImageAnalysisSlider = ({ Images }: { Images: ImageItem[] }) => {
-
+  console.log(Images)
   const { data: session } = useSession();
 
   const [previewImage, setPreviewImage] = useState<string | null>(null);
-  const [ImageLanding, SetImageLanding] = useState("")
+  const [ImageLanding, SetImageLanding] = useState("");
 
-  const handleImageClick = (imageUrl: string, imageLanding : string) => {
+  const handleImageClick = (imageUrl: string, imageLanding: string) => {
     setPreviewImage(imageUrl);
-    SetImageLanding(imageLanding)
+    SetImageLanding(imageLanding);
   };
 
   const closePreview = () => {
     setPreviewImage(null);
   };
 
-  
-  const [ViewDetails, SetViewDetails] = useState<{ color: string; items: { name: string; landing: string; src_url: string; } }[]>([]);
-  
-  const [ViewDetailOn, SetViewDetailOn] = useState(false)
+  const [ViewDetails, SetViewDetails] = useState<
+    {
+      color: string;
+      items: { name: string; landing: string; src_url: string };
+    }[]
+  >([]);
+
+  const [ViewDetailOn, SetViewDetailOn] = useState(false);
   const [IndexCheck, SetIndexCheck] = useState(0);
 
-  
-  const ViewDetailBtClick = (index : number) => {
-  
-    if (index === IndexCheck && ViewDetailOn ) {
-      SetViewDetailOn(false)
+  const ViewDetailBtClick = (index: number) => {
+    if (index === IndexCheck && ViewDetailOn) {
+      SetViewDetailOn(false);
       return;
-    } else if  (index === IndexCheck && !ViewDetailOn ){
-      SetViewDetailOn(true)
-      console.log("set ture")
+    } else if (index === IndexCheck && !ViewDetailOn) {
+      SetViewDetailOn(true);
+      console.log("set ture");
       return;
-    }
-    else {
-      SetIndexCheck(index)
+    } else {
+      SetIndexCheck(index);
     }
     const ItemGet = async () => {
       try {
@@ -66,7 +67,7 @@ const ImageAnalysisSlider = ({ Images }: { Images: ImageItem[] }) => {
           }
         );
         const ItemDatas = await ImagePost.json();
-        SetViewDetails(ItemDatas)
+        SetViewDetails(ItemDatas);
         if (ViewDetailOn) {
           SetViewDetailOn(false);
           SetViewDetailOn(true);
@@ -78,7 +79,7 @@ const ImageAnalysisSlider = ({ Images }: { Images: ImageItem[] }) => {
       }
     };
     ItemGet();
-  }
+  };
 
   return (
     <main className="flex-col w-full justify-center ">
@@ -94,7 +95,7 @@ const ImageAnalysisSlider = ({ Images }: { Images: ImageItem[] }) => {
           modules={[FreeMode, Navigation]}
           className="mySwiper"
         >
-          {Images.map((src, index) => (
+          { Array.isArray(Images) && Images.map((src, index) => (
             <SwiperSlide key={index}>
               <div
                 className="w-[300px] h-[300px] relative"
@@ -109,14 +110,31 @@ const ImageAnalysisSlider = ({ Images }: { Images: ImageItem[] }) => {
                 />
               </div>
               <div className="w-full flex items-center justify-center mt-3">
-                <button onClick={() => ViewDetailBtClick(src.index)} className="font-semibold border w-12 h-12 rounded">{index+1}</button>
+                <button
+                  onClick={() => ViewDetailBtClick(src.index)}
+                  className="font-semibold border w-12 h-12 rounded cursor-pointer"
+                > 
+                  <div className="flex justify-center items-center">
+                    <img
+                      src={`/+.png`}
+                      alt={`Desk ${index + 1}`}
+                      className=" w-6 h-6 transition-transform hover:scale-105"
+                    />
+                  </div>
+                </button>
               </div>
             </SwiperSlide>
           ))}
         </Swiper>
       </div>
       {ViewDetailOn && <ViewDetail Items={ViewDetails as any} />}
-      {previewImage && <Modal imageUrl={previewImage} onClose={closePreview} imageLanding={ImageLanding} />}
+      {previewImage && (
+        <Modal
+          imageUrl={previewImage}
+          onClose={closePreview}
+          imageLanding={ImageLanding}
+        />
+      )}
     </main>
   );
 };

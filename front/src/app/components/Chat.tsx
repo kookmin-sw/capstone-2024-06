@@ -103,7 +103,7 @@ const ChatModal = ({
     newClient.onmessage = (message) => {
       const parsed = JSON.parse(message.data);
       const pparse = JSON.parse(parsed);
-      const images_ids = pparse.image ?  pparse.image.image_id : null   
+      const images_ids = pparse.image ? pparse.image.image_id : null;
       AddMessage(pparse.message, pparse.sender_id, images_ids);
     };
     SetClient(newClient);
@@ -293,36 +293,37 @@ const ChatModal = ({
   }, []);
 
   const [ChatImage, SetChatImage] = useState<File | null>(null);
-  var url : any;
+  var url: any;
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       SetChatImage(file);
       url = URL.createObjectURL(file);
-      console.log(url)
+      console.log(url);
     }
   };
 
   const ChatImageSend = (file: any) => {
-    console.log(url)
+    console.log(url);
     if (Client && Client.readyState === WebSocket.OPEN) {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => {
-        const base64Content = reader.result?.split(",")[1];
-        Client.send(
-          JSON.stringify({
-            type: "image",
-            filename: file.name,
-            content: base64Content,
-          })
-        );
+        if (typeof reader.result === "string") {
+          const base64Content = reader.result?.split(",")[1];
+          Client.send(
+            JSON.stringify({
+              type: "image",
+              filename: file.name,
+              content: base64Content,
+            })
+          );
+        }
       };
     }
     // AddMessage("", session?.user.user_id , url)
     SetChatImage(null);
-    
   };
 
   return (

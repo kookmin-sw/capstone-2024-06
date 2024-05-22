@@ -3,47 +3,52 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Nav from '../../../components/Nav';
 
-const FindUserIDpage = () => {
+const ResetPasswordPage = () => {
+  const [user_id, setUserID] = useState<string>('');
   const [email, setEmail] = useState<string>('');
-  const [foundUserId, setFoundUserId] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   useEffect(() => {
-    const fetchUserId = async () => {
+    const resetPassword = async () => {
       if (!isSubmitting) return;
 
       try {
-        const response = await fetch(`${process.env.Localhost}/user/find/id/${email}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+        const response = await fetch(`${process.env.Localhost}/user/find/password`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_id, email }),
+          });
 
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.message || 'Something went wrong');
         }
 
-        console.log(response);
         const data = await response.json();
-
-        setFoundUserId(data.user_id);
+        setPassword(data.password);
         setError('');
       } catch (error : any) {
-        setError(error.message);
-        setFoundUserId('');
+        setError(error.message || 'Something went wrong.');
+        
       } finally {
         setIsSubmitting(false);
       }
     };
 
-    fetchUserId();
-  }, [isSubmitting, email]);
+    resetPassword();
+  }, [isSubmitting, user_id]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!user_id || !email) {
+      setError('모든 필드를 입력하세요.');
+      return;
+    }
     setIsSubmitting(true);
   };
 
@@ -52,9 +57,18 @@ const FindUserIDpage = () => {
       <Nav />
       <form onSubmit={onSubmit} className="flex flex-col items-center justify-center w-full h-full p-20">
         <div className="text-4xl font-bold text-yellow-700 mb-8">what_desk</div>
-        <div className="text-lg font-semibold text-gray-700 mb-4">아이디 찾기</div>
+        <div className="text-lg font-semibold text-gray-700 mb-4">비밀번호 변경</div>
         <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
-          <div className="text-sm font-semibold text-gray-700 mb-4">등록된 이메일을 입력해주세요</div>
+          <div className="text-sm font-semibold text-gray-700 mb-4">등록된 아이디와 이메일을 입력해주세요</div>
+          <label className="block text-gray-700 font-bold mb-2" htmlFor="username">아이디</label>
+          <input
+            id="id"
+            type="text"
+            placeholder="id"
+            value={user_id}
+            onChange={(e) => setUserID(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded mb-4"
+          />
           <label className="block text-gray-700 font-bold mb-2" htmlFor="email">이메일</label>
           <input
             id="email"
@@ -64,12 +78,8 @@ const FindUserIDpage = () => {
             onChange={(e) => setEmail(e.target.value)}
             className="w-full p-2 border border-gray-300 rounded mb-4"
           />
-          {error && (
-            <div className="text-red-500 mb-4">{error}</div>
-          )}
-          {foundUserId && (
-            <div className="text-green-500 mb-4">등록된 아이디: {foundUserId}</div>
-          )}
+          {error && <div className="text-red-500 mb-4">{error}</div>}
+          {password && <div className="text-green-500 mb-4">임시 비밀번호: {password}</div>}
           <button type="submit" className="w-full bg-yellow-500 text-white font-bold py-2 rounded hover:bg-yellow-600">
             확인
           </button>
@@ -80,4 +90,4 @@ const FindUserIDpage = () => {
   );
 };
 
-export default FindUserIDpage;
+export default ResetPasswordPage;

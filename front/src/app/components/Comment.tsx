@@ -194,11 +194,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
   };
 
   const handleAuthorImageClick = (user_id: string) => {
-    if (user_id === session?.user?.user_id) {
-      router.push("/Mypage");
-    }
-    else router.push(`/Users?user_id=${user_id}`);
-    // Users 페이지로 이동
+    router.push(`/Users?user_id=${user_id}`);
   };
 
   const CommentLikeBtClick = async (comment_id : number) => {
@@ -303,7 +299,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
                     />
                   </div>
                   <div className="flex-col  w-full">
-                    <div className="text-base font-bold mb-1">{replys.author.name}</div>
+                    <div className="text-base font-bold mb-1">{replys.author.name.substring(0, 4)}</div>
                     <div className="text-sm font-light h-auto mb-2">
                       {replys.content}
                     </div>
