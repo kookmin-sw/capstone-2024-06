@@ -27,7 +27,7 @@ class ProgressSummary(QWidget):
 
         layout = QVBoxLayout()
         layout.addWidget(self.progress_bar)
-        layout.addWidget(self.plot_view)
+        # layout.addWidget(self.plot_view)
         self.setLayout(layout)
 
     def add_answer(self, correct):

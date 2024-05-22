@@ -2,7 +2,6 @@ import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-import json
 from tqdm import tqdm
 from database.models import *
 from database.database import SessionLocal

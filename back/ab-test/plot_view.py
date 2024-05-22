@@ -1,5 +1,6 @@
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 import plotly.graph_objects as go
+import plotly
 
 
 class PlotView(QWebEngineView):

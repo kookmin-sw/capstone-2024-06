@@ -1,9 +1,13 @@
 import os
 import random
+import numpy as np
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel
 from PyQt5.QtCore import Qt, pyqtSignal
-import faiss
+import torchvision.models as models
 from image_label import ImageLabel
+
+from database import crud
+from dependencies import *
 from img2vec import Feat2Vec
 
 
@@ -15,8 +19,10 @@ class ImageSelector(QWidget):
         self.image_dir = image_dir
         self.correct_on_left = True
 
-        self.feat2vec = Feat2Vec()
-        self.feat_idx = faiss.read_index("vectors/vgg_features.index")
+        model = models.vgg16(weights=models.VGG16_Weights.DEFAULT)
+        model.classifier = model.classifier[:-1]
+        self.feat2vec = Feat2Vec(model, resize=(224, 224), from_url=True)
+        self.feature_mat = np.load("vectors/features.npy")
 
         self.query_image_label = ImageLabel()
         query_label = QLabel("Query")
@@ -43,32 +49,24 @@ class ImageSelector(QWidget):
         self.clicked.emit(correct)
 
     def load_image(self):
-        query_image_path = self.choice_random_image_path()
+        db = next(get_db())
+        query_image, random_image = crud.read_random_design_images_sync(db, 2)
 
-        feat_vec = self.feat2vec.get_vector(query_image_path)
-        _, feat_result = self.feat_idx.search(feat_vec, 2)
+        query_vec = self.feat2vec.get_vector(query_image.src_url)
+        query_mat = query_vec.reshape(1, -1)
+        similarity_mat = query_mat @ self.feature_mat.T
+        output_image = crud.read_design_images_sync(db, int(similarity_mat[0].argsort()[-2]))
 
-        output_image_name = os.listdir(self.image_dir)[feat_result[0][1]]
-        output_image_path = os.path.join(self.image_dir, output_image_name)
-
-        while True:
-            random_image_path = self.choice_random_image_path()
-            if (
-                random_image_path != query_image_path
-                and random_image_path != output_image_path
-            ):
-                break
-
-        self.query_image_label.set_pixmap(query_image_path)
-        self.output_image_label.set_pixmap(output_image_path)
-        self.random_image_label.set_pixmap(random_image_path)
+        self.query_image_label.set_pixmap(query_image.src_url)
+        self.output_image_label.set_pixmap(output_image.src_url)
+        self.random_image_label.set_pixmap(random_image.src_url)
 
         self.switch_image_position()
-    
+        db.close()
+
     def choice_random_image_path(self):
         image_name = random.choice(os.listdir(self.image_dir))
         return os.path.join(self.image_dir, image_name)
-
 
     def switch_image_position(self):
         if random.random() < 0.5:
