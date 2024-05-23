@@ -21,7 +21,7 @@ const Posts = ({ PostCateGory }: { PostCateGory: string }) => {
         var response: any;
         if (session) {
           response = await fetch(
-            `/api/community/post/search?category=${PostCateGory}&keyword=${tempkeyword}`,
+            `/what-desk-api/community/post/search?category=${PostCateGory}&keyword=${tempkeyword}`,
             {
               method: "GET",
               headers: {
@@ -32,7 +32,7 @@ const Posts = ({ PostCateGory }: { PostCateGory: string }) => {
           );
         } else {
           response = await fetch(
-            `/api/community/post/search?category=${PostCateGory}&keyword=${tempkeyword}`,
+            `/what-desk-api/community/post/search?category=${PostCateGory}&keyword=${tempkeyword}`,
             {
               method: "GET",
               headers: {

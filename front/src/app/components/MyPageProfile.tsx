@@ -36,7 +36,7 @@ const MyPageProfile = () => {
       try {
         if (!session) return;
 
-        const response = await fetch(`/api/user/profile/${(session as ExtendedSession)?.user?.user_id}`, {
+        const response = await fetch(`/what-desk-api/user/profile/${(session as ExtendedSession)?.user?.user_id}`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${(session as any)?.access_token}`,

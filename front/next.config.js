@@ -5,7 +5,7 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: '/api/:path*',
+        source: '/what-desk-api/:path*',
         destination: `${process.env.Localhost}/:path*`
       }
     ]

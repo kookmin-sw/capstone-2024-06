@@ -27,7 +27,7 @@ const MyPost = () => {
     const fetchUserPosts = async () => {
       try {
         if (status === 'authenticated') { // 인증된 경우에만 게시물 가져오기
-          const response = await fetch(`/api/community/post/search?author_id=${(session as ExtendedSession)?.user?.user_id}`, {
+          const response = await fetch(`/what-desk-api/community/post/search?author_id=${(session as ExtendedSession)?.user?.user_id}`, {
             method: 'GET',
             headers: {
               Authorization: `Bearer ${(session as any)?.access_token}`,

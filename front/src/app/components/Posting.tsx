@@ -53,7 +53,7 @@ const Posting = () => {
         try {
           const postIdKey = Object.keys(Postid)[0];
           const response = await fetch(
-            `/api/community/post/${Postid[postIdKey]}`,
+            `/what-desk-api/community/post/${Postid[postIdKey]}`,
             {
               method: "GET",
               headers: {
@@ -74,7 +74,7 @@ const Posting = () => {
         try {
           const postIdKey = Object.keys(Postid)[0];
           const response = await fetch(
-            `/api/community/post/${Postid[postIdKey]}`,
+            `/what-desk-api/community/post/${Postid[postIdKey]}`,
             {
               method: "GET",
               headers: {
@@ -98,7 +98,7 @@ const Posting = () => {
     try {
       const postIdKey = Object.keys(Postid)[0];
       const response = await fetch(
-        `/api/community/post/${Postid[postIdKey]}`,
+        `/what-desk-api/community/post/${Postid[postIdKey]}`,
         {
           method: "DELETE",
           headers: {
@@ -126,7 +126,7 @@ const Posting = () => {
       const postIdKey = Object.keys(Postid)[0];
 
       const response = await fetch(
-        `/api/community/post/like/${Postid[postIdKey]}`,
+        `/what-desk-api/community/post/like/${Postid[postIdKey]}`,
         {
           method: "POST",
           headers: {
@@ -147,7 +147,7 @@ const Posting = () => {
       const postIdKey = Object.keys(Postid)[0];
 
       const response = await fetch(
-        `/api/community/post/scrap/${Postid[postIdKey]}`,
+        `/what-desk-api/community/post/scrap/${Postid[postIdKey]}`,
         {
           method: "POST",
           headers: {

@@ -58,7 +58,7 @@ const ImageAnalysisSlider = ({ Images }: { Images: ImageItem[] }) => {
     const ItemGet = async () => {
       try {
         const ImagePost = await fetch(
-          `/api/recommend/item?index=${index}`,
+          `/what-desk-api/recommend/item?index=${index}`,
           {
             method: "GET",
             headers: {

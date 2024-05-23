@@ -68,7 +68,7 @@ const AnalysisImageUpLoader = () => {
         const formData = new FormData();
         formData.append("file", imagePreview.file);
         const ImagePost = await fetch(
-          `/api/recommend/image`,
+          `/what-desk-api/recommend/image`,
           {
             method: "POST",
             headers: {
@@ -104,7 +104,7 @@ const AnalysisImageUpLoader = () => {
     const SampleImageGet = async () => {
       try {
         const ImagePost = await fetch(
-          `/api/recommend/sample`,
+          `/what-desk-api/recommend/sample`,
           {
             method: "GET",
             headers: {
@@ -133,7 +133,7 @@ const AnalysisImageUpLoader = () => {
         rating: data.score,
       }));
       const ImagePost = await fetch(
-        `/api/recommend/preference`,
+        `/what-desk-api/recommend/preference`,
         {
           method: "POST",
           headers: {

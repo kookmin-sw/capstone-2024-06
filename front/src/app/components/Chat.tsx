@@ -154,7 +154,7 @@ const ChatModal = ({
       const ChatingLoad = async () => {
         try {
           const response = await fetch(
-            `/api/chat/history/${Id}`,
+            `/what-desk-api/chat/history/${Id}`,
             {
               method: "GET",
               headers: {
@@ -192,7 +192,7 @@ const ChatModal = ({
       const ChatingLoad = async () => {
         try {
           const response = await fetch(
-            `/api/chat/history/${Id}?last_chat_history_id=${
+            `/what-desk-api/chat/history/${Id}?last_chat_history_id=${
               chat_history_id + 1
             }`,
             {
@@ -227,7 +227,7 @@ const ChatModal = ({
     if (!session) return;
     const ChatLoad = async () => {
       try {
-        const response = await fetch(`/api/chat/room`, {
+        const response = await fetch(`/what-desk-api/chat/room`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${(session as any)?.access_token}`,
@@ -261,7 +261,7 @@ const ChatModal = ({
       const fetchUserData = async () => {
         try {
           const response = await fetch(
-            `/api/user/profile/${user_id}`,
+            `/what-desk-api/user/profile/${user_id}`,
             {
               method: "GET",
               headers: {

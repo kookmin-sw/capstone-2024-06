@@ -18,7 +18,7 @@ const EditPost = () => {
     const MyAnalysis = async () => {
       try {
         const response = await fetch(
-          `/api/recommend/reload`,
+          `/what-desk-api/recommend/reload`,
           {
             method: "POST",
             headers: {

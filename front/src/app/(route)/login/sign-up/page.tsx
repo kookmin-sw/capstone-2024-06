@@ -39,7 +39,7 @@ const RegistrationForm = () => {
 
       // 회원가입 요청
       try {
-        const response = await fetch(`/api/user`, {
+        const response = await fetch(`/what-desk-api/user`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

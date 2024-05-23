@@ -14,7 +14,7 @@ const FindUserIDpage = () => {
       if (!isSubmitting) return;
 
       try {
-        const response = await fetch(`/api/user/find/id/${email}`, {
+        const response = await fetch(`/what-desk-api/user/find/id/${email}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
