@@ -50,7 +50,7 @@ async def recommend_by_preference(rated_images: list[RatedImage], user_id: str =
             design_images.append(design_image)
         i += 1
 
-    await crud.update_analysis_history(db, user_id, design_images)
+    await crud.update_analysis_history(db, user_id, [DesignImage.model_validate(design_image).model_dump_json() for design_image in design_images])
     
     return design_images
 
