@@ -58,7 +58,7 @@ const ImageAnalysisSlider = ({ Images }: { Images: ImageItem[] }) => {
     const ItemGet = async () => {
       try {
         const ImagePost = await fetch(
-          `${process.env.Localhost}/recommend/item?index=${index}`,
+          `/api/recommend/item?index=${index}`,
           {
             method: "GET",
             headers: {

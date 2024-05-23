@@ -37,7 +37,7 @@ const EditUserProfileImg = () => {
         formData.append('file', imagePreview.file);
         console.log(imagePreview.file);
         const response = await fetch(
-          `${process.env.Localhost}/user/modification/profile_image`,
+          `/api/user/modification/profile_image`,
           {
             method: 'PUT',
             headers: {

@@ -25,7 +25,7 @@ export default function SettingForm({ user }: IProps) {
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!blankName && user) { // user가 null이 아닌 경우에만 실행
-      fetch(`${process.env.api_url}/user`, {
+      fetch(`/api/user`, {
         method: 'POST',
         body: JSON.stringify({ id: user.user_id, name }),
       }).then((res) => {

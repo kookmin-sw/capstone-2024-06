@@ -143,7 +143,7 @@ const authOptions: NextAuthOptions = {
               user_id: user.id,
               id: "",
             };
-            const res = await fetch(`${process.env.api_url}/user/token/${account.access_token}?provider=${account.provider}`, {
+            const res = await fetch(`/api/user/token/${account.access_token}?provider=${account.provider}`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',

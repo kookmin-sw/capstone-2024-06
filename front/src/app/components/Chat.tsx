@@ -154,7 +154,7 @@ const ChatModal = ({
       const ChatingLoad = async () => {
         try {
           const response = await fetch(
-            `${process.env.Localhost}/chat/history/${Id}`,
+            `/api/chat/history/${Id}`,
             {
               method: "GET",
               headers: {
@@ -192,7 +192,7 @@ const ChatModal = ({
       const ChatingLoad = async () => {
         try {
           const response = await fetch(
-            `${process.env.Localhost}/chat/history/${Id}?last_chat_history_id=${
+            `/api/chat/history/${Id}?last_chat_history_id=${
               chat_history_id + 1
             }`,
             {
@@ -261,7 +261,7 @@ const ChatModal = ({
       const fetchUserData = async () => {
         try {
           const response = await fetch(
-            `${process.env.Localhost}/user/profile/${user_id}`,
+            `/api/user/profile/${user_id}`,
             {
               method: "GET",
               headers: {
