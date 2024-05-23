@@ -1,15 +1,17 @@
 [![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&pause=1000&color=A16D07&random=false&width=435&lines=%EC%9D%B4+%EC%B1%85%EC%83%81+%EC%96%B4%EB%96%A4%EB%8D%B0%3F+++%EC%96%B4%EB%96%A4%EB%8D%B0%EC%8A%A4%ED%81%AC(what_desk))](https://git.io/typing-svg)
 
 <div align="center">
-  <img width="546" alt="포스터 표시용" src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/c445134b-ae11-420d-ad6c-b18724115791">
+  <img width="546" alt="포스터 표시용" src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/59a6c64e-2069-4e5f-aaf5-d79e90b52e66">
 </div>
 
 > 포스터 pdf링크
 > <a href="https://github.com/kookmin-sw/capstone-2024-06/files/15373556/default.pdf">어떤데스크 포스터(pdf)</a>
 
 > 2024 KMU SW 캡스톤 디자인 06조
-> <a href="https://kookmin-sw.github.io/capstone-2024-06/">어떤데스크(what_desk)</a>
+> <a href="https://kookmin-sw.github.io/capstone-2024-06/">깃허브 페이지</a>
 
+> 어떤데스크 시작하기
+> <a href="https://capstone-2024-06-front.vercel.app/">어떤데스크</a>
 
 ---
 
@@ -143,7 +145,7 @@ What_Desk aims to simplify desk decor, helping users improve their work culture,
         <th>ERD</th>
     </tr>
     <tr>
-        <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/f76c6b8a-09a3-40ae-90dc-dafba99d68d7" alt="구조도" width="500" height="200"></td>
+        <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/da01b460-e8a8-46fe-a1ae-7cf92b9df422" alt="구조도" width="500" height="200"></td>
         <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/29961234-537f-4da4-ac51-7e44eea1eb64" alt="Use Case" width="500" height="200"></td>
         <td><img src="https://github.com/kookmin-sw/capstone-2024-06/assets/54922799/09902c12-f908-4026-8ea4-54d64b65d9e9" alt="ERD" width="500" height="200"></td>
     </tr>
@@ -160,6 +162,27 @@ What_Desk aims to simplify desk decor, helping users improve their work culture,
 ---
 ### 7. 사용법
 
-<a href="https://drive.google.com/file/d/1LrOlDRCLbzYnOXvMmoTAbdmzO8eekoAE/view?usp=drive_link">시연 영상</a><br>
+- <a href="https://drive.google.com/file/d/1LrOlDRCLbzYnOXvMmoTAbdmzO8eekoAE/view?usp=drive_link">시연 영상</a><br>
+
+- 공통 매뉴얼
+    ```bash
+    git clone https://github.com/kookmin-sw/capstone-2024-06/
+    ```
+- Front-end
+
+    ```bash
+    cd front
+    npm install
+    npm run dev
+    ```
+- Back-end
+    ```bash
+    cd back
+    pip install -r requirement.txt
+    uvicorn main:app --reload --host 0.0.0.0 --port 8000
+    ```
+
+- 배포 방법과 데이터 관리는 수행 결과 보고서의 5.2참조
+<a href="https://docs.google.com/document/d/1mufXKwbdv8KsVtx-5chHl9aQmsy0YiZ-5WUD1upmSoc/edit?usp=sharing">수행결과 보고서</a><br>
 
 ---
