@@ -9,6 +9,8 @@
 
 > 2024 KMU SW 캡스톤 디자인 06조
 > <a href="https://kookmin-sw.github.io/capstone-2024-06/">깃허브 페이지</a>
+
+> 어떤데스크 시작하기
 > <a href="https://capstone-2024-06-front.vercel.app/">어떤데스크</a>
 
 ---
@@ -160,7 +162,7 @@ What_Desk aims to simplify desk decor, helping users improve their work culture,
 ---
 ### 7. 사용법
 
-<a href="https://drive.google.com/file/d/1LrOlDRCLbzYnOXvMmoTAbdmzO8eekoAE/view?usp=drive_link">시연 영상</a><br>
+- <a href="https://drive.google.com/file/d/1LrOlDRCLbzYnOXvMmoTAbdmzO8eekoAE/view?usp=drive_link">시연 영상</a><br>
 
 - 공통 매뉴얼
     ```bash
