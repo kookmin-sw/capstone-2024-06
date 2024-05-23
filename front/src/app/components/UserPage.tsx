@@ -29,7 +29,7 @@ const User = ({ }) => {
     // }
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`${process.env.Localhost}/user/profile/${user_id}`, {
+        const response = await fetch(`/api/user/profile/${user_id}`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${(session as any)?.access_token}`,
@@ -53,7 +53,7 @@ const User = ({ }) => {
   useEffect(() => {
     const fetchUserPosts = async () => {
       try {
-        const response = await fetch(`${process.env.Localhost}/community/post/search?author_id=${user_id}`, {
+        const response = await fetch(`/api/community/post/search?author_id=${user_id}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ const User = ({ }) => {
     if (!userProfile) return;
 
     try {
-      const response = await fetch(`${process.env.Localhost}/community/follow/${user_id}`, {
+      const response = await fetch(`/api/community/follow/${user_id}`, {
         method: userProfile.followed ? 'DELETE' : 'POST',
         headers: {
           Authorization: `Bearer ${(session as any)?.access_token}`,

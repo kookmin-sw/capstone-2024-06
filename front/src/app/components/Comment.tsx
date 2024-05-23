@@ -105,7 +105,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
         post_id: Postid[postIdKey],
         content: Comment,
       };
-      const response = await fetch(`${process.env.Localhost}/community/comment`, {
+      const response = await fetch(`/api/community/comment`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${(session as any)?.access_token}`,
@@ -147,7 +147,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
         parent_comment_id: Comments[index].comment_id,
         content: Reply,
       };
-      const response = await fetch(`${process.env.Localhost}/community/comment`, {
+      const response = await fetch(`/api/community/comment`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${(session as any)?.access_token}`,

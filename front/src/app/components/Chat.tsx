@@ -227,7 +227,7 @@ const ChatModal = ({
     if (!session) return;
     const ChatLoad = async () => {
       try {
-        const response = await fetch(`${process.env.Localhost}/chat/room`, {
+        const response = await fetch(`/api/chat/room`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${(session as any)?.access_token}`,

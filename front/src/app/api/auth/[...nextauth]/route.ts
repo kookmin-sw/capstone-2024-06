@@ -36,7 +36,7 @@ const credentialsProvider = CredentialsProvider({
     try {
       console.log(process.env.Localhost)
       console.log(process.env.api_url)
-      const res = await fetch(`${process.env.Localhost}/user/token`, {
+      const res = await fetch(`/api/user/token`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

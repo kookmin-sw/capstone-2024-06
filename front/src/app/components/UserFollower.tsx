@@ -45,7 +45,7 @@ const UserFollowerlist = ({ }) => {
     // }
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`${process.env.Localhost}/user/profile/${user_id}`, {
+        const response = await fetch(`/api/user/profile/${user_id}`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${(session as any)?.access_token}`,
@@ -72,7 +72,7 @@ const UserFollowerlist = ({ }) => {
     if (!userProfile) return;
 
     try {
-      const response = await fetch(`${process.env.Localhost}/community/follow/${user_id}`, {
+      const response = await fetch(`/api/community/follow/${user_id}`, {
         method: userProfile.followed ? 'DELETE' : 'POST',
         headers: {
           Authorization: `Bearer ${(session as any)?.access_token}`,
@@ -96,7 +96,7 @@ const UserFollowerlist = ({ }) => {
         if (!session) return;
 
         // 팔로잉 정보를 가져오는 API 요청
-        const res = await fetch(`${process.env.Localhost}/user/follower/${user_id}`, {
+        const res = await fetch(`/api/user/follower/${user_id}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

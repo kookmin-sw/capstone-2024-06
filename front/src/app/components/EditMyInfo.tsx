@@ -22,7 +22,7 @@ const EditUserInfo = () => {
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${process.env.Localhost}/user/modification`, {
+      const response = await fetch(`/api/user/modification`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${(session as any)?.access_token}`,

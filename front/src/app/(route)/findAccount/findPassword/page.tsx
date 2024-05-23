@@ -15,7 +15,7 @@ const ResetPasswordPage = () => {
       if (!isSubmitting) return;
 
       try {
-        const response = await fetch(`${process.env.Localhost}/user/find/password`,
+        const response = await fetch(`/api/user/find/password`,
           {
             method: 'POST',
             headers: {
