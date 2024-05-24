@@ -32,6 +32,8 @@ async def get_images_to_rate(n: int = 5, db: Session = Depends(get_db)):
 
 @router.post("/preference", response_model=list[DesignImage])
 async def recommend_by_preference(rated_images: list[RatedImage], user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    await crud.create_or_update_ratings(db, user_id, rated_images)
+
     feature_mat = np.load("vectors/features.npy")
     rated_images_index = [rated_image.index for rated_image in rated_images]
     query_mat = feature_mat[np.array(rated_images_index)]

@@ -336,3 +336,11 @@ class AnalysisHistories(Base):
 
     user_id = Column(String, ForeignKey("users.user_id"), primary_key=True)
     history = Column(JSON, nullable=False)
+
+
+class RatingHistories(Base):
+    __tablename__ = "rating_histories"
+
+    user_id = Column(String, ForeignKey("users.user_id"), primary_key=True)
+    index = Column(Integer, ForeignKey("design_images.index"), primary_key=True)
+    rating = Column(Integer, nullable=False)
