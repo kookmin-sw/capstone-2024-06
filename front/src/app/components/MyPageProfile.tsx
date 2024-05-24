@@ -136,7 +136,7 @@ const MyPageProfile = () => {
                   src={icon}
                   alt="Profile image"
                   width={100}
-                  height={1000}
+                  height={100}
                   objectFit="cover"
                   className="cursor-pointer mr-1"
                   onClick={() => handleClick(index)}
