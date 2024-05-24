@@ -29,7 +29,7 @@ const Category = () => {
 
   const PostCreateBt = async () => {
     try {
-      const response = await fetch(`${process.env.Localhost}/community/post/temp`, {
+      const response = await fetch(`/what-desk-api/community/post/temp`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${(session as any)?.access_token}`,

@@ -19,7 +19,7 @@ const MyNotification = () => {
     try {
       if (status === "authenticated") {
         const response = await fetch(
-          `${process.env.Localhost}/user/notification`,
+          `/what-desk-api/user/notification`,
           {
             method: "GET",
             headers: {
@@ -55,7 +55,7 @@ const MyNotification = () => {
     try {
       // 클릭한 알림의 상태를 변경하여 서버에 요청
       const response = await fetch(
-        `${process.env.Localhost}/user/notification/${notification_id}`,
+        `/what-desk-api/user/notification/${notification_id}`,
         {
           method: "POST",
           headers: {
@@ -82,7 +82,7 @@ const MyNotification = () => {
   const DeleteNotification = async () => {
     try {
       const response = await fetch(
-        `${process.env.Localhost}/user/notification`,
+        `/what-desk-api/user/notification`,
         {
           method: "DELETE",
           headers: {

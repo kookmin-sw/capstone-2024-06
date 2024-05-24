@@ -2,8 +2,15 @@
 const nextConfig = {
   transpilePackages: ["three"],
   reactStrictMode: false,
+  async rewrites() {
+    return [
+      {
+        source: '/what-desk-api/:path*',
+        destination: `${process.env.Localhost}/:path*`
+      }
+    ]
+  },
   env: {
-
     Localhost: `${process.env.Localhost}`,
     OnlyiP : `${process.env.Localhost}`,
   },

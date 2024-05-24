@@ -45,7 +45,7 @@ const PostCreates = () => {
         const formData = new FormData();
         formData.append("file", imagePreview.file);
         const ImagePost = await fetch(
-          `${process.env.Localhost}/community/image/${PostCreateTempId.PostCreateId}`,
+          `/what-desk-api/community/image/${PostCreateTempId.PostCreateId}`,
           {
             method: "POST",
             headers: {
@@ -65,7 +65,7 @@ const PostCreates = () => {
       };
       console.log(PostCreateData)
       const PostCreate = await fetch(
-        `${process.env.Localhost}/community/post/${PostCreateTempId.PostCreateId}`,
+        `/what-desk-api/community/post/${PostCreateTempId.PostCreateId}`,
         {
           method: "POST",
           headers: {

@@ -17,9 +17,9 @@ const ResetPassword = () => {
       return;
     }
 
-    try {
+    try { 
       // 예시로만 백엔드에 요청하는 부분을 넣었습니다.
-      const response = await fetch('/api/reset-password', {
+      const response = await fetch('/what-desk-api/reset-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

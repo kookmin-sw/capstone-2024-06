@@ -13,7 +13,7 @@ const MyScrappedPosts = () => {
     const fetchScrappedPosts = async () => {
       try {
         if (status === 'authenticated') {
-          const response = await fetch(`${process.env.Localhost}/user/scrapped_post`, {
+          const response = await fetch(`/what-desk-api/user/scrapped_post`, {
             method: 'GET',
             headers: {
               Authorization: `Bearer ${(session as any)?.access_token}`,

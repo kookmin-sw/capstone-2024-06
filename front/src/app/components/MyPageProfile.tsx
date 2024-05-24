@@ -36,7 +36,7 @@ const MyPageProfile = () => {
       try {
         if (!session) return;
 
-        const response = await fetch(`${process.env.Localhost}/user/profile/${(session as ExtendedSession)?.user?.user_id}`, {
+        const response = await fetch(`/what-desk-api/user/profile/${(session as ExtendedSession)?.user?.user_id}`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${(session as any)?.access_token}`,
@@ -136,7 +136,7 @@ const MyPageProfile = () => {
                   src={icon}
                   alt="Profile image"
                   width={100}
-                  height={1000}
+                  height={100}
                   objectFit="cover"
                   className="cursor-pointer mr-1"
                   onClick={() => handleClick(index)}

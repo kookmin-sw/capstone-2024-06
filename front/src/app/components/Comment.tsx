@@ -49,7 +49,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
     try {
       const postIdKey = Object.keys(Postid)[0];
       const response = await fetch(
-        `${process.env.Localhost}/community/comment/${Postid[postIdKey]}`,
+        `/what-desk-api/community/comment/${Postid[postIdKey]}`,
         {
           method: "GET",
           headers: {
@@ -105,7 +105,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
         post_id: Postid[postIdKey],
         content: Comment,
       };
-      const response = await fetch(`${process.env.Localhost}/community/comment`, {
+      const response = await fetch(`/what-desk-api/community/comment`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${(session as any)?.access_token}`,
@@ -123,7 +123,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
   const DeleteComment = async ({ comment_id }: { comment_id: number }) => {
     try {
       const response = await fetch(
-        `${process.env.Localhost}/comment/${comment_id}`,
+        `/what-desk-api/comment/${comment_id}`,
         {
           method: "DELETE",
           headers: {
@@ -147,7 +147,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
         parent_comment_id: Comments[index].comment_id,
         content: Reply,
       };
-      const response = await fetch(`${process.env.Localhost}/community/comment`, {
+      const response = await fetch(`/what-desk-api/community/comment`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${(session as any)?.access_token}`,
@@ -200,7 +200,7 @@ const Comment = ({ comment_count }: { comment_count: number }) => {
   const CommentLikeBtClick = async (comment_id : number) => {
     try {
       const response = await fetch(
-        `${process.env.Localhost}/community/comment/like/${comment_id}`,
+        `/what-desk-api/community/comment/like/${comment_id}`,
         {
           method: "POST",
           headers: {

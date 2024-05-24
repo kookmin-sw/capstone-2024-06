@@ -1,4 +1,4 @@
-//Users/user/Desktop/signforms/signforms/src/app/api/auth/[...nextauth]/route.ts
+//Users/user/Desktop/signforms/signforms/src/app/what-desk-api/auth/[...nextauth]/route.ts
 
 import NextAuth, { Session } from "next-auth";
 import { NextAuthOptions } from "next-auth";
@@ -36,7 +36,7 @@ const credentialsProvider = CredentialsProvider({
     try {
       console.log(process.env.Localhost)
       console.log(process.env.api_url)
-      const res = await fetch(`${process.env.Localhost}/user/token`, {
+      const res = await fetch(`/what-desk-api/user/token`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -129,7 +129,7 @@ const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, account, user, trigger, session }) {
       console.log(account)
-          console.log(user)
+      console.log(user)
       if (trigger === "update") {
         token.user = session.user;
       } else {
@@ -143,7 +143,8 @@ const authOptions: NextAuthOptions = {
               user_id: user.id,
               id: "",
             };
-            const res = await fetch(`${process.env.api_url}/user/token/${account.access_token}?provider=${account.provider}`, {
+            const url = new URL(`/user/token/${account.access_token}?provider=${account.provider}`, `${process.env.Localhost}`).href;
+            const res = await fetch(url, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
