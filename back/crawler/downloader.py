@@ -48,7 +48,5 @@ session = next(get_db())
 designs = session.query(DesignImages).order_by(DesignImages.index).all()
 designs = [(design.index, design.src_url) for design in designs]
 
-designs = [designs[i] for i in [776, 1404, 3334, 4157, 4639]]
-
 with ThreadPoolExecutor(max_workers=8) as executor:
     list(tqdm(executor.map(download_image, designs), total=len(designs)))
