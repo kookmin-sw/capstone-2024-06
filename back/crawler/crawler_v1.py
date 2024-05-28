@@ -1,7 +1,7 @@
 import os
 import re
 import requests
-from requests.packages.urllib3.util.retry import Retry
+from urllib3.util import Retry
 from requests.adapters import HTTPAdapter
 
 import queue
@@ -352,6 +352,61 @@ class OhouseItemCrawler(BaseCrawler):
         except Exception as e:
             session.rollback()
             return False
+        
+
+class OhouseDeskItemCrawler(BaseCrawler):
+    def __init__(self, path, query, style=None, num_workers=8, resize=None, verbose=False):
+        super().__init__(path, "ohouse", num_workers, resize, verbose)
+        self.query = query
+        self.style = style
+        self.api_url = "https://ohou.se/cards/feed.json"
+
+    def producer(self):
+        page = 1
+        while not self.finished:
+            desks = self.fetch_desks(page)
+            with self.lock:
+                for desk in desks:
+                    self.queue.put(desk)
+            page += 1
+
+    def fetch_desks(self, page):
+        params = {
+            "v": 5,
+            "query": self.query,
+            "search_affect_type": "Typing",
+            "page": page,
+            "per": 48,
+        }
+        if self.style:
+            params["style"] = self.style
+
+        session = create_retry_session()
+        response = session.get(self.api_url, params=params, headers=self.headers)
+        if response.status_code != 200:
+            raise Exception("Failed to fetch data")
+
+        desks = []
+        response_data = response.json()
+        fetched_desks = response_data["cards"]
+        for fetched_desk in fetched_desks:
+            url = fetched_desk["image"]["url"]
+            if "amazon" in url:
+                url = re.sub(r"\.s.*?\.com", "", url)
+                url = url.replace("https://", "https://image.ohou.se/i/")
+            url += "?gif=1&webp=1"
+            
+            desk = {
+                "filename": re.search(r'/([^/]*)\.([^.]*)$', url).group(1),
+                "src_url": url,
+                "landing": fetched_desk["link"]["landingUrl"]
+            }
+            desks.append(desk)
+
+        if not response_data["next"]:
+            self.finished = True
+
+        return desks
 
 
 if __name__ == "__main__":
