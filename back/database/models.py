@@ -313,22 +313,29 @@ class ChatAccessHistories(Base):
 class DesignImages(Base):
     __tablename__ = "design_images"
 
-    filename = Column(String, primary_key=True)
-
-    index = Column(Integer, nullable=True)
-    src_url = Column(String, unique=True)
+    id = Column(Integer, primary_key=True)
+    index = Column(Integer, unique=True)
+    src_url = Column(String, nullable=False)
     landing = Column(String, nullable=False)
 
 
 class ItemImages(Base):
     __tablename__ = "item_images"
 
-    name = Column(String, primary_key=True)
-
-    src_url = Column(String, unique=True)
+    id = Column(Integer, primary_key=True)
+    index = Column(Integer, unique=True)
+    name = Column(String, nullable=False)
+    src_url = Column(String, nullable=False)
     landing = Column(String, nullable=False)
-    color = Column(Vector(3))
-    category_id = Column(Integer)
+    color = Column(Vector(3), nullable=True)
+    category_id = Column(Integer, nullable=True)
+
+
+class DesignItemRelations(Base):
+    __tablename__ = "design_item_relations"
+    
+    design_id = Column(Integer, ForeignKey("design_images.id"), primary_key=True)
+    item_id = Column(Integer, ForeignKey("item_images.id"), primary_key=True)
 
 
 class AnalysisHistories(Base):
@@ -336,3 +343,11 @@ class AnalysisHistories(Base):
 
     user_id = Column(String, ForeignKey("users.user_id"), primary_key=True)
     history = Column(JSON, nullable=False)
+
+
+class RatingHistories(Base):
+    __tablename__ = "rating_histories"
+
+    user_id = Column(String, ForeignKey("users.user_id"), primary_key=True)
+    index = Column(Integer, ForeignKey("design_images.index"), primary_key=True)
+    rating = Column(Integer, nullable=False)

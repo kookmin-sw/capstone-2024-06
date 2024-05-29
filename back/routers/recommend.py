@@ -4,10 +4,11 @@ import cv2
 from fastapi import APIRouter, UploadFile, Depends
 
 import requests
-from requests.packages.urllib3.util.retry import Retry
+from urllib3.util import Retry
 from requests.adapters import HTTPAdapter
 
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from database import crud
 from database.models import *
@@ -15,6 +16,7 @@ from database.schemas import *
 from img2vec import Feat2Vec
 
 import torchvision.models as models
+from models.bpr_model import load_model, recommend_items
 
 from dependencies import *
 
@@ -32,6 +34,8 @@ async def get_images_to_rate(n: int = 5, db: Session = Depends(get_db)):
 
 @router.post("/preference", response_model=list[DesignImage])
 async def recommend_by_preference(rated_images: list[RatedImage], user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    await crud.create_or_update_ratings(db, user_id, rated_images)
+
     feature_mat = np.load("vectors/features.npy")
     rated_images_index = [rated_image.index for rated_image in rated_images]
     query_mat = feature_mat[np.array(rated_images_index)]
@@ -76,7 +80,7 @@ async def recommend_by_source_image(file: UploadFile, user_id: str = Depends(get
         design_images.append(design_image)
 
     await crud.update_analysis_history(db, user_id, [DesignImage.model_validate(design_image).model_dump_json() for design_image in design_images])
-    
+
     return design_images
 
 
@@ -106,15 +110,30 @@ async def recoomend_items_by_color(index: int, user_id: str = Depends(get_curren
     _, labels, centers = cv2.kmeans(pixels, 3, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
 
     colors = np.uint8(centers)
-    result = []
+    color_result = []
     for color in colors:
         color = color.tolist()
         items = await crud.read_item_images(db, color)
-        result.append({
+        color_result.append({
             "color": '#{:02x}{:02x}{:02x}'.format(*color),
             "items": [ItemImage.model_validate(item) for item in items]
         })
-    
+        
+    n_designs = db.query(func.max(DesignImages.index)).scalar() + 1
+    n_items = db.query(func.max(ItemImages.index)).scalar() + 1
+    feature_mat = np.load("vectors/features.npy")
+    model = load_model(n_designs, n_items, feature_mat)
+
+    recommend_index = recommend_items(model, index, n_items)
+    recommend_result = []
+    for idx in recommend_index:
+        item_image = await crud.read_item_images_by_idx(db, idx)
+        recommend_result.append(ItemImage.model_validate(item_image))
+
+    result = {
+        "color": color_result,
+        "recommend": recommend_result
+    }
     return result
 
 

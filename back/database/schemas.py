@@ -146,6 +146,7 @@ class ChatRoom(BaseModel):
 
 
 class DesignImage(BaseModel):
+    id: int | None = None
     index: int
     src_url: str
     landing: str
@@ -159,6 +160,7 @@ class RatedImage(BaseModel):
 
 
 class ItemImage(BaseModel):
+    id: int | None = None
     name: str
     src_url: str
     landing: str
