@@ -586,8 +586,8 @@ def read_design_images_sync(db: Session, i: int):
     return db.query(DesignImages).filter(DesignImages.index == i).first()
 
 
-async def read_item_images(db: Session, color: list):
-    return db.query(ItemImages).order_by(ItemImages.color.l2_distance(color)).limit(10).all()
+async def read_item_images(db: Session, color: list, n: int = 30):
+    return db.query(ItemImages).order_by(ItemImages.color.l2_distance(color)).limit(n).all()
 
 
 async def read_analysis_history(db: Session, user_id: str):
@@ -615,3 +615,6 @@ async def create_or_update_ratings(db: Session, user_id, rated_images: list[Rate
             rating_history = RatingHistories(user_id=user_id, index=index, rating=rating)
             db.add(rating_history)
     db.commit()
+
+async def read_item_images_by_idx(db: Session, index: int):
+    return db.query(ItemImages).filter(ItemImages.index == index).first()

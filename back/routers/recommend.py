@@ -4,18 +4,19 @@ import cv2
 from fastapi import APIRouter, UploadFile, Depends
 
 import requests
-from requests.packages.urllib3.util.retry import Retry
+from urllib3.util import Retry
 from requests.adapters import HTTPAdapter
 
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from database import crud
 from database.models import *
 from database.schemas import *
 from img2vec import Feat2Vec
-from models.bpr_model import BPRModel
 
 import torchvision.models as models
+from models.bpr_model import load_model, recommend_items
 
 from dependencies import *
 
@@ -85,50 +86,54 @@ async def recommend_by_source_image(file: UploadFile, user_id: str = Depends(get
 
 @router.get("/item")
 async def recoomend_items_by_color(index: int, user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
-    # image = await crud.read_design_images(db, index)
-    # url = image.src_url
+    image = await crud.read_design_images(db, index)
+    url = image.src_url
 
-    # session = requests.Session()
-    # retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
-    # session.mount("http://", HTTPAdapter(max_retries=retries))
-    # session.mount("https://", HTTPAdapter(max_retries=retries))
+    session = requests.Session()
+    retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
+    session.mount("http://", HTTPAdapter(max_retries=retries))
+    session.mount("https://", HTTPAdapter(max_retries=retries))
 
-    # response = session.get(url)
-    # if response.status_code != 200:
-    #     raise Exception("Failed to fetch data")
+    response = session.get(url)
+    if response.status_code != 200:
+        raise Exception("Failed to fetch data")
     
-    # image_array = np.frombuffer(response.content, np.uint8)
-    # image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
-    # image = cv2.resize(image, (200, 200), interpolation=cv2.INTER_AREA)
-    # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    image_array = np.frombuffer(response.content, np.uint8)
+    image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
+    image = cv2.resize(image, (200, 200), interpolation=cv2.INTER_AREA)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     
-    # pixels = image.reshape(-1, 3)
-    # pixels = np.float32(pixels)
+    pixels = image.reshape(-1, 3)
+    pixels = np.float32(pixels)
 
-    # criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 100, 0.2)
-    # _, labels, centers = cv2.kmeans(pixels, 3, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
+    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 100, 0.2)
+    _, labels, centers = cv2.kmeans(pixels, 3, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
 
-    # colors = np.uint8(centers)
-    # color_result = []
-    # for color in colors:
-    #     color = color.tolist()
-    #     items = await crud.read_item_images(db, color)
-    #     color_result.append({
-    #         "color": '#{:02x}{:02x}{:02x}'.format(*color),
-    #         "items": [ItemImage.model_validate(item) for item in items]
-    #     })
+    colors = np.uint8(centers)
     color_result = []
-    
-    # model = BPRModel()
-    # model.load()
-    test = {"name": "못없이 붙이는 무타공 벽선반 3size 3colors", "src_url": "https://image.ohou.se/i/bucketplace-v2-development/uploads/productions/165059163489267959.webp?gif=1&webp=1", "landing": "https://ohou.se/productions/1297048/selling"}
-    recommend_result = {"items": [test] * 5}
-    
+    for color in colors:
+        color = color.tolist()
+        items = await crud.read_item_images(db, color)
+        color_result.append({
+            "color": '#{:02x}{:02x}{:02x}'.format(*color),
+            "items": [ItemImage.model_validate(item) for item in items]
+        })
+        
+    n_designs = db.query(func.max(DesignImages.index)).scalar() + 1
+    n_items = db.query(func.max(ItemImages.index)).scalar() + 1
+    feature_mat = np.load("vectors/features.npy")
+    model = load_model(n_designs, n_items, feature_mat)
+
+    recommend_index = recommend_items(model, index, n_items)
+    recommend_result = []
+    for idx in recommend_index:
+        item_image = await crud.read_item_images_by_idx(db, idx)
+        recommend_result.append(ItemImage.model_validate(item_image))
+
     result = {
         "color": color_result,
         "recommend": recommend_result
     }
-
     return result
 
 

@@ -19,3 +19,28 @@ class BPRModel(nn.Module):
         design_embedding = self.linear(design_embedding)
         item_embedding = self.item_embedding(item_indices)
         return (design_embedding * item_embedding).sum(dim=1)
+
+
+def load_model(n_designs, n_items, feature_mat):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = BPRModel(n_designs, n_items, feature_mat)
+    model.load_state_dict(torch.load('models/BPR.pth', map_location=device))
+    model.to(device)
+    return model
+
+
+def recommend_items(model, design_idx, num_items, top_n=30):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    design_tensor = torch.tensor([design_idx])
+    item_indices = torch.arange(num_items)
+
+    design_tensor = design_tensor.to(device)
+    item_indices = item_indices.to(device)
+
+    with torch.no_grad():
+        scores = model(design_tensor, item_indices)
+
+    _, top_indices = torch.topk(scores, top_n)
+    top_indices = top_indices.squeeze().cpu().numpy().tolist()
+
+    return top_indices
