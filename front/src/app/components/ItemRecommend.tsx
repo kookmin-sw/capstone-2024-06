@@ -18,6 +18,8 @@ interface RecommendItem {
 
 const ItemRecommend = ({ Ritems}: { Ritems: RecommendItem[] }) => {
 
+  console.log(Ritems)
+
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [ImageLanding, SetImageLanding] = useState("")
 

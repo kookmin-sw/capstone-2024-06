@@ -11,6 +11,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import ViewDetail from "./ViewDetail";
+import RecommendViewDetail from "./RecommendViewDetail";
 
 interface ImageItem {
   index: number;
@@ -19,7 +20,6 @@ interface ImageItem {
 }
 
 const ImageAnalysisSlider = ({ Images }: { Images: ImageItem[] }) => {
-  console.log(Images)
   const { data: session } = useSession();
 
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -41,6 +41,12 @@ const ImageAnalysisSlider = ({ Images }: { Images: ImageItem[] }) => {
     }[]
   >([]);
 
+  const [RecommendViewDetails, SetRecommendViewDetails] = useState<
+  {
+    items: { name: string; landing: string; src_url: string };
+  }[]
+>([]);
+
   const [ViewDetailOn, SetViewDetailOn] = useState(false);
   const [IndexCheck, SetIndexCheck] = useState(0);
 
@@ -50,7 +56,6 @@ const ImageAnalysisSlider = ({ Images }: { Images: ImageItem[] }) => {
       return;
     } else if (index === IndexCheck && !ViewDetailOn) {
       SetViewDetailOn(true);
-      console.log("set ture");
       return;
     } else {
       SetIndexCheck(index);
@@ -67,7 +72,10 @@ const ImageAnalysisSlider = ({ Images }: { Images: ImageItem[] }) => {
           }
         );
         const ItemDatas = await ImagePost.json();
-        SetViewDetails(ItemDatas);
+        console.log(ItemDatas.color)
+        console.log(ItemDatas.recommend)
+        SetViewDetails(ItemDatas.color);
+        SetRecommendViewDetails(ItemDatas.recommend)
         if (ViewDetailOn) {
           SetViewDetailOn(false);
           SetViewDetailOn(true);
@@ -127,6 +135,7 @@ const ImageAnalysisSlider = ({ Images }: { Images: ImageItem[] }) => {
           ))}
         </Swiper>
       </div>
+      {ViewDetailOn && <RecommendViewDetail RecommendItems={RecommendViewDetails as any}/>}
       {ViewDetailOn && <ViewDetail Items={ViewDetails as any} />}
       {previewImage && (
         <Modal

@@ -78,6 +78,7 @@ const AnalysisImageUpLoader = () => {
           }
         );
         const ImageDatas = await ImagePost.json();
+        console.log(ImageDatas)
         SetAnalysisImage(ImageDatas);
         SetAnalysisImageGet(true);
         setImages(ImageDatas.file_name);
