@@ -607,7 +607,8 @@ async def update_analysis_history(db: Session, user_id: str, history: dict):
 
 
 async def create_or_update_ratings(db: Session, user_id, rated_images: list[RatedImage]):
-    for index, rating in rated_images:
+    for rated_image in rated_images:
+        index, rating = rated_image.index, rated_image.rating
         rating_history = db.query(RatingHistories).filter_by(user_id=user_id, index=index).first()
         if rating_history:
             rating_history.rating = rating
@@ -615,6 +616,7 @@ async def create_or_update_ratings(db: Session, user_id, rated_images: list[Rate
             rating_history = RatingHistories(user_id=user_id, index=index, rating=rating)
             db.add(rating_history)
     db.commit()
+
 
 async def read_item_images_by_idx(db: Session, index: int):
     return db.query(ItemImages).filter(ItemImages.index == index).first()
